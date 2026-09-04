@@ -23,6 +23,8 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		parent::setUp();
 		Monkey\setUp();
 
+		$_POST = array();
+
 		Functions\when( 'check_ajax_referer' )->justReturn( true );
 		Functions\when( 'current_user_can' )->justReturn( true );
 		Functions\when( 'wp_unslash' )->returnArg( 1 );
@@ -44,18 +46,18 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 
 		Functions\when( 'wp_send_json_success' )->alias(
 			function ( $data = null ) {
-				throw new R2CTestJsonExit( true, $data );
+				throw new \R2CTestJsonExit( true, $data );
 			}
 		);
 		Functions\when( 'wp_send_json_error' )->alias(
 			function ( $data = null ) {
-				throw new R2CTestJsonExit( false, $data );
+				throw new \R2CTestJsonExit( false, $data );
 			}
 		);
 	}
 
 	protected function tearDown(): void {
-		unset( $_POST );
+		$_POST = array();
 		Monkey\tearDown();
 		parent::tearDown();
 	}
@@ -94,7 +96,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		try {
 			\R2C_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
-		} catch ( R2CTestJsonExit $e ) {
+		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
 		}
 
@@ -110,7 +112,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		try {
 			\R2C_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
-		} catch ( R2CTestJsonExit $e ) {
+		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
 		}
 
@@ -127,7 +129,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		try {
 			\R2C_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
-		} catch ( R2CTestJsonExit $e ) {
+		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
 		}
 
