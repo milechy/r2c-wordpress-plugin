@@ -1,5 +1,4 @@
 {
-	"phpVersion": "7.4",
 	"mappings": {
 		"wp-content/plugins/r2c-ai-concierge": ".",
 		"wp-content/mu-plugins/r2c-mock-api.php": "./tests-e2e/mu-plugins/r2c-mock-api.php",

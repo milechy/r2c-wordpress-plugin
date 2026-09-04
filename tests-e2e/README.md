@@ -30,6 +30,17 @@ See `docs/WORDPRESS_PLUGIN_REQUIREMENTS.md` §7 (commerce-faq-tasks repo) for
 the full B/C/D/E acceptance-condition list; the items above are the ones a
 WP-only E2E suite can actually exercise.
 
+## Why `.wp-env.json` doesn't pin `phpVersion: "7.4"`
+
+This suite tests plugin *behavior*, not PHP-7.4-specific compatibility —
+`phpcs.xml.dist`'s `PHPCompatibilityWP` sniff already checks that statically
+against the plugin's declared minimum. Pinning `phpVersion: "7.4"` here
+instead pulls wp-env's `wordpress:php7.4` base image, whose baked-in apt
+package index has gone stale (a `sudo` package version it references no
+longer exists on Debian's security mirror, so `wp-env start` fails outright
+— confirmed in CI, not a one-off flake). Using wp-env's default PHP version
+avoids that entirely.
+
 ## Running locally
 
 ```bash
