@@ -3,6 +3,14 @@
 .gitignore
 .distignore
 tests
+tests-e2e
+.wp-env.json
+package.json
+package-lock.json
+playwright.config.js
+playwright-report
+test-results
+node_modules
 CLAUDE.md
 composer.json
 composer.lock
