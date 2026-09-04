@@ -101,8 +101,13 @@ jobs:
       - name: Sanity-check the mock API directly
         run: |
           set -x
-          echo "--- rest_route index (is r2c-mock namespace registered at all?) ---"
-          curl -s http://localhost:8888/wp-json/ | head -c 4000
+          echo "--- permalink_structure ---"
+          npx wp-env run cli wp option get permalink_structure || true
+          echo "--- pretty /wp-json/ index ---"
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' http://localhost:8888/wp-json/ | head -c 2000
+          echo
+          echo "--- ?rest_route= fallback index ---"
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' 'http://localhost:8888/?rest_route=/' | head -c 2000
           echo
           echo "--- reset ---"
           curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/reset
