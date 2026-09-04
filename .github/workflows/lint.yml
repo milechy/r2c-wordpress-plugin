@@ -98,6 +98,18 @@ jobs:
       - name: Run Playwright E2E tests
         run: npm run e2e
 
+      # 失敗の切り分け用: WP側PHPのエラーログとモックの状態をCIログへ
+      # そのまま出す(アーティファクトDLの往復を待たずに済む)。
+      - name: Dump WP debug log and mock state
+        if: always()
+        run: |
+          echo "::group::wp-content/debug.log"
+          npx wp-env run cli bash -c "cat wp-content/debug.log 2>/dev/null || echo '(no debug.log)'"
+          echo "::endgroup::"
+          echo "::group::r2c_mock_state option"
+          npx wp-env run cli wp option get r2c_mock_state --format=json || true
+          echo "::endgroup::"
+
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4

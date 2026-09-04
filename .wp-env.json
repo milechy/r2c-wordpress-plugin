@@ -6,6 +6,8 @@
 	},
 	"config": {
 		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true,
+		"WP_DEBUG_DISPLAY": false,
 		"WP_ACCESSIBLE_HOSTS": "localhost,127.0.0.1"
 	}
 }
