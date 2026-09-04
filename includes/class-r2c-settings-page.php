@@ -172,6 +172,7 @@ class R2C_Settings_Page {
 		$is_active    = ! empty( $body['is_active'] );
 		$plan         = isset( $body['plan'] ) ? (string) $body['plan'] : '';
 		$status_label = $is_active ? __( '稼働中', 'r2c-ai-concierge' ) : __( '停止中', 'r2c-ai-concierge' );
+		$masked_key   = self::mask_api_key( R2C_Options::get_api_key() );
 		?>
 		<table class="form-table" role="presentation">
 			<tbody>
@@ -183,6 +184,12 @@ class R2C_Settings_Page {
 					<th><?php esc_html_e( 'テナントID', 'r2c-ai-concierge' ); ?></th>
 					<td><code><?php echo esc_html( $tenant_id ); ?></code></td>
 				</tr>
+				<?php if ( '' !== $masked_key ) : ?>
+				<tr>
+					<th><?php esc_html_e( 'APIキー', 'r2c-ai-concierge' ); ?></th>
+					<td><code><?php echo esc_html( $masked_key ); ?></code></td>
+				</tr>
+				<?php endif; ?>
 				<?php if ( '' !== $plan ) : ?>
 				<tr>
 					<th><?php esc_html_e( 'プラン', 'r2c-ai-concierge' ); ?></th>
@@ -206,6 +213,19 @@ class R2C_Settings_Page {
 				esc_html__( 'FAQ を登録する', 'r2c-ai-concierge' )
 			);
 		}
+	}
+
+	/**
+	 * WP-4/NFR-05/D6: ローカル暗号化はしない代わりに、画面には常にマスク
+	 * 済みでしか出さない(生キーをそのまま表示しない)。マスク規則は
+	 * commerce-faq-tasks側 apiKeyUtils.ts の maskApiKey() と揃える
+	 * (先頭12文字 + "****")— 表示形式が食い違うとサポート時に混乱するため。
+	 */
+	private static function mask_api_key( $api_key ) {
+		if ( strlen( $api_key ) < 12 ) {
+			return '';
+		}
+		return substr( $api_key, 0, 12 ) . '****';
 	}
 
 	private static function plan_label( $plan ) {
