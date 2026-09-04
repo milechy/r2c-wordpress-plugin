@@ -36,13 +36,12 @@ class R2C_Widget {
 
 		$attrs = self::placement_attributes();
 
-		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- this is R2C's own
-		// remote widget.js (a per-tenant, dynamically-generated URL from api.r2c.biz), not a
-		// local plugin asset. wp_enqueue_script() has no way to express "async, no local file,
-		// runtime-computed tenant-scoped URL" — this is the same pattern get_embed_code() in
-		// the parent repo already documents as the correct embed for third parties.
+		// This is R2C's own remote widget.js (a per-tenant, dynamically-generated URL from
+		// api.r2c.biz), not a local plugin asset. wp_enqueue_script() has no way to express
+		// "async, no local file, runtime-computed tenant-scoped URL" — the same reasoning
+		// get_embed_code() in the parent repo already documents for this exact embed.
 		printf(
-			'<script src="%s" data-tenant="%s"%s async></script>' . "\n",
+			'<script src="%s" data-tenant="%s"%s async></script>' . "\n", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			esc_url( R2C_AI_CONCIERGE_API_BASE . '/widget/' . rawurlencode( $tenant_id ) . '.js' ),
 			esc_attr( $tenant_id ),
 			$attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped attribute-by-attribute in placement_attributes().
