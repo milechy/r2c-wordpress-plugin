@@ -101,13 +101,17 @@ jobs:
       - name: Sanity-check the mock API directly
         run: |
           set -x
-          curl -sf -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/reset
+          echo "--- rest_route index (is r2c-mock namespace registered at all?) ---"
+          curl -s http://localhost:8888/wp-json/ | head -c 4000
           echo
-          curl -sf -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/configure \
+          echo "--- reset ---"
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/reset
+          echo "--- configure (seed_api_key) ---"
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/configure \
             -H 'Content-Type: application/json' \
             -d '{"seed_api_key":"mock_diag_key"}'
-          echo
-          curl -sv -X GET http://localhost:8888/wp-json/r2c-mock/v1/public/wp/settings \
+          echo "--- get settings with seeded key ---"
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X GET http://localhost:8888/wp-json/r2c-mock/v1/public/wp/settings \
             -H 'x-api-key: mock_diag_key'
 
       - name: Run Playwright E2E tests
