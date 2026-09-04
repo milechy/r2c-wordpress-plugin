@@ -42,3 +42,22 @@ jobs:
 
       - name: Run PHPUnit
         run: composer run test
+
+  plugin-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # WP-11 / requirements §7 A-1: Plugin Check(PCP)の Security と
+      # Plugin repo カテゴリが両方0件であることが新規申請の必須要件
+      # (2024-10-01施行)。ローカルにPHP/WordPress環境が無いため、公式の
+      # wordpress/plugin-check-action(内部でwp-envを起動しPCPを実行)を使う。
+      # tests/やdev用の設定ファイルはこのリポジトリには入っているが
+      # wordpress.org配布物には含めない(.distignore参照)ため、PCPの
+      # 対象からも同様に除外する。
+      - name: Run WordPress Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          categories: 'security,plugin_repo'
+          exclude-directories: 'tests,.github'
+          exclude-files: 'CLAUDE.md,composer.json,composer.lock,phpcs.xml.dist,phpunit.xml.dist,.distignore'
