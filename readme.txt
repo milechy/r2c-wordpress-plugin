@@ -19,17 +19,34 @@ every page of your WordPress site, with no theme editing required.
 
 **This plugin is a thin client for the R2C service.** Settings you change
 here are sent to your R2C account and applied there; the plugin itself
-does not store or process your visitors' conversations.
+does not store or process your visitors' conversations. Day-to-day
+operation — registering FAQ content, reviewing conversations, managing
+your plan — happens in the R2C dashboard, linked from this plugin's
+settings screen once connected.
+
+Source code: https://github.com/milechy/r2c-wordpress-plugin
 
 = External Services =
 
 This plugin communicates with `api.r2c.biz`, the R2C API, to connect your
-site, sync widget settings, and load the chat widget script. No request is
-sent until you explicitly connect the plugin from the settings screen.
+site, read and save widget display settings, and load the chat widget
+script. No request is sent until you explicitly connect the plugin from
+the settings screen.
 
-Data sent when you connect: your email address, your site's URL and name,
-and your WordPress/plugin versions. Once connected, widget settings
-(display position, excluded pages) are synced on save.
+* **Connecting**: sends your email address, your site's URL and name, and
+  your WordPress/plugin versions, so R2C can create or match your account
+  and verify you control this site.
+* **Opening the settings screen** (once connected): fetches your widget's
+  current display settings — position, offset, brand color, and the list
+  of pages/post types where the widget is hidden — from R2C, so the
+  screen never shows stale values.
+* **Saving a change**: sends only the fields you changed back to R2C.
+* **Every front-end page view** (once connected): loads
+  `https://api.r2c.biz/widget/{your-tenant-id}.js`, R2C's own script that
+  renders the chat bubble and generates AI responses to your visitors'
+  questions. That script's traffic goes to R2C's own AI providers
+  (OpenAI, Groq, and Google Gemini) and, for the optional voice/avatar
+  feature, LiveKit — not to this plugin.
 
 * R2C Terms of Service: https://r2c.biz/legal/terms.html
 * R2C Privacy Policy: https://r2c.biz/legal/privacy.html
@@ -48,7 +65,29 @@ and your WordPress/plugin versions. Once connected, widget settings
 Yes. R2C offers a free plan; connecting from this plugin creates one
 automatically if you don't already have an R2C account.
 
+= Where do I manage my FAQ content, or view conversations? =
+
+In the R2C dashboard, linked from this plugin's settings screen once
+you're connected. This plugin only handles installing and configuring
+the widget on your WordPress site.
+
+= What happens to the widget if I deactivate the plugin? =
+
+It stops appearing on your site immediately. Your R2C account, FAQ
+content, and conversation history are unaffected — reactivating the
+plugin restores the widget without reconnecting.
+
+= What happens if I uninstall (delete) the plugin? =
+
+All locally stored settings (your API key, cached display settings) are
+removed from this site. Your R2C account and its data are not deleted;
+disconnect first from the settings screen if you also want to revoke the
+API key on R2C's side immediately.
+
 == Changelog ==
 
 = 0.1.0 =
-* Initial scaffold. No functionality is wired up yet.
+* Connect a WordPress site to R2C (new or existing account) with explicit consent, or by pasting an existing API key.
+* Embed the R2C chat widget on the front end, with position, offset, and brand color synced from R2C.
+* Hide the widget on specific pages, by post type, or by URL pattern.
+* Disconnect at any time; revokes the API key on both sides.
