@@ -183,11 +183,14 @@
 			button.disabled = true;
 			setStatusText( status, window.r2cAdmin.i18n.saving );
 
+			var excludedPatterns = document.getElementById( 'r2c-excluded-patterns' );
+
 			var fields = {
 				position: document.getElementById( 'r2c-position' ).value,
 				offset_x: document.getElementById( 'r2c-offset-x' ).value,
 				offset_y: document.getElementById( 'r2c-offset-y' ).value,
 				primary_color: document.getElementById( 'r2c-primary-color' ).value,
+				excluded_page_patterns: excludedPatterns ? excludedPatterns.value : '',
 			};
 
 			post( 'r2c_save_settings', fields ).then( function ( json ) {
@@ -203,10 +206,53 @@
 		} );
 	}
 
+	// -----------------------------------------------------------------
+	// 非表示ページ: 投稿タイプ / 固定ページ選択からテキストエリアへの追加(FR-10)
+	// -----------------------------------------------------------------
+
+	function appendExcludedPattern( pattern ) {
+		var textarea = document.getElementById( 'r2c-excluded-patterns' );
+		if ( ! textarea || ! pattern ) {
+			return;
+		}
+		var lines = textarea.value.split( '\n' ).map( function ( line ) {
+			return line.trim();
+		} ).filter( function ( line ) {
+			return line !== '';
+		} );
+		if ( lines.indexOf( pattern ) !== -1 ) {
+			return;
+		}
+		lines.push( pattern );
+		textarea.value = lines.join( '\n' );
+	}
+
+	function initExcludedPagesHelpers() {
+		var postTypeSelect = document.getElementById( 'r2c-excluded-post-type' );
+		var postTypeAdd = document.getElementById( 'r2c-excluded-post-type-add' );
+		if ( postTypeSelect && postTypeAdd ) {
+			postTypeAdd.addEventListener( 'click', function () {
+				appendExcludedPattern( postTypeSelect.value );
+				postTypeSelect.value = '';
+			} );
+		}
+
+		var pagePicker = document.getElementById( 'r2c-excluded-page-picker' );
+		var pageAdd = document.getElementById( 'r2c-excluded-page-add' );
+		if ( pagePicker && pageAdd ) {
+			pageAdd.addEventListener( 'click', function () {
+				var pagePaths = window.r2cAdmin.pagePaths || {};
+				appendExcludedPattern( pagePaths[ pagePicker.value ] );
+				pagePicker.value = '';
+			} );
+		}
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		initConnectForm();
 		initManualForm();
 		initDisconnectButton();
 		initSettingsForm();
+		initExcludedPagesHelpers();
 	} );
 } )();

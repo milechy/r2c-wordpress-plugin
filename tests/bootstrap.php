@@ -57,3 +57,22 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 		}
 	}
 }
+
+/**
+ * In real WordPress, wp_send_json_success()/wp_send_json_error() always end
+ * the request via wp_die() — code after them is unreachable. Tests that stub
+ * those two functions directly (rather than wp_die itself) must reproduce
+ * that halting behaviour, or execution falls through into code that assumes
+ * it already exited. Stub both to throw this, and assert on the caught
+ * instance's ->success / ->data.
+ */
+class R2CTestJsonExit extends \Exception {
+	public $success;
+	public $data;
+
+	public function __construct( $success, $data ) {
+		parent::__construct( 'wp_send_json_' . ( $success ? 'success' : 'error' ) );
+		$this->success = $success;
+		$this->data    = $data;
+	}
+}
