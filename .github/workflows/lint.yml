@@ -101,22 +101,18 @@ jobs:
       - name: Sanity-check the mock API directly
         run: |
           set -x
-          echo "--- permalink_structure ---"
-          npx wp-env run cli wp option get permalink_structure || true
-          echo "--- pretty /wp-json/ index ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' http://localhost:8888/wp-json/ | head -c 2000
-          echo
-          echo "--- ?rest_route= fallback index ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' 'http://localhost:8888/?rest_route=/' | head -c 2000
-          echo
-          echo "--- reset ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/reset
+          echo "--- what the plugin actually computed R2C_AI_CONCIERGE_API_BASE as ---"
+          npx wp-env run cli wp eval 'echo R2C_AI_CONCIERGE_API_BASE . PHP_EOL;'
+          BASE=$(npx wp-env run cli wp eval 'echo R2C_AI_CONCIERGE_API_BASE;' | tr -d '\r')
+          echo "BASE=${BASE}"
+          echo "--- reset (using that exact base) ---"
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST "${BASE}/__test__/reset"
           echo "--- configure (seed_api_key) ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/configure \
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST "${BASE}/__test__/configure" \
             -H 'Content-Type: application/json' \
             -d '{"seed_api_key":"mock_diag_key"}'
           echo "--- get settings with seeded key ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X GET http://localhost:8888/wp-json/r2c-mock/v1/public/wp/settings \
+          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X GET "${BASE}/public/wp/settings" \
             -H 'x-api-key: mock_diag_key'
 
       - name: Run Playwright E2E tests
