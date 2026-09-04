@@ -52,19 +52,21 @@ jobs:
       # Plugin repo カテゴリが両方0件であることが新規申請の必須要件
       # (2024-10-01施行)。ローカルにPHP/WordPress環境が無いため、公式の
       # wordpress/plugin-check-action(内部でwp-envを起動しPCPを実行)を使う。
-      # tests/やdev用の設定ファイルはこのリポジトリには入っているが
-      # wordpress.org配布物には含めない(.distignore参照)ため、PCPの
-      # 対象からも同様に除外する。
       #
-      # ★slugを明示指定する★ 指定しないとアクションがgitリポジトリの
-      # ディレクトリ名(r2c-wordpress-plugin)をスラッグとして扱ってしまい、
-      # 実際に確定しているスラッグ(r2c-ai-concierge、メインファイルの
-      # Text Domainと一致)との不一致でTextDomainMismatch/trademarked_term
-      # (slugに"plugin"を含む)が大量に誤検出される(初回実行で確認済み)。
+      # ★生のgit checkoutではなく.distignoreで濾したビルド成果物に対して
+      # 実行する★ exclude-directories/exclude-filesオプションは個別checkの
+      # ファイル走査は除外できるが、hidden_filesチェック(隠しファイルの
+      # 存在そのものを見る)はこれらのオプションを無視することを2回の
+      # 実機実行で確認した。本番のSVN/zip配布物には最初から.git等が
+      # 存在しないのと同じ状態を作るため、rsyncで.distignore記載分を
+      # 除いたコピーを作り、そちらをbuild-dirに指定する。
+      - name: Build clean plugin directory (.distignore-filtered)
+        run: |
+          mkdir -p /tmp/plugin-build/r2c-ai-concierge
+          rsync -a --exclude-from='.distignore' ./ /tmp/plugin-build/r2c-ai-concierge/
+
       - name: Run WordPress Plugin Check
         uses: wordpress/plugin-check-action@v1
         with:
-          slug: 'r2c-ai-concierge'
+          build-dir: '/tmp/plugin-build/r2c-ai-concierge'
           categories: 'security,plugin_repo'
-          exclude-directories: 'tests,.github,.git'
-          exclude-files: 'CLAUDE.md,composer.json,composer.lock,phpcs.xml.dist,phpunit.xml.dist,.distignore,.gitignore'
