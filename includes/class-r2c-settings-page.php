@@ -108,7 +108,7 @@ class R2C_Settings_Page {
 						<?php
 						printf(
 							/* translators: 1: terms of service link, 2: privacy policy link */
-							esc_html__( 'Connecting will send your site URL, site name, WordPress/plugin versions, and the email address above to R2C. I agree to R2C\'s %1$s and %2$s.', 'r2c-ai-concierge' ),
+							esc_html__( 'Connecting will send your site URL, site name, site language, WordPress/plugin versions, and the email address above to R2C. I agree to R2C\'s %1$s and %2$s.', 'r2c-ai-concierge' ),
 							'<a href="https://r2c.biz/legal/terms.html" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Terms of Service', 'r2c-ai-concierge' ) . '</a>',
 							'<a href="https://r2c.biz/legal/privacy.html" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Privacy Policy', 'r2c-ai-concierge' ) . '</a>'
 						);

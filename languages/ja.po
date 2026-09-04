@@ -157,8 +157,8 @@ msgstr "メールアドレス"
 
 #: includes/class-r2c-settings-page.php:111
 #, php-format
-msgid "Connecting will send your site URL, site name, WordPress/plugin versions, and the email address above to R2C. I agree to R2C's %1$s and %2$s."
-msgstr "接続すると、サイトURL・サイト名・WordPress/プラグインのバージョン・上記メールアドレスが R2C に送信されます。R2C の%1$sと%2$sに同意します。"
+msgid "Connecting will send your site URL, site name, site language, WordPress/plugin versions, and the email address above to R2C. I agree to R2C's %1$s and %2$s."
+msgstr "接続すると、サイトURL・サイト名・サイトの言語・WordPress/プラグインのバージョン・上記メールアドレスが R2C に送信されます。R2C の%1$sと%2$sに同意します。"
 
 #: includes/class-r2c-settings-page.php:112
 msgid "Terms of Service"
