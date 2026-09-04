@@ -10,7 +10,9 @@
         "wp-coding-standards/wpcs": "^3.0",
         "phpcsstandards/phpcsutils": "^1.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-        "phpcompatibility/phpcompatibility-wp": "^2.1"
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "phpunit/phpunit": "^9.6",
+        "brain/monkey": "^2.6"
     },
     "config": {
         "allow-plugins": {
@@ -19,6 +21,12 @@
     },
     "scripts": {
         "lint": "phpcs",
-        "lint:fix": "phpcbf"
+        "lint:fix": "phpcbf",
+        "test": "phpunit"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "R2C\\Tests\\": "tests/"
+        }
     }
 }

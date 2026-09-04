@@ -24,3 +24,21 @@ jobs:
 
       - name: Run PHPCS (WordPress Coding Standards)
         run: composer run lint
+
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPUnit
+        run: composer run test
