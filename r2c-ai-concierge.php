@@ -20,18 +20,15 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Skeleton only (WP-6). The full plugin (settings screen, provisioning,
- * widget output, verify endpoint) lands in follow-up commits — see
- * docs/WORDPRESS_PLUGIN_REQUIREMENTS.md in the milechy/commerce-faq-tasks
- * repository for the requirements this plugin implements (WP-6..WP-9).
+ * See docs/WORDPRESS_PLUGIN_REQUIREMENTS.md in the milechy/commerce-faq-tasks
+ * repository for the requirements this plugin implements (WP-1..WP-15).
  *
- * ★No functionality is wired up yet on purpose★
- * This file intentionally does nothing beyond defining constants and
- * loading the translation catalogue. Guideline #7 (wordpress.org Detailed
- * Plugin Guidelines) requires that a plugin contact no external server
- * without explicit, authorized consent — so until the connect flow
- * (WP-7) exists, this plugin must not perform any network request, and it
- * doesn't.
+ * ★No network request fires until the admin explicitly connects★
+ * Every class that talks to R2C (R2C_Api_Client) is only ever invoked from
+ * R2C_Ajax's nonce-verified handlers, which only run when an admin submits
+ * the connect form or an already-connected settings action — never from a
+ * hook that runs unconditionally (init, wp, admin_init). Guideline #7
+ * (wordpress.org Detailed Plugin Guidelines) requires exactly this.
  */
 
 define( 'R2C_AI_CONCIERGE_VERSION', '0.1.0' );
@@ -56,12 +53,29 @@ function r2c_ai_concierge_load_textdomain() {
 }
 add_action( 'plugins_loaded', 'r2c_ai_concierge_load_textdomain' );
 
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-options.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-api-client.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-verify-endpoint.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ajax.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-settings-page.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-notice.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-widget.php';
+
+R2C_Verify_Endpoint::init();
+R2C_Ajax::init();
+R2C_Settings_Page::init();
+R2C_Notice::init();
+R2C_Widget::init();
+
 /**
- * Remove everything this plugin created. Wired up for real once WP-7
- * starts writing options (D-loop: uninstall.php mirrors this file 1:1 so
- * "what did we create" is answered by grepping both files together).
+ * Nothing to do on activation — every option this plugin writes is created
+ * lazily by the connect flow (R2C_Ajax::handle_connect /
+ * handle_connect_manual), not up front. Kept as an explicit no-op (rather
+ * than omitted) so a future option that genuinely needs activation-time
+ * setup has an obvious place to go, and so uninstall.php's "nothing to
+ * register here either" comment stays true by inspection.
  */
 function r2c_ai_concierge_activate() {
-	// Intentionally empty until WP-7 introduces the first option to register.
+	// Intentionally empty — see doc comment above.
 }
 register_activation_hook( R2C_AI_CONCIERGE_FILE, 'r2c_ai_concierge_activate' );

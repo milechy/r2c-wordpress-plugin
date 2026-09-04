@@ -1,0 +1,11 @@
+.r2c-settings .r2c-color-field {
+	width: 120px;
+}
+
+.r2c-settings #r2c-connect-status,
+.r2c-settings #r2c-manual-status,
+.r2c-settings #r2c-settings-status,
+.r2c-settings #r2c-disconnect-status {
+	display: inline-block;
+	margin-left: 8px;
+}
