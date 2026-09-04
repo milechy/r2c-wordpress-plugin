@@ -6,6 +6,11 @@
 	<exclude-pattern>/vendor/*</exclude-pattern>
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 	<exclude-pattern>/languages/*</exclude-pattern>
+	<!-- PHPUnit test files follow PSR-4 (namespaced TestCase classes,
+	     tests/bootstrap.php) rather than the WordPress single-class-per-
+	     class-r2c-*.php-file convention WordPress.Files.FileName checks
+	     for — they ship in the repo but not in the distributed plugin. -->
+	<exclude-pattern>/tests/*</exclude-pattern>
 
 	<arg value="sp"/>
 	<arg name="basepath" value="."/>
