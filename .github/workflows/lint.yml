@@ -101,19 +101,22 @@ jobs:
       - name: Sanity-check the mock API directly
         run: |
           set -x
-          echo "--- what the plugin actually computed R2C_AI_CONCIERGE_API_BASE as ---"
-          npx wp-env run cli wp eval 'echo R2C_AI_CONCIERGE_API_BASE . PHP_EOL;'
-          BASE=$(npx wp-env run cli wp eval 'echo R2C_AI_CONCIERGE_API_BASE;' | tr -d '\r')
-          echo "BASE=${BASE}"
-          echo "--- reset (using that exact base) ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST "${BASE}/__test__/reset"
-          echo "--- configure (seed_api_key) ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X POST "${BASE}/__test__/configure" \
-            -H 'Content-Type: application/json' \
-            -d '{"seed_api_key":"mock_diag_key"}'
-          echo "--- get settings with seeded key ---"
-          curl -s -w '\nHTTP_STATUS:%{http_code}\n' -X GET "${BASE}/public/wp/settings" \
-            -H 'x-api-key: mock_diag_key'
+          # 前回、CIランナーからhttp://localhost(ポート80)へcurlしてもHTTP_STATUS:000
+          # (接続不可)になった — 当然で、ランナー自身のポート80には何も無い。
+          # wp_remote_request()が実際に発行するのはコンテナ*内部*からのリクエストの
+          # ため、ランナーから叩いても正しい疎通確認にならない。wp evalで
+          # wp_remote_request()自体をコンテナ内部から直接呼び、生の結果を見る。
+          npx wp-env run cli wp eval '
+            $base = R2C_AI_CONCIERGE_API_BASE;
+            echo "BASE: " . $base . PHP_EOL;
+            $r = wp_remote_request( $base . "/__test__/reset", array( "method" => "POST", "timeout" => 10 ) );
+            if ( is_wp_error( $r ) ) {
+              echo "WP_ERROR: " . $r->get_error_message() . PHP_EOL;
+            } else {
+              echo "STATUS: " . wp_remote_retrieve_response_code( $r ) . PHP_EOL;
+              echo "BODY: " . wp_remote_retrieve_body( $r ) . PHP_EOL;
+            }
+          '
 
       - name: Run Playwright E2E tests
         run: npm run e2e
