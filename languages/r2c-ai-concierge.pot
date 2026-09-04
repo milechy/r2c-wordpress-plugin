@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: R2C AI Concierge 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/"
 "issues\n"
-"POT-Creation-Date: 2026-09-05 06:36+0900\n"
+"POT-Creation-Date: 2026-09-05 07:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,8 +171,9 @@ msgstr ""
 #: includes/class-r2c-settings-page.php:111
 #, php-format
 msgid ""
-"Connecting will send your site URL, site name, WordPress/plugin versions, "
-"and the email address above to R2C. I agree to R2C's %1$s and %2$s."
+"Connecting will send your site URL, site name, site language, WordPress/"
+"plugin versions, and the email address above to R2C. I agree to R2C's %1$s "
+"and %2$s."
 msgstr ""
 
 #: includes/class-r2c-settings-page.php:112

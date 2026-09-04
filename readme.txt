@@ -33,8 +33,9 @@ site, read and save widget display settings, and load the chat widget
 script. No request is sent until you explicitly connect the plugin from
 the settings screen.
 
-* **Connecting**: sends your email address, your site's URL and name, and
-  your WordPress/plugin versions, so R2C can create or match your account
+* **Connecting**: sends your email address, your site's URL, name, and
+  language, and your WordPress/plugin versions, so R2C can create or match
+  your account
   and verify you control this site.
 * **Opening the settings screen** (once connected): fetches your widget's
   current display settings — position, offset, brand color, and the list
