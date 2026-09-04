@@ -86,7 +86,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 	}
 
 	public function test_textarea_lines_are_trimmed_deduplicated_and_blanks_dropped() {
-		$captured = null;
+		$captured = array();
 		$this->captureRemoteRequestBody( $captured );
 
 		$_POST['excluded_page_patterns'] = "/cart\n  /checkout/*  \n\n/cart\n/blog/*\n";
@@ -102,7 +102,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 	}
 
 	public function test_empty_textarea_clears_all_patterns_rather_than_being_ignored() {
-		$captured = null;
+		$captured = array();
 		$this->captureRemoteRequestBody( $captured );
 
 		$_POST['excluded_page_patterns'] = '';
@@ -118,7 +118,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 	}
 
 	public function test_absent_excluded_page_patterns_key_is_not_sent_at_all() {
-		$captured = null;
+		$captured = array();
 		$this->captureRemoteRequestBody( $captured );
 
 		unset( $_POST['excluded_page_patterns'] );

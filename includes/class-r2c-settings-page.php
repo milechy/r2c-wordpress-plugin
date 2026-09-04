@@ -306,7 +306,7 @@ class R2C_Settings_Page {
 			wp_dropdown_pages(
 				array(
 					'id'                => 'r2c-excluded-page-picker',
-					'show_option_none'  => __( '選択してください', 'r2c-ai-concierge' ),
+					'show_option_none'  => esc_html__( '選択してください', 'r2c-ai-concierge' ),
 					'option_none_value' => '',
 				)
 			);
@@ -352,13 +352,14 @@ class R2C_Settings_Page {
 			array(
 				'post_type'     => 'page',
 				'post_status'   => 'publish',
-				'numberposts'   => 300,
+				'numberposts'   => 300, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_numberposts -- deliberate practical cap for this dropdown, see class doc comment above.
 				'fields'        => 'ids',
 				'no_found_rows' => true,
 				'orderby'       => 'title',
 				'order'         => 'ASC',
 			)
 		);
+
 		$map = array();
 		foreach ( $page_ids as $page_id ) {
 			$path = wp_parse_url( get_permalink( $page_id ), PHP_URL_PATH );

@@ -268,6 +268,7 @@ class R2C_Ajax {
 		if ( isset( $_POST['excluded_page_patterns'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$raw   = sanitize_textarea_field( wp_unslash( $_POST['excluded_page_patterns'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$lines = array_filter( array_map( 'trim', explode( "\n", $raw ) ), 'strlen' );
+
 			$fields['excluded_page_patterns'] = array_values( array_unique( $lines ) );
 		}
 
