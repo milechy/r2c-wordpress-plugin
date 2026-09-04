@@ -77,6 +77,12 @@ class ZeroCommunicationTest extends TestCase {
 		Functions\expect( 'wp_localize_script' )->once();
 
 		\R2C_Notice::maybe_enqueue();
+
+		// Functions\expect()->once()/->never() above are verified by Brain
+		// Monkey's own teardown, not by a PHPUnit assertion — bump the
+		// assertion count so this test isn't flagged risky under
+		// beStrictAboutTestsThatDoNotTestAnything.
+		$this->addToAssertionCount( 1 );
 	}
 
 	public function test_notice_is_silent_once_dismissed() {

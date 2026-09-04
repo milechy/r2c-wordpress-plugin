@@ -262,6 +262,15 @@ class R2C_Ajax {
 				$fields['primary_color'] = $color;
 			}
 		}
+		// FR-10: テキストエリアの1行1パターンをそのまま配列化する。空文字列の
+		// 送信(全パターン削除)も有効な操作として扱うため、issetのみで判定する
+		// (他フィールドの「空なら無視」とは違う——ここは「空=クリア」が意味を持つ)。
+		if ( isset( $_POST['excluded_page_patterns'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$raw   = sanitize_textarea_field( wp_unslash( $_POST['excluded_page_patterns'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$lines = array_filter( array_map( 'trim', explode( "\n", $raw ) ), 'strlen' );
+
+			$fields['excluded_page_patterns'] = array_values( array_unique( $lines ) );
+		}
 
 		if ( empty( $fields ) ) {
 			wp_send_json_error( array( 'message' => __( '変更する項目がありません。', 'r2c-ai-concierge' ) ) );
