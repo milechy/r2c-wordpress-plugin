@@ -41,17 +41,14 @@ define( 'R2C_AI_CONCIERGE_URL', plugin_dir_url( __FILE__ ) );
 // place to audit for "which external service does this plugin call".
 define( 'R2C_AI_CONCIERGE_API_BASE', 'https://api.r2c.biz' );
 
-/**
- * Load the r2c-ai-concierge text domain.
- *
- * All UI strings ship in English; Japanese (the primary market per the
- * requirements doc) is provided via the .mo/.po files in /languages, not
- * via hardcoded strings switched on WPLANG (see docs §11.4 / NFR-07).
- */
-function r2c_ai_concierge_load_textdomain() {
-	load_plugin_textdomain( 'r2c-ai-concierge', false, dirname( plugin_basename( R2C_AI_CONCIERGE_FILE ) ) . '/languages' );
-}
-add_action( 'plugins_loaded', 'r2c_ai_concierge_load_textdomain' );
+// UI strings ship in English; Japanese (the primary market per the
+// requirements doc) is provided via languages/r2c-ai-concierge-ja.mo (see
+// docs §11.4 / NFR-07). No load_plugin_textdomain() call here on purpose —
+// since WP 4.6, core auto-loads a plugin's translations (including a
+// bundled .mo matching this Text Domain in /languages) the moment a
+// translation function is first called; calling it manually is discouraged
+// (https://make.wordpress.org/core/2016/07/06/i18n-improvements-in-4-6/)
+// and flagged by Plugin Check.
 
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-options.php';
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-api-client.php';

@@ -42,3 +42,31 @@ jobs:
 
       - name: Run PHPUnit
         run: composer run test
+
+  plugin-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # WP-11 / requirements §7 A-1: Plugin Check(PCP)の Security と
+      # Plugin repo カテゴリが両方0件であることが新規申請の必須要件
+      # (2024-10-01施行)。ローカルにPHP/WordPress環境が無いため、公式の
+      # wordpress/plugin-check-action(内部でwp-envを起動しPCPを実行)を使う。
+      #
+      # ★生のgit checkoutではなく.distignoreで濾したビルド成果物に対して
+      # 実行する★ exclude-directories/exclude-filesオプションは個別checkの
+      # ファイル走査は除外できるが、hidden_filesチェック(隠しファイルの
+      # 存在そのものを見る)はこれらのオプションを無視することを2回の
+      # 実機実行で確認した。本番のSVN/zip配布物には最初から.git等が
+      # 存在しないのと同じ状態を作るため、rsyncで.distignore記載分を
+      # 除いたコピーを作り、そちらをbuild-dirに指定する。
+      - name: Build clean plugin directory (.distignore-filtered)
+        run: |
+          mkdir -p /tmp/plugin-build/r2c-ai-concierge
+          rsync -a --exclude-from='.distignore' ./ /tmp/plugin-build/r2c-ai-concierge/
+
+      - name: Run WordPress Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: '/tmp/plugin-build/r2c-ai-concierge'
+          categories: 'security,plugin_repo'

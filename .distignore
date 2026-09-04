@@ -1,0 +1,12 @@
+.git
+.github
+.gitignore
+.distignore
+tests
+CLAUDE.md
+composer.json
+composer.lock
+phpcs.xml.dist
+phpunit.xml.dist
+languages/*.po
+languages/*.pot
