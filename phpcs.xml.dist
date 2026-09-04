@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<ruleset name="r2c-ai-concierge">
+	<description>Coding standards for the R2C AI Concierge WordPress plugin.</description>
+
+	<file>.</file>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/languages/*</exclude-pattern>
+
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+
+	<!-- WordPress.org Detailed Plugin Guidelines #4: code must be human
+	     readable. WPCS + PHPCompatibilityWP are the standard tooling to
+	     keep this true and to catch calls to functions the declared
+	     minimum PHP (7.4, per the plugin header) doesn't have. -->
+	<rule ref="WordPress"/>
+	<rule ref="PHPCompatibilityWP"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<!-- CLAUDE.md (this repo): all option/hook/function/class names carry
+	     the r2c_ prefix — same requirement WPCS' prefix sniff checks for. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="r2c_"/>
+				<element value="R2C_"/>
+				<element value="R2C_AI_Concierge"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="is_theme" value="false"/>
+		</properties>
+	</rule>
+</ruleset>
