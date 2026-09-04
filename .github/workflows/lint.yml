@@ -95,6 +95,21 @@ jobs:
       - name: Start wp-env and activate the plugin
         run: npm run e2e:start
 
+      # Playwright越しではなく、CIランナーから直接モックAPIを叩いて
+      # ルート自体が生きているか切り分ける(失敗の原因がモック側か
+      # ブラウザ/JS側かをここで確定させる)。
+      - name: Sanity-check the mock API directly
+        run: |
+          set -x
+          curl -sf -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/reset
+          echo
+          curl -sf -X POST http://localhost:8888/wp-json/r2c-mock/v1/__test__/configure \
+            -H 'Content-Type: application/json' \
+            -d '{"seed_api_key":"mock_diag_key"}'
+          echo
+          curl -sv -X GET http://localhost:8888/wp-json/r2c-mock/v1/public/wp/settings \
+            -H 'x-api-key: mock_diag_key'
+
       - name: Run Playwright E2E tests
         run: npm run e2e
 
