@@ -13,4 +13,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'R2C_AI_CONCIERGE_API_BASE', home_url( '/wp-json/r2c-mock' ) );
+/**
+ * home_url()(and by extension rest_url()) reports the port wp-env exposes
+ * on the *host* (e.g. :8888), but wp_remote_request() below runs inside
+ * this same container, where the webserver actually listens on the
+ * default port 80 — a literal home_url()-based URL is unreachable from in
+ * here (confirmed via CI: every request came back as a transport failure).
+ * rest_url() still picks the right REST path form (pretty /wp-json/ vs the
+ * ?rest_route= fallback) for however this install's permalinks are
+ * configured; only the host:port prefix needs correcting to the
+ * container-internal address.
+ */
+$mock_base = str_replace( home_url(), 'http://localhost', rest_url( 'r2c-mock' ) );
+
+define( 'R2C_AI_CONCIERGE_API_BASE', untrailingslashit( $mock_base ) );
