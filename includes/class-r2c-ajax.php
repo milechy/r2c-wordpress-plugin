@@ -30,12 +30,12 @@ class R2C_Ajax {
 	private static function guard() {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'この操作を行う権限がありません。', 'r2c-ai-concierge' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'r2c-ai-concierge' ) ), 403 );
 		}
 	}
 
 	private static function unreachable_message() {
-		return __( '現在 R2C に接続できません。しばらくしてから再度お試しください。', 'r2c-ai-concierge' );
+		return __( 'Unable to reach R2C right now. Please try again in a moment.', 'r2c-ai-concierge' );
 	}
 
 	/* 接続開始 */
@@ -47,12 +47,12 @@ class R2C_Ajax {
 		// 押させない作りだが、それとは別にサーバ側でも確認する。
 		$consent = isset( $_POST['consent'] ) && '1' === $_POST['consent']; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above via check_ajax_referer.
 		if ( ! $consent ) {
-			wp_send_json_error( array( 'message' => __( '同意チェックボックスにチェックを入れてください。', 'r2c-ai-concierge' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please check the consent checkbox.', 'r2c-ai-concierge' ) ) );
 		}
 
 		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( empty( $email ) || ! is_email( $email ) ) {
-			wp_send_json_error( array( 'message' => __( '有効なメールアドレスを入力してください。', 'r2c-ai-concierge' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'r2c-ai-concierge' ) ) );
 		}
 
 		// サイトURLは入力させない — このWPサイト自身のURLで確定させる
@@ -68,7 +68,7 @@ class R2C_Ajax {
 		);
 
 		if ( ! $result['ok'] ) {
-			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( '接続の開始に失敗しました。', 'r2c-ai-concierge' ) ) ) );
+			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to start the connection.', 'r2c-ai-concierge' ) ) ) );
 		}
 
 		$body = $result['body'];
@@ -87,7 +87,7 @@ class R2C_Ajax {
 		if ( empty( $poll_token ) ) {
 			wp_send_json_error(
 				array(
-					'message'  => __( '進行中の接続試行がありません。最初からやり直してください。', 'r2c-ai-concierge' ),
+					'message'  => __( 'No connection attempt is in progress. Please start over.', 'r2c-ai-concierge' ),
 					'terminal' => true,
 				)
 			);
@@ -102,7 +102,7 @@ class R2C_Ajax {
 			R2C_Options::clear_pending_challenge();
 			wp_send_json_error(
 				array(
-					'message'  => __( '接続試行が見つかりませんでした。最初からやり直してください。', 'r2c-ai-concierge' ),
+					'message'  => __( 'The connection attempt could not be found. Please start over.', 'r2c-ai-concierge' ),
 					'terminal' => true,
 				)
 			);
@@ -137,7 +137,7 @@ class R2C_Ajax {
 			wp_send_json_success(
 				array(
 					'status'  => 'issued_without_key',
-					'message' => __( '接続処理は完了しましたが、APIキーを受信できませんでした。下の「APIキーを直接入力」からR2C管理画面で発行したキーを貼り付けてください。', 'r2c-ai-concierge' ),
+					'message' => __( 'The connection finished, but the API key could not be received. Please paste the key issued in your R2C dashboard using "Enter API key manually" below.', 'r2c-ai-concierge' ),
 				)
 			);
 		}
@@ -148,7 +148,7 @@ class R2C_Ajax {
 			wp_send_json_success(
 				array(
 					'status'  => 'expired',
-					'message' => __( 'サイトの確認が完了しないまま期限切れになりました。もう一度お試しください。', 'r2c-ai-concierge' ),
+					'message' => __( 'Site verification expired before it could complete. Please try again.', 'r2c-ai-concierge' ),
 				)
 			);
 		}
@@ -181,16 +181,16 @@ class R2C_Ajax {
 
 		$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( empty( $api_key ) ) {
-			wp_send_json_error( array( 'message' => __( 'APIキーを入力してください。', 'r2c-ai-concierge' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter an API key.', 'r2c-ai-concierge' ) ) );
 		}
 
 		$result = R2C_Api_Client::get_settings( $api_key );
 
 		if ( ! $result['ok'] ) {
 			if ( 401 === $result['status'] ) {
-				wp_send_json_error( array( 'message' => __( 'APIキーが無効です。', 'r2c-ai-concierge' ) ) );
+				wp_send_json_error( array( 'message' => __( 'This API key is invalid.', 'r2c-ai-concierge' ) ) );
 			}
-			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'APIキーの確認に失敗しました。', 'r2c-ai-concierge' ) ) ) );
+			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to verify the API key.', 'r2c-ai-concierge' ) ) ) );
 		}
 
 		$body = $result['body'];
@@ -220,7 +220,7 @@ class R2C_Ajax {
 				// FR-07の「ローカル資格情報を削除」は利用者が今すぐ止められる
 				// べき操作。R2C側への失効リクエストが届かなくても、ここで
 				// 止めるのを諦めない代わりに、その旨を明示する。
-				$warning = __( 'ローカルの接続情報は削除しましたが、R2C側でのキー失効に失敗した可能性があります。心当たりがない場合はR2Cの管理画面でキーの状態をご確認ください。', 'r2c-ai-concierge' );
+				$warning = __( 'The local connection info was removed, but revoking the key on R2C\'s side may have failed. If this is unexpected, please check the key status in your R2C dashboard.', 'r2c-ai-concierge' );
 			}
 		}
 
@@ -240,7 +240,7 @@ class R2C_Ajax {
 		self::guard();
 
 		if ( ! R2C_Options::is_connected() ) {
-			wp_send_json_error( array( 'message' => __( '接続されていません。', 'r2c-ai-concierge' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Not connected.', 'r2c-ai-concierge' ) ) );
 		}
 
 		$fields = array();
@@ -273,13 +273,13 @@ class R2C_Ajax {
 		}
 
 		if ( empty( $fields ) ) {
-			wp_send_json_error( array( 'message' => __( '変更する項目がありません。', 'r2c-ai-concierge' ) ) );
+			wp_send_json_error( array( 'message' => __( 'There is nothing to change.', 'r2c-ai-concierge' ) ) );
 		}
 
 		$result = R2C_Api_Client::patch_settings( R2C_Options::get_api_key(), $fields );
 
 		if ( ! $result['ok'] ) {
-			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( '設定の保存に失敗しました。', 'r2c-ai-concierge' ) ) ) );
+			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to save the settings.', 'r2c-ai-concierge' ) ) ) );
 		}
 
 		$body = $result['body'];
@@ -312,31 +312,31 @@ class R2C_Ajax {
 	private static function pending_reason_message( $body ) {
 		if ( ! empty( $body['wait_reason'] ) ) {
 			if ( 'capacity_reached' === $body['wait_reason'] ) {
-				return __( '現在R2Cへの新規登録が混み合っています。しばらくお待ちください。', 'r2c-ai-concierge' );
+				return __( 'New sign-ups to R2C are currently at capacity. Please wait a moment.', 'r2c-ai-concierge' );
 			}
 			if ( 'daily_limit_reached' === $body['wait_reason'] ) {
-				return __( '本日の新規登録上限に達しました。明日改めてお試しください。', 'r2c-ai-concierge' );
+				return __( 'Today\'s sign-up limit has been reached. Please try again tomorrow.', 'r2c-ai-concierge' );
 			}
 		}
 		if ( ! empty( $body['verify_reason'] ) ) {
 			switch ( $body['verify_reason'] ) {
 				case 'http_error':
-					return __( 'このサイトへの確認アクセスが拒否されました。Basic認証やアクセス制限を一時的に解除してください。', 'r2c-ai-concierge' );
+					return __( 'Verification access to this site was denied. Please temporarily disable Basic Auth or any access restrictions.', 'r2c-ai-concierge' );
 				case 'blocked':
 				case 'unreachable':
-					return __( 'このサイトに外部からアクセスできません。公開されているサイトである必要があります(ローカル環境等では接続できません)。', 'r2c-ai-concierge' );
+					return __( 'This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect).', 'r2c-ai-concierge' );
 				case 'invalid_body':
 				case 'challenge_mismatch':
-					return __( 'サイトの確認に失敗しました。プラグインが有効化されているか確認してください。', 'r2c-ai-concierge' );
+					return __( 'Site verification failed. Please make sure the plugin is activated.', 'r2c-ai-concierge' );
 			}
 		}
-		return __( 'サイトを確認しています…', 'r2c-ai-concierge' );
+		return __( 'Verifying your site…', 'r2c-ai-concierge' );
 	}
 
 	private static function failure_reason_message( $reason ) {
 		if ( 'site_unreachable' === $reason ) {
-			return __( 'サイトの確認に失敗しました。もう一度お試しください。', 'r2c-ai-concierge' );
+			return __( 'Site verification failed. Please try again.', 'r2c-ai-concierge' );
 		}
-		return __( '接続に失敗しました。もう一度お試しください。', 'r2c-ai-concierge' );
+		return __( 'Connection failed. Please try again.', 'r2c-ai-concierge' );
 	}
 }

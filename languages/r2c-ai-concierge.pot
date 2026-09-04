@@ -1,0 +1,341 @@
+# Translations template for R2C AI Concierge.
+# Copyright (C) 2026 R2C
+# This file is distributed under the same license as the R2C AI Concierge package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: R2C AI Concierge 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/"
+"issues\n"
+"POT-Creation-Date: 2026-09-05 06:36+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: includes/class-r2c-ajax.php:33
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:38
+msgid "Unable to reach R2C right now. Please try again in a moment."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:50
+msgid "Please check the consent checkbox."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:55
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:71
+msgid "Failed to start the connection."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:90
+msgid "No connection attempt is in progress. Please start over."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:105
+msgid "The connection attempt could not be found. Please start over."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:140
+msgid ""
+"The connection finished, but the API key could not be received. Please paste "
+"the key issued in your R2C dashboard using \"Enter API key manually\" below."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:151
+msgid "Site verification expired before it could complete. Please try again."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:184
+msgid "Please enter an API key."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:191
+msgid "This API key is invalid."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:193
+msgid "Failed to verify the API key."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:223
+msgid ""
+"The local connection info was removed, but revoking the key on R2C's side "
+"may have failed. If this is unexpected, please check the key status in your "
+"R2C dashboard."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:243
+msgid "Not connected."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:276
+msgid "There is nothing to change."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:282
+msgid "Failed to save the settings."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:315
+msgid "New sign-ups to R2C are currently at capacity. Please wait a moment."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:318
+msgid "Today's sign-up limit has been reached. Please try again tomorrow."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:324
+msgid ""
+"Verification access to this site was denied. Please temporarily disable "
+"Basic Auth or any access restrictions."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:327
+msgid ""
+"This site cannot be reached from outside. It must be a publicly accessible "
+"site (local environments cannot connect)."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:330
+msgid "Site verification failed. Please make sure the plugin is activated."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:333
+msgid "Verifying your site…"
+msgstr ""
+
+#: includes/class-r2c-ajax.php:338
+msgid "Site verification failed. Please try again."
+msgstr ""
+
+#: includes/class-r2c-ajax.php:340
+msgid "Connection failed. Please try again."
+msgstr ""
+
+#: includes/class-r2c-notice.php:69
+msgid "The R2C plugin is not connected yet."
+msgstr ""
+
+#: includes/class-r2c-notice.php:71 includes/class-r2c-settings-page.php:119
+msgid "Connect"
+msgstr ""
+
+#: includes/class-r2c-notice.php:73
+msgid "Dismiss this notice"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:32
+#: includes/class-r2c-settings-page.php:33
+#: includes/class-r2c-settings-page.php:82
+msgid "R2C"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:62
+msgid "Connecting…"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:63
+msgid ""
+"Are you sure you want to disconnect? Your conversation data and R2C tenant "
+"will not be deleted."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:64
+msgid "Saving…"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:65
+msgid "Saved."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:98
+msgid ""
+"R2C is an AI concierge widget that automatically chats with your site's "
+"visitors. Connect using the button below to display the widget with no theme "
+"editing required."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:102
+msgid "Email address"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:111
+#, php-format
+msgid ""
+"Connecting will send your site URL, site name, WordPress/plugin versions, "
+"and the email address above to R2C. I agree to R2C's %1$s and %2$s."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:112
+msgid "Terms of Service"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:113
+msgid "Privacy Policy"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:125
+msgid "If you already have an R2C account"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:128
+#: includes/class-r2c-settings-page.php:189
+msgid "API key"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:132
+msgid "Connect with this key"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:146
+msgid "Status: Connected"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:154
+msgid ""
+"Unable to reach R2C right now. To change settings, please reopen this page "
+"in a moment."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:174
+msgid "Active"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:174
+msgid "Inactive"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:180
+msgid "Status"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:184
+msgid "Tenant ID"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:195
+msgid "Plan"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:205
+msgid ""
+"This tenant is currently inactive, so the widget will not be displayed. If "
+"this is unexpected, please check your plan and billing status in the R2C "
+"dashboard."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:211
+msgid ""
+"No published FAQs have been registered yet. The widget will display, but it "
+"will not be able to answer questions."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:213
+#: includes/class-r2c-settings-page.php:247
+msgid "Register FAQs"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:233
+msgid "Free plan (ad-supported)"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:234
+msgid "Starter plan"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:235
+msgid "Standard plan"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:236
+msgid "Growth plan"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:237
+msgid "Enterprise plan"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:245
+msgid "Next steps"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:249
+msgid "View conversations"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:262
+msgid "Widget display settings"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:266
+msgid "Position"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:269
+msgid "Bottom right"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:270
+msgid "Bottom left"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:275
+msgid "Horizontal offset (px)"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:279
+msgid "Vertical offset (px)"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:283
+msgid "Brand color"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:291
+msgid "Save"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:295
+msgid "Changes may take up to 5 minutes to take effect."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:308
+msgid "Pages to hide the widget on"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:309
+msgid ""
+"One pattern per line. Start with / ; add * at the end to match everything "
+"under that path (e.g. /cart, /checkout/*)."
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:314
+msgid "Add a post type:"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:316
+#: includes/class-r2c-settings-page.php:329
+msgid "Please choose"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:321
+#: includes/class-r2c-settings-page.php:334
+msgid "Add"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:324
+msgid "Add a specific page:"
+msgstr ""
+
+#: includes/class-r2c-settings-page.php:397
+msgid "Disconnect"
+msgstr ""

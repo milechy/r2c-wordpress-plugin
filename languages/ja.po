@@ -1,0 +1,318 @@
+# Japanese translation for R2C AI Concierge.
+# Copyright (C) 2026 R2C
+# This file is distributed under the same license as the R2C AI Concierge package.
+# R2C <support@r2c.biz>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: R2C AI Concierge 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/issues\n"
+"POT-Creation-Date: 2026-09-05 06:36+0900\n"
+"PO-Revision-Date: 2026-09-05 06:40+0900\n"
+"Last-Translator: R2C <support@r2c.biz>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: includes/class-r2c-ajax.php:33
+msgid "You do not have permission to perform this action."
+msgstr "この操作を行う権限がありません。"
+
+#: includes/class-r2c-ajax.php:38
+msgid "Unable to reach R2C right now. Please try again in a moment."
+msgstr "現在 R2C に接続できません。しばらくしてから再度お試しください。"
+
+#: includes/class-r2c-ajax.php:50
+msgid "Please check the consent checkbox."
+msgstr "同意チェックボックスにチェックを入れてください。"
+
+#: includes/class-r2c-ajax.php:55
+msgid "Please enter a valid email address."
+msgstr "有効なメールアドレスを入力してください。"
+
+#: includes/class-r2c-ajax.php:71
+msgid "Failed to start the connection."
+msgstr "接続の開始に失敗しました。"
+
+#: includes/class-r2c-ajax.php:90
+msgid "No connection attempt is in progress. Please start over."
+msgstr "進行中の接続試行がありません。最初からやり直してください。"
+
+#: includes/class-r2c-ajax.php:105
+msgid "The connection attempt could not be found. Please start over."
+msgstr "接続試行が見つかりませんでした。最初からやり直してください。"
+
+#: includes/class-r2c-ajax.php:140
+msgid "The connection finished, but the API key could not be received. Please paste the key issued in your R2C dashboard using \"Enter API key manually\" below."
+msgstr "接続処理は完了しましたが、APIキーを受信できませんでした。下の「APIキーを直接入力」からR2C管理画面で発行したキーを貼り付けてください。"
+
+#: includes/class-r2c-ajax.php:151
+msgid "Site verification expired before it could complete. Please try again."
+msgstr "サイトの確認が完了しないまま期限切れになりました。もう一度お試しください。"
+
+#: includes/class-r2c-ajax.php:184
+msgid "Please enter an API key."
+msgstr "APIキーを入力してください。"
+
+#: includes/class-r2c-ajax.php:191
+msgid "This API key is invalid."
+msgstr "APIキーが無効です。"
+
+#: includes/class-r2c-ajax.php:193
+msgid "Failed to verify the API key."
+msgstr "APIキーの確認に失敗しました。"
+
+#: includes/class-r2c-ajax.php:223
+msgid "The local connection info was removed, but revoking the key on R2C's side may have failed. If this is unexpected, please check the key status in your R2C dashboard."
+msgstr "ローカルの接続情報は削除しましたが、R2C側でのキー失効に失敗した可能性があります。心当たりがない場合はR2Cの管理画面でキーの状態をご確認ください。"
+
+#: includes/class-r2c-ajax.php:243
+msgid "Not connected."
+msgstr "接続されていません。"
+
+#: includes/class-r2c-ajax.php:276
+msgid "There is nothing to change."
+msgstr "変更する項目がありません。"
+
+#: includes/class-r2c-ajax.php:282
+msgid "Failed to save the settings."
+msgstr "設定の保存に失敗しました。"
+
+#: includes/class-r2c-ajax.php:315
+msgid "New sign-ups to R2C are currently at capacity. Please wait a moment."
+msgstr "現在R2Cへの新規登録が混み合っています。しばらくお待ちください。"
+
+#: includes/class-r2c-ajax.php:318
+msgid "Today's sign-up limit has been reached. Please try again tomorrow."
+msgstr "本日の新規登録上限に達しました。明日改めてお試しください。"
+
+#: includes/class-r2c-ajax.php:324
+msgid "Verification access to this site was denied. Please temporarily disable Basic Auth or any access restrictions."
+msgstr "このサイトへの確認アクセスが拒否されました。Basic認証やアクセス制限を一時的に解除してください。"
+
+#: includes/class-r2c-ajax.php:327
+msgid "This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect)."
+msgstr "このサイトに外部からアクセスできません。公開されているサイトである必要があります(ローカル環境等では接続できません)。"
+
+#: includes/class-r2c-ajax.php:330
+msgid "Site verification failed. Please make sure the plugin is activated."
+msgstr "サイトの確認に失敗しました。プラグインが有効化されているか確認してください。"
+
+#: includes/class-r2c-ajax.php:333
+msgid "Verifying your site…"
+msgstr "サイトを確認しています…"
+
+#: includes/class-r2c-ajax.php:338
+msgid "Site verification failed. Please try again."
+msgstr "サイトの確認に失敗しました。もう一度お試しください。"
+
+#: includes/class-r2c-ajax.php:340
+msgid "Connection failed. Please try again."
+msgstr "接続に失敗しました。もう一度お試しください。"
+
+#: includes/class-r2c-notice.php:69
+msgid "The R2C plugin is not connected yet."
+msgstr "R2C プラグインはまだ接続されていません。"
+
+#: includes/class-r2c-notice.php:71 includes/class-r2c-settings-page.php:119
+msgid "Connect"
+msgstr "接続する"
+
+#: includes/class-r2c-notice.php:73
+msgid "Dismiss this notice"
+msgstr "この通知を閉じる"
+
+#: includes/class-r2c-settings-page.php:32
+#: includes/class-r2c-settings-page.php:33
+#: includes/class-r2c-settings-page.php:82
+msgid "R2C"
+msgstr "R2C"
+
+#: includes/class-r2c-settings-page.php:62
+msgid "Connecting…"
+msgstr "接続しています…"
+
+#: includes/class-r2c-settings-page.php:63
+msgid "Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted."
+msgstr "本当に接続を解除しますか？会話データとR2Cテナントは削除されません。"
+
+#: includes/class-r2c-settings-page.php:64
+msgid "Saving…"
+msgstr "保存しています…"
+
+#: includes/class-r2c-settings-page.php:65
+msgid "Saved."
+msgstr "保存しました。"
+
+#: includes/class-r2c-settings-page.php:98
+msgid "R2C is an AI concierge widget that automatically chats with your site's visitors. Connect using the button below to display the widget with no theme editing required."
+msgstr "R2C は、サイトを訪れたお客様に自動でチャット対応する AI 接客ウィジェットです。下のボタンから接続すると、テーマの編集なしにウィジェットが表示されます。"
+
+#: includes/class-r2c-settings-page.php:102
+msgid "Email address"
+msgstr "メールアドレス"
+
+#: includes/class-r2c-settings-page.php:111
+#, php-format
+msgid "Connecting will send your site URL, site name, WordPress/plugin versions, and the email address above to R2C. I agree to R2C's %1$s and %2$s."
+msgstr "接続すると、サイトURL・サイト名・WordPress/プラグインのバージョン・上記メールアドレスが R2C に送信されます。R2C の%1$sと%2$sに同意します。"
+
+#: includes/class-r2c-settings-page.php:112
+msgid "Terms of Service"
+msgstr "利用規約"
+
+#: includes/class-r2c-settings-page.php:113
+msgid "Privacy Policy"
+msgstr "プライバシーポリシー"
+
+#: includes/class-r2c-settings-page.php:125
+msgid "If you already have an R2C account"
+msgstr "すでに R2C アカウントをお持ちの場合"
+
+#: includes/class-r2c-settings-page.php:128
+#: includes/class-r2c-settings-page.php:189
+msgid "API key"
+msgstr "APIキー"
+
+#: includes/class-r2c-settings-page.php:132
+msgid "Connect with this key"
+msgstr "このキーで接続する"
+
+#: includes/class-r2c-settings-page.php:146
+msgid "Status: Connected"
+msgstr "ステータス: 接続済み"
+
+#: includes/class-r2c-settings-page.php:154
+msgid "Unable to reach R2C right now. To change settings, please reopen this page in a moment."
+msgstr "現在 R2C に接続できません。設定を変更するには、しばらくしてから再度このページを開いてください。"
+
+#: includes/class-r2c-settings-page.php:174
+msgid "Active"
+msgstr "稼働中"
+
+#: includes/class-r2c-settings-page.php:174
+msgid "Inactive"
+msgstr "停止中"
+
+#: includes/class-r2c-settings-page.php:180
+msgid "Status"
+msgstr "稼働状況"
+
+#: includes/class-r2c-settings-page.php:184
+msgid "Tenant ID"
+msgstr "テナントID"
+
+#: includes/class-r2c-settings-page.php:195
+msgid "Plan"
+msgstr "プラン"
+
+#: includes/class-r2c-settings-page.php:205
+msgid "This tenant is currently inactive, so the widget will not be displayed. If this is unexpected, please check your plan and billing status in the R2C dashboard."
+msgstr "このテナントは現在停止中のため、ウィジェットは表示されません。心当たりがない場合はR2C管理画面でプランや支払い状況をご確認ください。"
+
+#: includes/class-r2c-settings-page.php:211
+msgid "No published FAQs have been registered yet. The widget will display, but it will not be able to answer questions."
+msgstr "まだ公開済みのFAQが登録されていません。ウィジェットは表示されますが、質問に回答できません。"
+
+#: includes/class-r2c-settings-page.php:213
+#: includes/class-r2c-settings-page.php:247
+msgid "Register FAQs"
+msgstr "FAQ を登録する"
+
+#: includes/class-r2c-settings-page.php:233
+msgid "Free plan (ad-supported)"
+msgstr "広告付き無料プラン"
+
+#: includes/class-r2c-settings-page.php:234
+msgid "Starter plan"
+msgstr "スタータープラン"
+
+#: includes/class-r2c-settings-page.php:235
+msgid "Standard plan"
+msgstr "スタンダードプラン"
+
+#: includes/class-r2c-settings-page.php:236
+msgid "Growth plan"
+msgstr "グロースプラン"
+
+#: includes/class-r2c-settings-page.php:237
+msgid "Enterprise plan"
+msgstr "エンタープライズプラン"
+
+#: includes/class-r2c-settings-page.php:245
+msgid "Next steps"
+msgstr "次にやること"
+
+#: includes/class-r2c-settings-page.php:249
+msgid "View conversations"
+msgstr "会話を見る"
+
+#: includes/class-r2c-settings-page.php:262
+msgid "Widget display settings"
+msgstr "ウィジェットの表示設定"
+
+#: includes/class-r2c-settings-page.php:266
+msgid "Position"
+msgstr "表示位置"
+
+#: includes/class-r2c-settings-page.php:269
+msgid "Bottom right"
+msgstr "右下"
+
+#: includes/class-r2c-settings-page.php:270
+msgid "Bottom left"
+msgstr "左下"
+
+#: includes/class-r2c-settings-page.php:275
+msgid "Horizontal offset (px)"
+msgstr "横方向の余白(px)"
+
+#: includes/class-r2c-settings-page.php:279
+msgid "Vertical offset (px)"
+msgstr "縦方向の余白(px)"
+
+#: includes/class-r2c-settings-page.php:283
+msgid "Brand color"
+msgstr "ブランドカラー"
+
+#: includes/class-r2c-settings-page.php:291
+msgid "Save"
+msgstr "保存する"
+
+#: includes/class-r2c-settings-page.php:295
+msgid "Changes may take up to 5 minutes to take effect."
+msgstr "設定の反映には最大5分かかることがあります。"
+
+#: includes/class-r2c-settings-page.php:308
+msgid "Pages to hide the widget on"
+msgstr "非表示にするページ"
+
+#: includes/class-r2c-settings-page.php:309
+msgid "One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*)."
+msgstr "1行に1パターンで指定します。/ から始まり、末尾に * を付けると以下を含めます(例: /cart, /checkout/*)。"
+
+#: includes/class-r2c-settings-page.php:314
+msgid "Add a post type:"
+msgstr "投稿タイプを追加:"
+
+#: includes/class-r2c-settings-page.php:316
+#: includes/class-r2c-settings-page.php:329
+msgid "Please choose"
+msgstr "選択してください"
+
+#: includes/class-r2c-settings-page.php:321
+#: includes/class-r2c-settings-page.php:334
+msgid "Add"
+msgstr "追加"
+
+#: includes/class-r2c-settings-page.php:324
+msgid "Add a specific page:"
+msgstr "特定の固定ページを追加:"
+
+#: includes/class-r2c-settings-page.php:397
+msgid "Disconnect"
+msgstr "接続を解除する"
+

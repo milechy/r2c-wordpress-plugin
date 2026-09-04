@@ -59,10 +59,10 @@ class R2C_Settings_Page {
 				// 済ませ、JS側は選ばれたIDでこのマップを引くだけにする。
 				'pagePaths' => self::page_id_to_path_map(),
 				'i18n'      => array(
-					'connecting'        => __( '接続しています…', 'r2c-ai-concierge' ),
-					'confirmDisconnect' => __( '本当に接続を解除しますか？会話データとR2Cテナントは削除されません。', 'r2c-ai-concierge' ),
-					'saving'            => __( '保存しています…', 'r2c-ai-concierge' ),
-					'saved'             => __( '保存しました。', 'r2c-ai-concierge' ),
+					'connecting'        => __( 'Connecting…', 'r2c-ai-concierge' ),
+					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted.', 'r2c-ai-concierge' ),
+					'saving'            => __( 'Saving…', 'r2c-ai-concierge' ),
+					'saved'             => __( 'Saved.', 'r2c-ai-concierge' ),
 				),
 			)
 		);
@@ -95,11 +95,11 @@ class R2C_Settings_Page {
 	private static function render_disconnected() {
 		?>
 		<div id="r2c-connect-panel">
-			<p><?php esc_html_e( 'R2C は、サイトを訪れたお客様に自動でチャット対応する AI 接客ウィジェットです。下のボタンから接続すると、テーマの編集なしにウィジェットが表示されます。', 'r2c-ai-concierge' ); ?></p>
+			<p><?php esc_html_e( 'R2C is an AI concierge widget that automatically chats with your site\'s visitors. Connect using the button below to display the widget with no theme editing required.', 'r2c-ai-concierge' ); ?></p>
 
 			<form id="r2c-connect-form">
 				<p>
-					<label for="r2c-email"><?php esc_html_e( 'メールアドレス', 'r2c-ai-concierge' ); ?></label><br />
+					<label for="r2c-email"><?php esc_html_e( 'Email address', 'r2c-ai-concierge' ); ?></label><br />
 					<input type="email" id="r2c-email" name="email" class="regular-text" value="<?php echo esc_attr( get_bloginfo( 'admin_email' ) ); ?>" required />
 				</p>
 				<p>
@@ -108,28 +108,28 @@ class R2C_Settings_Page {
 						<?php
 						printf(
 							/* translators: 1: terms of service link, 2: privacy policy link */
-							esc_html__( '接続すると、サイトURL・サイト名・WordPress/プラグインのバージョン・上記メールアドレスが R2C に送信されます。R2C の%1$sと%2$sに同意します。', 'r2c-ai-concierge' ),
-							'<a href="https://r2c.biz/legal/terms.html" target="_blank" rel="noopener noreferrer">' . esc_html__( '利用規約', 'r2c-ai-concierge' ) . '</a>',
-							'<a href="https://r2c.biz/legal/privacy.html" target="_blank" rel="noopener noreferrer">' . esc_html__( 'プライバシーポリシー', 'r2c-ai-concierge' ) . '</a>'
+							esc_html__( 'Connecting will send your site URL, site name, WordPress/plugin versions, and the email address above to R2C. I agree to R2C\'s %1$s and %2$s.', 'r2c-ai-concierge' ),
+							'<a href="https://r2c.biz/legal/terms.html" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Terms of Service', 'r2c-ai-concierge' ) . '</a>',
+							'<a href="https://r2c.biz/legal/privacy.html" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Privacy Policy', 'r2c-ai-concierge' ) . '</a>'
 						);
 						?>
 					</label>
 				</p>
 				<p>
-					<button type="submit" class="button button-primary" id="r2c-connect-button"><?php esc_html_e( '接続する', 'r2c-ai-concierge' ); ?></button>
+					<button type="submit" class="button button-primary" id="r2c-connect-button"><?php esc_html_e( 'Connect', 'r2c-ai-concierge' ); ?></button>
 				</p>
 				<p id="r2c-connect-status" role="status" aria-live="polite"></p>
 			</form>
 
 			<details style="margin-top: 24px;">
-				<summary><?php esc_html_e( 'すでに R2C アカウントをお持ちの場合', 'r2c-ai-concierge' ); ?></summary>
+				<summary><?php esc_html_e( 'If you already have an R2C account', 'r2c-ai-concierge' ); ?></summary>
 				<form id="r2c-manual-form" style="margin-top: 12px;">
 					<p>
-						<label for="r2c-manual-key"><?php esc_html_e( 'APIキー', 'r2c-ai-concierge' ); ?></label><br />
+						<label for="r2c-manual-key"><?php esc_html_e( 'API key', 'r2c-ai-concierge' ); ?></label><br />
 						<input type="text" id="r2c-manual-key" name="api_key" class="regular-text" autocomplete="off" />
 					</p>
 					<p>
-						<button type="submit" class="button" id="r2c-manual-button"><?php esc_html_e( 'このキーで接続する', 'r2c-ai-concierge' ); ?></button>
+						<button type="submit" class="button" id="r2c-manual-button"><?php esc_html_e( 'Connect with this key', 'r2c-ai-concierge' ); ?></button>
 					</p>
 					<p id="r2c-manual-status" role="status" aria-live="polite"></p>
 				</form>
@@ -143,7 +143,7 @@ class R2C_Settings_Page {
 	private static function render_connected() {
 		$result = R2C_Api_Client::get_settings( R2C_Options::get_api_key() );
 
-		echo '<p>' . esc_html__( 'ステータス: 接続済み', 'r2c-ai-concierge' ) . '</p>';
+		echo '<p>' . esc_html__( 'Status: Connected', 'r2c-ai-concierge' ) . '</p>';
 
 		self::render_next_steps();
 
@@ -151,7 +151,7 @@ class R2C_Settings_Page {
 			// FR-24: 取得できない値で「保存できるように見える」フォームを出さない。
 			printf(
 				'<div class="notice notice-error"><p>%s</p></div>',
-				esc_html__( '現在 R2C に接続できません。設定を変更するには、しばらくしてから再度このページを開いてください。', 'r2c-ai-concierge' )
+				esc_html__( 'Unable to reach R2C right now. To change settings, please reopen this page in a moment.', 'r2c-ai-concierge' )
 			);
 			self::render_disconnect_button();
 			return;
@@ -171,28 +171,28 @@ class R2C_Settings_Page {
 		$tenant_id    = isset( $body['tenant_id'] ) ? $body['tenant_id'] : R2C_Options::get_tenant_id();
 		$is_active    = ! empty( $body['is_active'] );
 		$plan         = isset( $body['plan'] ) ? (string) $body['plan'] : '';
-		$status_label = $is_active ? __( '稼働中', 'r2c-ai-concierge' ) : __( '停止中', 'r2c-ai-concierge' );
+		$status_label = $is_active ? __( 'Active', 'r2c-ai-concierge' ) : __( 'Inactive', 'r2c-ai-concierge' );
 		$masked_key   = self::mask_api_key( R2C_Options::get_api_key() );
 		?>
 		<table class="form-table" role="presentation">
 			<tbody>
 				<tr>
-					<th><?php esc_html_e( '稼働状況', 'r2c-ai-concierge' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'r2c-ai-concierge' ); ?></th>
 					<td><?php echo esc_html( $status_label ); ?></td>
 				</tr>
 				<tr>
-					<th><?php esc_html_e( 'テナントID', 'r2c-ai-concierge' ); ?></th>
+					<th><?php esc_html_e( 'Tenant ID', 'r2c-ai-concierge' ); ?></th>
 					<td><code><?php echo esc_html( $tenant_id ); ?></code></td>
 				</tr>
 				<?php if ( '' !== $masked_key ) : ?>
 				<tr>
-					<th><?php esc_html_e( 'APIキー', 'r2c-ai-concierge' ); ?></th>
+					<th><?php esc_html_e( 'API key', 'r2c-ai-concierge' ); ?></th>
 					<td><code><?php echo esc_html( $masked_key ); ?></code></td>
 				</tr>
 				<?php endif; ?>
 				<?php if ( '' !== $plan ) : ?>
 				<tr>
-					<th><?php esc_html_e( 'プラン', 'r2c-ai-concierge' ); ?></th>
+					<th><?php esc_html_e( 'Plan', 'r2c-ai-concierge' ); ?></th>
 					<td><?php echo esc_html( self::plan_label( $plan ) ); ?></td>
 				</tr>
 				<?php endif; ?>
@@ -202,15 +202,15 @@ class R2C_Settings_Page {
 		if ( ! $is_active ) {
 			printf(
 				'<div class="notice notice-warning inline"><p>%s</p></div>',
-				esc_html__( 'このテナントは現在停止中のため、ウィジェットは表示されません。心当たりがない場合はR2C管理画面でプランや支払い状況をご確認ください。', 'r2c-ai-concierge' )
+				esc_html__( 'This tenant is currently inactive, so the widget will not be displayed. If this is unexpected, please check your plan and billing status in the R2C dashboard.', 'r2c-ai-concierge' )
 			);
 		}
 		if ( empty( $body['has_published_faq'] ) ) {
 			printf(
 				'<div class="notice notice-warning inline"><p>%s <a href="%s" target="_blank" rel="noopener noreferrer">%s</a></p></div>',
-				esc_html__( 'まだ公開済みのFAQが登録されていません。ウィジェットは表示されますが、質問に回答できません。', 'r2c-ai-concierge' ),
+				esc_html__( 'No published FAQs have been registered yet. The widget will display, but it will not be able to answer questions.', 'r2c-ai-concierge' ),
 				esc_url( self::APP_URL ),
-				esc_html__( 'FAQ を登録する', 'r2c-ai-concierge' )
+				esc_html__( 'Register FAQs', 'r2c-ai-concierge' )
 			);
 		}
 	}
@@ -230,11 +230,11 @@ class R2C_Settings_Page {
 
 	private static function plan_label( $plan ) {
 		$labels = array(
-			'free_ad'    => __( '広告付き無料プラン', 'r2c-ai-concierge' ),
-			'starter'    => __( 'スタータープラン', 'r2c-ai-concierge' ),
-			'standard'   => __( 'スタンダードプラン', 'r2c-ai-concierge' ),
-			'growth'     => __( 'グロースプラン', 'r2c-ai-concierge' ),
-			'enterprise' => __( 'エンタープライズプラン', 'r2c-ai-concierge' ),
+			'free_ad'    => __( 'Free plan (ad-supported)', 'r2c-ai-concierge' ),
+			'starter'    => __( 'Starter plan', 'r2c-ai-concierge' ),
+			'standard'   => __( 'Standard plan', 'r2c-ai-concierge' ),
+			'growth'     => __( 'Growth plan', 'r2c-ai-concierge' ),
+			'enterprise' => __( 'Enterprise plan', 'r2c-ai-concierge' ),
 		);
 		return isset( $labels[ $plan ] ) ? $labels[ $plan ] : $plan;
 	}
@@ -242,11 +242,11 @@ class R2C_Settings_Page {
 	private static function render_next_steps() {
 		printf(
 			'<div class="notice notice-info r2c-next-steps"><p><strong>%s</strong></p><ul style="list-style:disc;margin-left:20px;"><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li></ul></div>',
-			esc_html__( '次にやること', 'r2c-ai-concierge' ),
+			esc_html__( 'Next steps', 'r2c-ai-concierge' ),
 			esc_url( self::APP_URL ),
-			esc_html__( 'FAQ を登録する', 'r2c-ai-concierge' ),
+			esc_html__( 'Register FAQs', 'r2c-ai-concierge' ),
 			esc_url( self::APP_URL ),
-			esc_html__( '会話を見る', 'r2c-ai-concierge' )
+			esc_html__( 'View conversations', 'r2c-ai-concierge' )
 		);
 	}
 
@@ -259,28 +259,28 @@ class R2C_Settings_Page {
 			? $settings['excluded_page_patterns']
 			: array();
 		?>
-		<h2><?php esc_html_e( 'ウィジェットの表示設定', 'r2c-ai-concierge' ); ?></h2>
+		<h2><?php esc_html_e( 'Widget display settings', 'r2c-ai-concierge' ); ?></h2>
 		<form id="r2c-settings-form">
 			<table class="form-table">
 				<tr>
-					<th><label for="r2c-position"><?php esc_html_e( '表示位置', 'r2c-ai-concierge' ); ?></label></th>
+					<th><label for="r2c-position"><?php esc_html_e( 'Position', 'r2c-ai-concierge' ); ?></label></th>
 					<td>
 						<select id="r2c-position" name="position">
-							<option value="bottom-right" <?php selected( $position, 'bottom-right' ); ?>><?php esc_html_e( '右下', 'r2c-ai-concierge' ); ?></option>
-							<option value="bottom-left" <?php selected( $position, 'bottom-left' ); ?>><?php esc_html_e( '左下', 'r2c-ai-concierge' ); ?></option>
+							<option value="bottom-right" <?php selected( $position, 'bottom-right' ); ?>><?php esc_html_e( 'Bottom right', 'r2c-ai-concierge' ); ?></option>
+							<option value="bottom-left" <?php selected( $position, 'bottom-left' ); ?>><?php esc_html_e( 'Bottom left', 'r2c-ai-concierge' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				<tr>
-					<th><label for="r2c-offset-x"><?php esc_html_e( '横方向の余白(px)', 'r2c-ai-concierge' ); ?></label></th>
+					<th><label for="r2c-offset-x"><?php esc_html_e( 'Horizontal offset (px)', 'r2c-ai-concierge' ); ?></label></th>
 					<td><input type="number" id="r2c-offset-x" name="offset_x" min="0" max="320" value="<?php echo esc_attr( $offset_x ); ?>" /></td>
 				</tr>
 				<tr>
-					<th><label for="r2c-offset-y"><?php esc_html_e( '縦方向の余白(px)', 'r2c-ai-concierge' ); ?></label></th>
+					<th><label for="r2c-offset-y"><?php esc_html_e( 'Vertical offset (px)', 'r2c-ai-concierge' ); ?></label></th>
 					<td><input type="number" id="r2c-offset-y" name="offset_y" min="0" max="320" value="<?php echo esc_attr( $offset_y ); ?>" /></td>
 				</tr>
 				<tr>
-					<th><label for="r2c-primary-color"><?php esc_html_e( 'ブランドカラー', 'r2c-ai-concierge' ); ?></label></th>
+					<th><label for="r2c-primary-color"><?php esc_html_e( 'Brand color', 'r2c-ai-concierge' ); ?></label></th>
 					<td><input type="text" id="r2c-primary-color" name="primary_color" class="r2c-color-field" value="<?php echo esc_attr( $primary_color ); ?>" placeholder="#3B82F6" /></td>
 				</tr>
 			</table>
@@ -288,11 +288,11 @@ class R2C_Settings_Page {
 			<?php self::render_excluded_pages_section( $excluded ); ?>
 
 			<p>
-				<button type="submit" class="button button-primary" id="r2c-settings-save"><?php esc_html_e( '保存する', 'r2c-ai-concierge' ); ?></button>
+				<button type="submit" class="button button-primary" id="r2c-settings-save"><?php esc_html_e( 'Save', 'r2c-ai-concierge' ); ?></button>
 				<span id="r2c-settings-status" role="status" aria-live="polite"></span>
 			</p>
 		</form>
-		<p class="description"><?php esc_html_e( '設定の反映には最大5分かかることがあります。', 'r2c-ai-concierge' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Changes may take up to 5 minutes to take effect.', 'r2c-ai-concierge' ); ?></p>
 		<?php
 	}
 
@@ -305,33 +305,33 @@ class R2C_Settings_Page {
 	 */
 	private static function render_excluded_pages_section( $patterns ) {
 		?>
-		<h2><?php esc_html_e( '非表示にするページ', 'r2c-ai-concierge' ); ?></h2>
-		<p class="description"><?php esc_html_e( '1行に1パターンで指定します。/ から始まり、末尾に * を付けると以下を含めます(例: /cart, /checkout/*)。', 'r2c-ai-concierge' ); ?></p>
+		<h2><?php esc_html_e( 'Pages to hide the widget on', 'r2c-ai-concierge' ); ?></h2>
+		<p class="description"><?php esc_html_e( 'One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*).', 'r2c-ai-concierge' ); ?></p>
 		<p>
 			<textarea id="r2c-excluded-patterns" name="excluded_page_patterns" rows="4" class="large-text code"><?php echo esc_textarea( implode( "\n", $patterns ) ); ?></textarea>
 		</p>
 		<p>
-			<label for="r2c-excluded-post-type"><?php esc_html_e( '投稿タイプを追加:', 'r2c-ai-concierge' ); ?></label>
+			<label for="r2c-excluded-post-type"><?php esc_html_e( 'Add a post type:', 'r2c-ai-concierge' ); ?></label>
 			<select id="r2c-excluded-post-type">
-				<option value=""><?php esc_html_e( '選択してください', 'r2c-ai-concierge' ); ?></option>
+				<option value=""><?php esc_html_e( 'Please choose', 'r2c-ai-concierge' ); ?></option>
 				<?php foreach ( self::excludable_post_type_patterns() as $pattern => $label ) : ?>
 					<option value="<?php echo esc_attr( $pattern ); ?>"><?php echo esc_html( $label ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<button type="button" class="button" id="r2c-excluded-post-type-add"><?php esc_html_e( '追加', 'r2c-ai-concierge' ); ?></button>
+			<button type="button" class="button" id="r2c-excluded-post-type-add"><?php esc_html_e( 'Add', 'r2c-ai-concierge' ); ?></button>
 		</p>
 		<p>
-			<label for="r2c-excluded-page-picker"><?php esc_html_e( '特定の固定ページを追加:', 'r2c-ai-concierge' ); ?></label>
+			<label for="r2c-excluded-page-picker"><?php esc_html_e( 'Add a specific page:', 'r2c-ai-concierge' ); ?></label>
 			<?php
 			wp_dropdown_pages(
 				array(
 					'id'                => 'r2c-excluded-page-picker',
-					'show_option_none'  => esc_html__( '選択してください', 'r2c-ai-concierge' ),
+					'show_option_none'  => esc_html__( 'Please choose', 'r2c-ai-concierge' ),
 					'option_none_value' => '',
 				)
 			);
 			?>
-			<button type="button" class="button" id="r2c-excluded-page-add"><?php esc_html_e( '追加', 'r2c-ai-concierge' ); ?></button>
+			<button type="button" class="button" id="r2c-excluded-page-add"><?php esc_html_e( 'Add', 'r2c-ai-concierge' ); ?></button>
 		</p>
 		<?php
 	}
@@ -394,7 +394,7 @@ class R2C_Settings_Page {
 		?>
 		<hr />
 		<p>
-			<button type="button" class="button" id="r2c-disconnect-button"><?php esc_html_e( '接続を解除する', 'r2c-ai-concierge' ); ?></button>
+			<button type="button" class="button" id="r2c-disconnect-button"><?php esc_html_e( 'Disconnect', 'r2c-ai-concierge' ); ?></button>
 			<span id="r2c-disconnect-status" role="status" aria-live="polite"></span>
 		</p>
 		<?php

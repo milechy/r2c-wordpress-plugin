@@ -66,11 +66,11 @@ class R2C_Notice {
 		$settings_url = admin_url( 'options-general.php?page=' . R2C_Settings_Page::SLUG );
 		printf(
 			'<div class="notice notice-info r2c-connect-notice"><p>%s <a href="%s">%s</a> <button type="button" class="notice-dismiss r2c-notice-dismiss" data-nonce="%s"><span class="screen-reader-text">%s</span></button></p></div>',
-			esc_html__( 'R2C プラグインはまだ接続されていません。', 'r2c-ai-concierge' ),
+			esc_html__( 'The R2C plugin is not connected yet.', 'r2c-ai-concierge' ),
 			esc_url( $settings_url ),
-			esc_html__( '接続する', 'r2c-ai-concierge' ),
+			esc_html__( 'Connect', 'r2c-ai-concierge' ),
 			esc_attr( wp_create_nonce( self::DISMISS_ACTION ) ),
-			esc_html__( 'この通知を閉じる', 'r2c-ai-concierge' )
+			esc_html__( 'Dismiss this notice', 'r2c-ai-concierge' )
 		);
 	}
 
