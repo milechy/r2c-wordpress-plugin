@@ -62,5 +62,15 @@
 		     comment-style section dividers, which group related methods
 		     rather than document one. -->
 		<exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>
+		<!-- InvalidEndChar only recognises ASCII `.`/`!`/`?` as a valid
+		     comment terminator. This codebase's engineering-rationale
+		     comments are written in Japanese (matching the parent
+		     commerce-faq-tasks repo's convention), ending in the
+		     full-width `。`/`！`/`？` — which this sniff has no concept
+		     of, so it flags every single one regardless of how the
+		     sentence actually ends. Verified by inspection: every
+		     flagged line in this repo already ended correctly in
+		     Japanese punctuation. -->
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 	</rule>
 </ruleset>

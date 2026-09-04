@@ -83,6 +83,8 @@ class R2C_Api_Client {
 	}
 
 	/**
+	 * Shared request builder every public method above funnels through.
+	 *
 	 * @param string      $method   HTTP method.
 	 * @param string      $path     Path, leading slash, no host.
 	 * @param string|null $api_key  x-api-key header value, or null for the

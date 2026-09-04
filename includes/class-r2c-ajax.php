@@ -234,7 +234,7 @@ class R2C_Ajax {
 		);
 	}
 
-	/* 設定保存(位置・オフセット・色・除外ページ・許可ドメイン) */
+	/* ウィジェット表示設定の保存 */
 
 	public static function handle_save_settings() {
 		self::guard();
