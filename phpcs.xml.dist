@@ -59,8 +59,8 @@
 		<!-- WrongStyle fires whenever a `//` comment sits near a function
 		     with no docblock, assuming it's a mis-styled attempt at
 		     documenting that function. False positive for this codebase's
-		     `// ---- 見出し ----` section dividers, which group related
-		     methods rather than document one. -->
+		     comment-style section dividers, which group related methods
+		     rather than document one. -->
 		<exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>
 	</rule>
 </ruleset>
