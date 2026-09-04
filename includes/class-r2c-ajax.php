@@ -38,9 +38,7 @@ class R2C_Ajax {
 		return __( '現在 R2C に接続できません。しばらくしてから再度お試しください。', 'r2c-ai-concierge' );
 	}
 
-	// -------------------------------------------------------------------
-	// 接続開始
-	// -------------------------------------------------------------------
+	/* 接続開始 */
 
 	public static function handle_connect() {
 		self::guard();
@@ -80,16 +78,19 @@ class R2C_Ajax {
 		wp_send_json_success( array( 'waiting' => true ) );
 	}
 
-	// -------------------------------------------------------------------
-	// ポーリング
-	// -------------------------------------------------------------------
+	/* ポーリング */
 
 	public static function handle_poll() {
 		self::guard();
 
 		$poll_token = R2C_Options::get_pending_poll_token();
 		if ( empty( $poll_token ) ) {
-			wp_send_json_error( array( 'message' => __( '進行中の接続試行がありません。最初からやり直してください。', 'r2c-ai-concierge' ), 'terminal' => true ) );
+			wp_send_json_error(
+				array(
+					'message'  => __( '進行中の接続試行がありません。最初からやり直してください。', 'r2c-ai-concierge' ),
+					'terminal' => true,
+				)
+			);
 		}
 
 		$result = R2C_Api_Client::poll( $poll_token );
@@ -99,7 +100,12 @@ class R2C_Ajax {
 		if ( ! $result['ok'] && 404 === $result['status'] ) {
 			R2C_Options::clear_pending_poll_token();
 			R2C_Options::clear_pending_challenge();
-			wp_send_json_error( array( 'message' => __( '接続試行が見つかりませんでした。最初からやり直してください。', 'r2c-ai-concierge' ), 'terminal' => true ) );
+			wp_send_json_error(
+				array(
+					'message'  => __( '接続試行が見つかりませんでした。最初からやり直してください。', 'r2c-ai-concierge' ),
+					'terminal' => true,
+				)
+			);
 		}
 
 		// 到達不能はまだ終端にしない — ネットワークの一時的な不調かもしれず、
@@ -168,9 +174,7 @@ class R2C_Ajax {
 		);
 	}
 
-	// -------------------------------------------------------------------
-	// 手動キー貼り付け(FR-05)
-	// -------------------------------------------------------------------
+	/* 手動キー貼り付け(FR-05) */
 
 	public static function handle_connect_manual() {
 		self::guard();
@@ -201,9 +205,7 @@ class R2C_Ajax {
 		wp_send_json_success( array( 'status' => 'connected' ) );
 	}
 
-	// -------------------------------------------------------------------
-	// 解除
-	// -------------------------------------------------------------------
+	/* 解除 */
 
 	public static function handle_disconnect() {
 		self::guard();
@@ -232,9 +234,7 @@ class R2C_Ajax {
 		);
 	}
 
-	// -------------------------------------------------------------------
-	// 設定保存(位置・オフセット・色・除外ページ・許可ドメイン)
-	// -------------------------------------------------------------------
+	/* 設定保存(位置・オフセット・色・除外ページ・許可ドメイン) */
 
 	public static function handle_save_settings() {
 		self::guard();
@@ -284,9 +284,7 @@ class R2C_Ajax {
 		wp_send_json_success( array( 'settings' => $body ) );
 	}
 
-	// -------------------------------------------------------------------
-	// 文言の組み立て
-	// -------------------------------------------------------------------
+	/* 文言の組み立て */
 
 	private static function error_message_for( $result, $fallback ) {
 		if ( null === $result['status'] ) {
@@ -299,7 +297,7 @@ class R2C_Ajax {
 	}
 
 	/**
-	 * verifyReason(サイト所有証明の失敗理由)を利用者向けの日本語に変換する。
+	 * サイト所有証明の失敗理由(verify_reason)を利用者向けの日本語に変換する。
 	 * 理由コードは src/api/widget/wpSiteVerifier.ts の WpVerifyFailure と一致させる。
 	 */
 	private static function pending_reason_message( $body ) {

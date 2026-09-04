@@ -86,9 +86,7 @@ class R2C_Settings_Page {
 		echo '</div>';
 	}
 
-	// -------------------------------------------------------------------
-	// 未接続
-	// -------------------------------------------------------------------
+	/* 未接続 */
 
 	private static function render_disconnected() {
 		?>
@@ -136,9 +134,7 @@ class R2C_Settings_Page {
 		<?php
 	}
 
-	// -------------------------------------------------------------------
-	// 接続済み
-	// -------------------------------------------------------------------
+	/* 接続済み */
 
 	private static function render_connected() {
 		$result = R2C_Api_Client::get_settings( R2C_Options::get_api_key() );

@@ -35,7 +35,7 @@ class R2C_Verify_Endpoint {
 		);
 	}
 
-	public static function handle( $request ) {
+	public static function handle() {
 		$challenge = R2C_Options::get_pending_challenge();
 
 		if ( empty( $challenge ) ) {

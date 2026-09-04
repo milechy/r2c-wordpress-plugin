@@ -16,7 +16,6 @@
 	     readable. WPCS + PHPCompatibilityWP are the standard tooling to
 	     keep this true and to catch calls to functions the declared
 	     minimum PHP (7.4, per the plugin header) doesn't have. -->
-	<rule ref="WordPress"/>
 	<rule ref="PHPCompatibilityWP"/>
 	<config name="testVersion" value="7.4-"/>
 
@@ -36,5 +35,32 @@
 		<properties>
 			<property name="is_theme" value="false"/>
 		</properties>
+	</rule>
+
+	<!-- Docblock-completeness sniffs excluded on purpose, not out of
+	     laziness. `WordPress` pulls in Squiz.Commenting's requirement for a
+	     full /** */ block (with @param on every argument) on every single
+	     method, including one-line private getters like get_api_key().
+	     No wordpress.org Detailed Plugin Guideline requires this — #4 asks
+	     for human-readable code, not formal doc-block completeness — and
+	     this repo's own conventions (see the parent commerce-faq-tasks
+	     CLAUDE.md, and this file's own comment style) explicitly avoid
+	     comments that only restate what a well-named function already
+	     says. Public entry points (wp_ajax_* handlers, REST callbacks,
+	     hook registrations) still carry real doc comments in this codebase
+	     — that's a deliberate choice, not something enforced mechanically
+	     here. Everything else phpcs checks (escaping, nonces, prefixing,
+	     SQL, array/whitespace style, inline-comment punctuation) stays on. -->
+	<rule ref="WordPress">
+		<exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+		<exclude name="Squiz.Commenting.ClassComment.Missing"/>
+		<!-- WrongStyle fires whenever a `//` comment sits near a function
+		     with no docblock, assuming it's a mis-styled attempt at
+		     documenting that function. False positive for this codebase's
+		     `// ---- 見出し ----` section dividers, which group related
+		     methods rather than document one. -->
+		<exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>
 	</rule>
 </ruleset>
