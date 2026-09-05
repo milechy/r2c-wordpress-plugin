@@ -38,6 +38,23 @@ class R2C_Ajax {
 		return __( 'Unable to reach R2C right now. Please try again in a moment.', 'r2c-ai-concierge' );
 	}
 
+	/**
+	 * $_POST[$key] as an unslashed string, or '' if absent or not actually
+	 * a string (e.g. a hand-crafted `key[]=x` array submission).
+	 * sanitize_text_field()/sanitize_textarea_field() already guard against
+	 * non-scalar input inside WordPress core, but sanitize_email() and
+	 * sanitize_hex_color() do not — passing either an array ends up calling
+	 * strlen()/preg_match() on it, which is a fatal TypeError on PHP 8+.
+	 * Every raw $_POST read in this class goes through here instead of
+	 * trusting the shape of the incoming request field-by-field.
+	 */
+	private static function post_string( $key ) {
+		if ( ! isset( $_POST[ $key ] ) || ! is_string( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- every caller reaches this only after guard() has verified the nonce.
+			return '';
+		}
+		return wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	}
+
 	/* 接続開始 */
 
 	public static function handle_connect() {
@@ -45,12 +62,12 @@ class R2C_Ajax {
 
 		// FR-02: サーバ側の同意バックストップ。JSがチェック無しでボタンを
 		// 押させない作りだが、それとは別にサーバ側でも確認する。
-		$consent = isset( $_POST['consent'] ) && '1' === $_POST['consent']; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above via check_ajax_referer.
+		$consent = '1' === self::post_string( 'consent' );
 		if ( ! $consent ) {
 			wp_send_json_error( array( 'message' => __( 'Please check the consent checkbox.', 'r2c-ai-concierge' ) ) );
 		}
 
-		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$email = sanitize_email( self::post_string( 'email' ) );
 		if ( empty( $email ) || ! is_email( $email ) ) {
 			wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'r2c-ai-concierge' ) ) );
 		}
@@ -179,7 +196,7 @@ class R2C_Ajax {
 	public static function handle_connect_manual() {
 		self::guard();
 
-		$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$api_key = sanitize_text_field( self::post_string( 'api_key' ) );
 		if ( empty( $api_key ) ) {
 			wp_send_json_error( array( 'message' => __( 'Please enter an API key.', 'r2c-ai-concierge' ) ) );
 		}
@@ -245,19 +262,21 @@ class R2C_Ajax {
 
 		$fields = array();
 
-		if ( isset( $_POST['position'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$position = sanitize_text_field( wp_unslash( $_POST['position'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['position'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above via check_ajax_referer.
+			$position = sanitize_text_field( self::post_string( 'position' ) );
 			if ( in_array( $position, array( 'bottom-right', 'bottom-left' ), true ) ) {
 				$fields['position'] = $position;
 			}
 		}
 		foreach ( array( 'offset_x', 'offset_y' ) as $key ) {
-			if ( isset( $_POST[ $key ] ) && '' !== $_POST[ $key ] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-				$fields[ $key ] = absint( wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$raw_offset = self::post_string( $key );
+			if ( '' !== $raw_offset ) {
+				$fields[ $key ] = absint( $raw_offset );
 			}
 		}
-		if ( isset( $_POST['primary_color'] ) && '' !== $_POST['primary_color'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$color = sanitize_hex_color( wp_unslash( $_POST['primary_color'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw_color = self::post_string( 'primary_color' );
+		if ( '' !== $raw_color ) {
+			$color = sanitize_hex_color( $raw_color );
 			if ( $color ) {
 				$fields['primary_color'] = $color;
 			}
@@ -266,7 +285,7 @@ class R2C_Ajax {
 		// 送信(全パターン削除)も有効な操作として扱うため、issetのみで判定する
 		// (他フィールドの「空なら無視」とは違う——ここは「空=クリア」が意味を持つ)。
 		if ( isset( $_POST['excluded_page_patterns'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$raw   = sanitize_textarea_field( wp_unslash( $_POST['excluded_page_patterns'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$raw   = sanitize_textarea_field( self::post_string( 'excluded_page_patterns' ) );
 			$lines = array_filter( array_map( 'trim', explode( "\n", $raw ) ), 'strlen' );
 
 			$fields['excluded_page_patterns'] = array_values( array_unique( $lines ) );
