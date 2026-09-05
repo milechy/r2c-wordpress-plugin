@@ -240,8 +240,23 @@ class R2C_Mock_Api {
 
 	/* ---- テスト制御専用(本物のAPIには存在しない) ---- */
 
+	/**
+	 * モック側(このAPIが保持する仮想テナントの状態)だけでなく、この
+	 * WordPressインストール自身がローカルに持つ接続状態(r2c_api_key等)も
+	 * 一緒に消す。テストは全て同一のWordPressインストールを共有するため、
+	 * ここでR2C_Optionsをクリアしておかないと、直前のテストで接続済みに
+	 * なった状態が次のテストへそのまま残り、次のテストの
+	 * gotoSettings()が(未接続用の)接続フォームではなく接続済み画面を
+	 * 表示してしまい、summary/manual-key要素待ちが延々とタイムアウトする
+	 * (実機のCIログで確認した実際の不具合)。
+	 */
 	public static function handle_test_reset() {
 		self::save_state( self::default_state() );
+		if ( class_exists( 'R2C_Options' ) ) {
+			R2C_Options::clear_connection();
+			R2C_Options::clear_pending_poll_token();
+			R2C_Options::clear_pending_challenge();
+		}
 		return new WP_REST_Response( array( 'ok' => true ), 200 );
 	}
 
