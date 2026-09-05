@@ -23,12 +23,14 @@ class R2C_Settings_Page {
 	const APP_URL = 'https://admin.r2c.biz/copilot-preview';
 
 	/**
-	 * page_id_to_path_map()のリクエスト単位メモ化。enqueue_assets()
-	 * (admin_enqueue_scripts)とrender_excluded_pages_section()(render()内)
-	 * が同一の設定画面リクエストで両方これを呼ぶため、get_posts()が
-	 * 2回走らないようにする。テストはtearDown()でnullに戻すこと
-	 * (PHPUnitは既定で全テストを同一プロセス内で実行するため、staticな
-	 * 値はテストをまたいで残ってしまう)。
+	 * Per-request memoization of page_id_to_path_map(). enqueue_assets()
+	 * (admin_enqueue_scripts) and render_excluded_pages_section() (inside
+	 * render()) both call it on the same settings-page request, so this
+	 * keeps get_posts() from running twice. Tests must reset it to null in
+	 * tearDown() — PHPUnit runs every test in one PHP process by default,
+	 * so a static value would otherwise leak across tests.
+	 *
+	 * @var array<int,string>|null
 	 */
 	private static $page_id_to_path_map_cache = null;
 
