@@ -9,8 +9,19 @@ const ADMIN_PASS = 'password';
 
 const SETTINGS_URL = '/wp-admin/options-general.php?page=r2c-ai-concierge';
 
+/**
+ * Idempotent: WordPress auto-redirects an already-authenticated session
+ * straight from wp-login.php to wp-admin without showing the login form at
+ * all, so a second call in the same browser context (e.g.
+ * setPermalinkStructure() calling this from both a test.beforeEach() and
+ * that same test's later loginAsAdmin()) must not assume the form fields
+ * are present.
+ */
 async function loginAsAdmin( page, baseURL ) {
 	await page.goto( `${ baseURL }/wp-login.php` );
+	if ( /\/wp-admin\//.test( page.url() ) ) {
+		return;
+	}
 	await page.fill( '#user_login', ADMIN_USER );
 	await page.fill( '#user_pass', ADMIN_PASS );
 	await page.click( '#wp-submit' );
@@ -97,9 +108,18 @@ async function connectViaManualKey( page, baseURL, apiKey ) {
  * against (see excluded-pages-quick-add.spec.js). `value` attributes for
  * WordPress core's built-in permalink presets are stable across versions,
  * unlike the radio inputs' element ids.
+ *
+ * Logs in itself rather than assuming the caller already did — every
+ * Playwright test gets a fresh, unauthenticated browser context, and this
+ * is called from test.beforeEach()/afterEach() hooks that run before a
+ * test body's own loginAsAdmin() call. Navigating to options-permalink.php
+ * while logged out silently lands on wp-login.php instead, where the
+ * selection radios don't exist — that (not a selector mismatch) is what
+ * actually caused this to hang for a full 30s the first time around.
  */
 async function setPermalinkStructure( page, baseURL, structure ) {
 	const value = 'pretty' === structure ? '/%postname%/' : '';
+	await loginAsAdmin( page, baseURL );
 	await page.goto( `${ baseURL }/wp-admin/options-permalink.php` );
 	await page.check( `input[name="selection"][value="${ value }"]` );
 	await Promise.all( [
