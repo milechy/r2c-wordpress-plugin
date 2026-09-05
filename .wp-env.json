@@ -1,0 +1,13 @@
+{
+	"mappings": {
+		"wp-content/plugins/r2c-ai-concierge": ".",
+		"wp-content/mu-plugins/r2c-mock-api.php": "./tests-e2e/mu-plugins/r2c-mock-api.php",
+		"wp-content/mu-plugins/r2c-api-base-override.php": "./tests-e2e/mu-plugins/r2c-api-base-override.php"
+	},
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true,
+		"WP_DEBUG_DISPLAY": false,
+		"WP_ACCESSIBLE_HOSTS": "localhost,127.0.0.1"
+	}
+}

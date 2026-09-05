@@ -1,0 +1,17 @@
+{
+	"name": "r2c-ai-concierge-e2e",
+	"private": true,
+	"description": "Playwright E2E tests for the R2C WordPress plugin (wp-env + a mocked R2C API — see tests-e2e/README.md). Dev-only, not part of the distributed plugin.",
+	"scripts": {
+		"wp-env": "wp-env",
+		"e2e:start": "wp-env start && wp-env run cli wp plugin activate r2c-ai-concierge",
+		"e2e:stop": "wp-env stop",
+		"e2e:destroy": "wp-env destroy",
+		"e2e": "playwright test",
+		"e2e:ci": "npm run e2e:start && npm run e2e"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.47.0",
+		"@wordpress/env": "^10.10.0"
+	}
+}

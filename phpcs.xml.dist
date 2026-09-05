@@ -11,6 +11,10 @@
 	     class-r2c-*.php-file convention WordPress.Files.FileName checks
 	     for — they ship in the repo but not in the distributed plugin. -->
 	<exclude-pattern>/tests/*</exclude-pattern>
+	<!-- Playwright/wp-env E2E fixtures (tests-e2e/README.md) — a mock API
+	     mu-plugin that only ever runs inside a throwaway wp-env container,
+	     never shipped in the distributed plugin (.distignore). -->
+	<exclude-pattern>/tests-e2e/*</exclude-pattern>
 
 	<arg value="sp"/>
 	<arg name="basepath" value="."/>

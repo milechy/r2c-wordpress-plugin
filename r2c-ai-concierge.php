@@ -39,7 +39,17 @@ define( 'R2C_AI_CONCIERGE_URL', plugin_dir_url( __FILE__ ) );
 // api.r2c.biz is the only host this plugin will ever talk to (WP-1/2/3/13,
 // commerce-faq-tasks). Keeping it as a single constant means there is one
 // place to audit for "which external service does this plugin call".
-define( 'R2C_AI_CONCIERGE_API_BASE', 'https://api.r2c.biz' );
+//
+// The `if ( ! defined() )` guard is a standard WP convention allowing a
+// must-use plugin (which loads first) to pre-define this — used only by
+// tests-e2e/mu-plugins/r2c-api-base-override.php in the wp-env E2E
+// environment to point at the local mock API instead of the real one
+// (see tests-e2e/README.md). Never present in a real install: nothing
+// outside this test fixture defines this constant, so production behavior
+// is unchanged.
+if ( ! defined( 'R2C_AI_CONCIERGE_API_BASE' ) ) {
+	define( 'R2C_AI_CONCIERGE_API_BASE', 'https://api.r2c.biz' );
+}
 
 // UI strings ship in English; Japanese (the primary market per the
 // requirements doc) is provided via languages/r2c-ai-concierge-ja.mo (see
