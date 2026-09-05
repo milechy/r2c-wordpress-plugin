@@ -88,11 +88,32 @@ async function connectViaManualKey( page, baseURL, apiKey ) {
 	await page.waitForSelector( '#r2c-disconnect-button' );
 }
 
+/**
+ * This wp-env install defaults to WordPress's own "Plain" permalink
+ * structure (value=""), under which get_permalink()/
+ * get_post_type_archive_link() fall back to `?page_id=`/`?post_type=`
+ * query strings — the condition class-r2c-settings-page.php's
+ * page_id_to_path_map()/excludable_post_type_patterns() specifically guard
+ * against (see excluded-pages-quick-add.spec.js). `value` attributes for
+ * WordPress core's built-in permalink presets are stable across versions,
+ * unlike the radio inputs' element ids.
+ */
+async function setPermalinkStructure( page, baseURL, structure ) {
+	const value = 'pretty' === structure ? '/%postname%/' : '';
+	await page.goto( `${ baseURL }/wp-admin/options-permalink.php` );
+	await page.check( `input[name="selection"][value="${ value }"]` );
+	await Promise.all( [
+		page.waitForNavigation(),
+		page.click( '#submit' ),
+	] );
+}
+
 module.exports = {
 	loginAsAdmin,
 	gotoSettings,
 	resetMock,
 	configureMock,
 	connectViaManualKey,
+	setPermalinkStructure,
 	SETTINGS_URL,
 };

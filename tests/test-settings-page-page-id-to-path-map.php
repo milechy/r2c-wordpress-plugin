@@ -1,17 +1,24 @@
 <?php
 /**
- * R2C_Settings_Page::page_id_to_path_map() — the lookup table behind the
- * "Add a specific page" quick-add button (FR-10). It has no test anywhere,
- * unit or E2E: the E2E suite's WordPress install never registers a second
- * page beyond the default "Sample Page", and no spec exercises this button.
+ * R2C_Settings_Page::page_id_to_path_map() / excludable_post_type_patterns()
+ * — the lookup tables behind the "Add a specific page" / "Add a post type"
+ * quick-add buttons (FR-10).
  *
- * This file exists specifically to pin down a suspected bug found while
- * reading the code rather than filling an arbitrary gap: get_permalink()
- * for a page falls back to `?page_id={id}` whenever the site's permalink
- * structure is "Plain" (WordPress core's own get_page_link(), not anything
- * this plugin controls) — and wp_parse_url( ..., PHP_URL_PATH ) on that URL
- * returns just "/", not a path that identifies the page. See the second
- * test below for the consequence.
+ * ★Regression guard for a real bug found while writing this suite★
+ * get_permalink()/get_post_type_archive_link() fall back to a
+ * `?page_id={id}` / `?post_type={name}` query string whenever the site's
+ * permalink structure is "Plain" — the state every fresh WordPress install
+ * starts in, before an admin ever visits Settings → Permalinks. Under that
+ * fallback, wp_parse_url( ..., PHP_URL_PATH ) returns just "/" for every
+ * single page and post type — indistinguishable from one another. Before
+ * the fix, that "/" (or "/*" for post types) was used as the exclusion
+ * pattern regardless of which page/post type was actually picked, so
+ * clicking "Add" for ANY page on such a site would hide the widget from
+ * the entire site, not the one page selected. Both helpers now skip any
+ * entry whose only resolvable path is "/", and
+ * render_excluded_pages_section() (see the E2E suite's
+ * excluded-pages-quick-add.spec.js) shows an explanatory note instead of
+ * the pickers when nothing is left to offer.
  */
 
 namespace R2C\Tests;
@@ -74,24 +81,7 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 		);
 	}
 
-	/**
-	 * ★Known bug, pinned rather than silently accepted★ On a site still
-	 * using WordPress's default "Plain" permalink structure (the state
-	 * every fresh WP install starts in, before an admin visits
-	 * Settings → Permalinks and picks something else), get_permalink() for
-	 * *every* page returns `?page_id={id}` — a query string, not a path.
-	 * wp_parse_url( ..., PHP_URL_PATH ) on that URL returns "/" for every
-	 * single page, so page_id_to_path_map() maps every page to the same "/"
-	 * entry. Clicking "Add a specific page" for ANY page on such a site
-	 * appends the pattern "/" to the excluded-pages textarea — which, once
-	 * saved, would hide the widget from the entire site rather than the one
-	 * page the admin selected. This is a real, reachable bug in the FR-10
-	 * quick-add helper, not a hypothetical: "Plain" is WordPress's own
-	 * out-of-the-box default. See the accompanying risk report for the
-	 * recommended fix (fall back to the page's slug, or refuse to add a
-	 * pattern that doesn't distinguish the page from the site root).
-	 */
-	public function test_plain_permalinks_collapse_every_page_to_the_same_root_pattern() {
+	public function test_plain_permalinks_yield_no_page_entries_rather_than_a_colliding_root_pattern() {
 		Functions\when( 'get_posts' )->justReturn( array( 5, 7 ) );
 		Functions\when( 'get_permalink' )->alias(
 			function ( $id ) {
@@ -99,19 +89,10 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 			}
 		);
 
-		$map = $this->call_page_id_to_path_map();
-
-		$this->assertSame(
-			array(
-				5 => '/',
-				7 => '/',
-			),
-			$map,
-			'This assertion documents the current (buggy) behaviour under Plain permalinks — see the doc comment above.'
-		);
+		$this->assertSame( array(), $this->call_page_id_to_path_map() );
 	}
 
-	/* ---- excludable_post_type_patterns(): same root cause, worse pattern ---- */
+	/* ---- excludable_post_type_patterns(): same root cause ---- */
 
 	private function call_excludable_post_type_patterns() {
 		$ref = new ReflectionMethod( '\R2C_Settings_Page', 'excludable_post_type_patterns' );
@@ -120,10 +101,10 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 	}
 
 	private function stub_one_public_post_type( $name, $label, $archive_link ) {
-		$post_type_object                = new \stdClass();
-		$post_type_object->name          = $name;
-		$post_type_object->labels        = new \stdClass();
-		$post_type_object->labels->name  = $label;
+		$post_type_object               = new \stdClass();
+		$post_type_object->name         = $name;
+		$post_type_object->labels       = new \stdClass();
+		$post_type_object->labels->name = $label;
 
 		Functions\when( 'get_post_types' )->justReturn( array( $name => $post_type_object ) );
 		Functions\when( 'get_post_type_archive_link' )->justReturn( $archive_link );
@@ -137,24 +118,9 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 		$this->assertSame( array( '/shop/*' => 'Products' ), $patterns );
 	}
 
-	/**
-	 * ★Same root cause as page_id_to_path_map(), worse result★ Under Plain
-	 * permalinks, get_post_type_archive_link() also falls back to a query
-	 * string (`?post_type=xxx`), so wp_parse_url PHP_URL_PATH again returns
-	 * "/". Here that becomes the pattern "/*" (untrailingslashit('/') is ''
-	 * , then '/*' is appended) — a wildcard that plausibly matches every
-	 * path on the site, not just this post type's archive. Pinned for the
-	 * same reason as the page-picker test above.
-	 */
-	public function test_plain_permalinks_produce_a_site_wide_wildcard_pattern() {
+	public function test_plain_permalinks_yield_no_post_type_entries_rather_than_a_site_wide_wildcard() {
 		$this->stub_one_public_post_type( 'product', 'Products', 'https://site.example/?post_type=product' );
 
-		$patterns = $this->call_excludable_post_type_patterns();
-
-		$this->assertSame(
-			array( '/*' => 'Products' ),
-			$patterns,
-			'This assertion documents the current (buggy) behaviour under Plain permalinks — see the doc comment above.'
-		);
+		$this->assertSame( array(), $this->call_excludable_post_type_patterns() );
 	}
 }
