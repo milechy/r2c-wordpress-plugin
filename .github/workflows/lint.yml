@@ -101,22 +101,26 @@ jobs:
       - name: Sanity-check the mock API directly
         run: |
           set -x
-          # 前回、CIランナーからhttp://localhost(ポート80)へcurlしてもHTTP_STATUS:000
-          # (接続不可)になった — 当然で、ランナー自身のポート80には何も無い。
-          # wp_remote_request()が実際に発行するのはコンテナ*内部*からのリクエストの
-          # ため、ランナーから叩いても正しい疎通確認にならない。wp evalで
-          # wp_remote_request()自体をコンテナ内部から直接呼び、生の結果を見る。
-          npx wp-env run cli wp eval '
-            $base = R2C_AI_CONCIERGE_API_BASE;
-            echo "BASE: " . $base . PHP_EOL;
-            $r = wp_remote_request( $base . "/__test__/reset", array( "method" => "POST", "timeout" => 10 ) );
-            if ( is_wp_error( $r ) ) {
-              echo "WP_ERROR: " . $r->get_error_message() . PHP_EOL;
-            } else {
-              echo "STATUS: " . wp_remote_retrieve_response_code( $r ) . PHP_EOL;
-              echo "BODY: " . wp_remote_retrieve_body( $r ) . PHP_EOL;
-            }
-          '
+          # 前回判明: wp-env run cli の "cli" は、実際にリクエストを処理する
+          # "wordpress" コンテナとは *別のコンテナ*(docker-composeの別サービス)。
+          # "cli"から見たlocalhost:80は自分自身であり、wordpressコンテナの
+          # webサーバーではない(cURL error 7で確定)。実際にR2C_Api_Client::request()
+          # が実行されるのはブラウザ/admin-ajax.php経由の"wordpress"コンテナ内なので、
+          # そちらから直接(wp-cliは無いため素のPHPソケットで、プラグインの
+          # マウント先経由でファイルを持ち込んで)疎通確認する。
+          cat > /tmp/sockcheck.php <<'PHP'
+          <?php
+          $fp = @fsockopen( 'localhost', 80, $errno, $errstr, 3 );
+          if ( $fp ) {
+            echo "CONNECT_OK to localhost:80" . PHP_EOL;
+            fclose( $fp );
+          } else {
+            echo "CONNECT_FAILED to localhost:80 - $errno $errstr" . PHP_EOL;
+          }
+          PHP
+          cp /tmp/sockcheck.php sockcheck.php
+          npx wp-env run wordpress php /var/www/html/wp-content/plugins/r2c-ai-concierge/sockcheck.php
+          rm sockcheck.php
 
       - name: Run Playwright E2E tests
         run: npm run e2e
