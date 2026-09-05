@@ -30,3 +30,19 @@ test( 'an unrecognized manual key is rejected with an inline error', async ( { p
 	// Must not have connected.
 	await expect( page.locator( '#r2c-disconnect-button' ) ).toHaveCount( 0 );
 } );
+
+// #r2c-manual-key has no `required` attribute (unlike the connect form's
+// email/consent) — a user can submit this form completely blank with no
+// browser-side gate at all. The server-side empty-key check is the only
+// thing standing between that click and a wasted round trip.
+test( 'submitting the manual key form with an empty field is rejected without connecting', async ( { page, baseURL } ) => {
+	await resetMock( baseURL );
+	await loginAsAdmin( page, baseURL );
+	await gotoSettings( page, baseURL );
+
+	await page.click( 'summary' );
+	await page.click( '#r2c-manual-button' );
+
+	await expect( page.locator( '#r2c-manual-status' ) ).toContainText( 'Please enter an API key' );
+	await expect( page.locator( '#r2c-disconnect-button' ) ).toHaveCount( 0 );
+} );

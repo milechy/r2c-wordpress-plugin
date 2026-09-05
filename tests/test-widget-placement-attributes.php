@@ -112,4 +112,45 @@ class WidgetPlacementAttributesTest extends TestCase {
 
 		$this->assertSame( '', $output );
 	}
+
+	/**
+	 * An API key can exist locally (is_connected() true) while tenant_id is
+	 * somehow empty — e.g. a partially-completed manual connection, or a
+	 * corrupted option row. render() must still emit nothing rather than a
+	 * script tag with an empty/garbage tenant id in its URL.
+	 */
+	public function test_renders_nothing_when_connected_but_tenant_id_is_empty() {
+		Functions\when( 'get_option' )->alias(
+			function ( $name, $default = false ) {
+				if ( \R2C_Options::API_KEY === $name ) {
+					return 'connected-key';
+				}
+				if ( \R2C_Options::TENANT_ID === $name ) {
+					return '';
+				}
+				return $default;
+			}
+		);
+
+		ob_start();
+		\R2C_Widget::render();
+		$output = ob_get_clean();
+
+		$this->assertSame( '', $output );
+	}
+
+	public function test_renders_nothing_in_wp_admin_even_when_connected() {
+		Functions\when( 'is_admin' )->justReturn( true );
+		$this->stub_options(
+			array(
+				'position' => 'bottom-left',
+			)
+		);
+
+		ob_start();
+		\R2C_Widget::render();
+		$output = ob_get_clean();
+
+		$this->assertSame( '', $output );
+	}
 }
