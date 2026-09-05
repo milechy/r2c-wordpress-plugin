@@ -52,8 +52,7 @@ class R2C_Ajax {
 		if ( ! isset( $_POST[ $key ] ) || ! is_string( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- every caller reaches this only after guard() has verified the nonce.
 			return '';
 		}
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- deliberately returns the raw unslashed value; every call site applies the sanitizer appropriate to that specific field (sanitize_email, sanitize_hex_color, sanitize_text_field, ...).
-		return wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- deliberately returns the raw unslashed value; every call site applies the sanitizer appropriate to that specific field (sanitize_email, sanitize_hex_color, sanitize_text_field, ...).
 	}
 
 	/* 接続開始 */
