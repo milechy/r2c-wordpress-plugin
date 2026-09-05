@@ -207,6 +207,8 @@ class R2C_Mock_Api {
 		}
 
 		$api_key = $req->get_header( 'x-api-key' );
+		// TEMP DEBUG(WP-11 E2E調査中、原因特定後に削除)
+		error_log( '[R2C_MOCK_DEBUG] get_settings header=' . var_export( $api_key, true ) . ' active_api_keys=' . var_export( $state['active_api_keys'], true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		if ( ! in_array( $api_key, $state['active_api_keys'], true ) ) {
 			return new WP_REST_Response( array( 'error' => 'invalid_api_key' ), 401 );
 		}
@@ -270,6 +272,8 @@ class R2C_Mock_Api {
 	public static function handle_test_configure( WP_REST_Request $req ) {
 		$state = self::get_state();
 		$body  = $req->get_json_params();
+		// TEMP DEBUG(WP-11 E2E調査中、原因特定後に削除)
+		error_log( '[R2C_MOCK_DEBUG] configure raw_body=' . $req->get_body() . ' parsed=' . var_export( $body, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		if ( ! is_array( $body ) ) {
 			return new WP_REST_Response( array( 'error' => 'invalid_body' ), 400 );
 		}
@@ -287,6 +291,8 @@ class R2C_Mock_Api {
 		}
 
 		self::save_state( $state );
+		// TEMP DEBUG(WP-11 E2E調査中、原因特定後に削除)
+		error_log( '[R2C_MOCK_DEBUG] configure saved active_api_keys=' . var_export( $state['active_api_keys'], true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		return new WP_REST_Response( array( 'ok' => true, 'state' => $state ), 200 );
 	}
 }
