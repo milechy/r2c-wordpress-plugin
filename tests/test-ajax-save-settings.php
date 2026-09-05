@@ -135,4 +135,27 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 
 		$this->assertArrayNotHasKey( 'excluded_page_patterns', $captured );
 	}
+
+	/**
+	 * A line containing only spaces/tabs is not the same as a truly blank
+	 * line to a careless split-and-filter — trim() must run before the
+	 * strlen() emptiness check, or whitespace-only lines would survive as
+	 * bogus "patterns" R2C then has to reject or (worse) silently match
+	 * everything with.
+	 */
+	public function test_whitespace_only_lines_are_dropped_like_blank_lines() {
+		$captured = array();
+		$this->captureRemoteRequestBody( $captured );
+
+		$_POST['excluded_page_patterns'] = "/cart\n   \n\t\n/checkout/*";
+
+		try {
+			\R2C_Ajax::handle_save_settings();
+			$this->fail( 'expected wp_send_json_success to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertTrue( $e->success );
+		}
+
+		$this->assertSame( array( '/cart', '/checkout/*' ), $captured['excluded_page_patterns'] );
+	}
 }

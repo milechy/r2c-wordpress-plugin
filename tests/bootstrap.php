@@ -69,10 +69,18 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 class R2CTestJsonExit extends \Exception {
 	public $success;
 	public $data;
+	public $status_code;
 
-	public function __construct( $success, $data ) {
+	/**
+	 * $status_code is optional (defaults null) so existing 2-arg call sites
+	 * that stub wp_send_json_error()/wp_send_json_success() with a
+	 * single-param closure keep working unchanged — PHP silently drops the
+	 * extra argument those closures never declared.
+	 */
+	public function __construct( $success, $data, $status_code = null ) {
 		parent::__construct( 'wp_send_json_' . ( $success ? 'success' : 'error' ) );
-		$this->success = $success;
-		$this->data    = $data;
+		$this->success     = $success;
+		$this->data        = $data;
+		$this->status_code = $status_code;
 	}
 }
