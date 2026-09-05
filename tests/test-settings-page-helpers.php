@@ -37,6 +37,12 @@ class SettingsPageHelpersTest extends TestCase {
 
 	protected function tearDown(): void {
 		Monkey\tearDown();
+		// page_id_to_path_map() memoizes into a private static property
+		// (see test-settings-page-page-id-to-path-map.php's tearDown for
+		// why this must be reset between tests in the same PHP process).
+		$ref = new \ReflectionProperty( '\R2C_Settings_Page', 'page_id_to_path_map_cache' );
+		$ref->setAccessible( true );
+		$ref->setValue( null, null );
 		parent::tearDown();
 	}
 
@@ -165,9 +171,13 @@ class SettingsPageHelpersTest extends TestCase {
 		Functions\when( 'esc_textarea' )->returnArg( 1 );
 		Functions\when( 'admin_url' )->returnArg( 1 );
 
-		// Both lookups empty: no post types, no pages.
+		// Both lookups empty: no post types, no pages. Plain permalinks
+		// ('' === permalink_structure) so the Plain-specific note applies —
+		// see the sibling test below for the "genuinely nothing to offer,
+		// pretty permalinks already on" case.
 		Functions\when( 'get_post_types' )->justReturn( array() );
 		Functions\when( 'get_posts' )->justReturn( array() );
+		Functions\when( 'get_option' )->justReturn( '' );
 
 		Functions\expect( 'wp_dropdown_pages' )->never();
 
@@ -178,5 +188,40 @@ class SettingsPageHelpersTest extends TestCase {
 		$this->assertStringNotContainsString( 'r2c-excluded-post-type-add', $output );
 		$this->assertStringNotContainsString( 'r2c-excluded-page-picker', $output );
 		$this->assertStringContainsString( 'pretty', $output );
+	}
+
+	/**
+	 * The bug this fix corrects: both lookups can also come back empty on a
+	 * site that already has pretty permalinks on, simply because it has no
+	 * pages and no post-type archives yet — a completely different cause
+	 * from Plain permalinks. Showing "this site is using Plain permalinks"
+	 * in that case would be actively wrong, not just unhelpful.
+	 */
+	public function test_render_excluded_pages_section_shows_a_generic_note_when_pretty_permalinks_are_already_on() {
+		Functions\when( 'esc_html_e' )->alias(
+			function ( $text ) {
+				echo $text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- test-only stand-in.
+			}
+		);
+		Functions\when( 'esc_html__' )->returnArg( 1 );
+		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'esc_html' )->returnArg( 1 );
+		Functions\when( 'esc_attr' )->returnArg( 1 );
+		Functions\when( 'esc_url' )->returnArg( 1 );
+		Functions\when( 'esc_textarea' )->returnArg( 1 );
+		Functions\when( 'admin_url' )->returnArg( 1 );
+
+		Functions\when( 'get_post_types' )->justReturn( array() );
+		Functions\when( 'get_posts' )->justReturn( array() );
+		Functions\when( 'get_option' )->justReturn( '/%postname%/' );
+
+		Functions\expect( 'wp_dropdown_pages' )->never();
+
+		ob_start();
+		$this->call_private_static( 'render_excluded_pages_section', array( array() ) );
+		$output = ob_get_clean();
+
+		$this->assertStringNotContainsString( 'Plain', $output );
+		$this->assertStringContainsString( 'no pages or post type archives', $output );
 	}
 }
