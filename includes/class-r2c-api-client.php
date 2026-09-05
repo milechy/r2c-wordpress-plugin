@@ -108,7 +108,15 @@ class R2C_Api_Client {
 			$args['body']                    = wp_json_encode( $body );
 		}
 
-		$response = wp_remote_request( R2C_AI_CONCIERGE_API_BASE . $path, $args );
+		$url      = R2C_AI_CONCIERGE_API_BASE . $path;
+		$response = wp_remote_request( $url, $args );
+
+		// TEMP DEBUG(WP-11 E2E調査中、原因特定後に削除): CIのwp-content/debug.log
+		// へ生の結果を出す。resetMock/configureMockで正しくx-api-keyヘッダ付き
+		// のGET/PATCHが飛んでいるか、レスポンスの中身が何かを直接見る。
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[R2C_DEBUG] request ' . $method . ' ' . $url . ' -> ' . ( is_wp_error( $response ) ? 'WP_ERROR: ' . $response->get_error_message() : 'status=' . wp_remote_retrieve_response_code( $response ) . ' body=' . wp_remote_retrieve_body( $response ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
 
 		if ( is_wp_error( $response ) ) {
 			return array(
