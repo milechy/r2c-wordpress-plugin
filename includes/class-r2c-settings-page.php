@@ -304,35 +304,54 @@ class R2C_Settings_Page {
 	 * 1本のまま(FR-21のローカル権威化を避ける設計と同じく、経路を増やさない)。
 	 */
 	private static function render_excluded_pages_section( $patterns ) {
+		$post_type_patterns = self::excludable_post_type_patterns();
+		$page_map           = self::page_id_to_path_map();
 		?>
 		<h2><?php esc_html_e( 'Pages to hide the widget on', 'r2c-ai-concierge' ); ?></h2>
 		<p class="description"><?php esc_html_e( 'One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*).', 'r2c-ai-concierge' ); ?></p>
 		<p>
 			<textarea id="r2c-excluded-patterns" name="excluded_page_patterns" rows="4" class="large-text code"><?php echo esc_textarea( implode( "\n", $patterns ) ); ?></textarea>
 		</p>
-		<p>
-			<label for="r2c-excluded-post-type"><?php esc_html_e( 'Add a post type:', 'r2c-ai-concierge' ); ?></label>
-			<select id="r2c-excluded-post-type">
-				<option value=""><?php esc_html_e( 'Please choose', 'r2c-ai-concierge' ); ?></option>
-				<?php foreach ( self::excludable_post_type_patterns() as $pattern => $label ) : ?>
-					<option value="<?php echo esc_attr( $pattern ); ?>"><?php echo esc_html( $label ); ?></option>
-				<?php endforeach; ?>
-			</select>
-			<button type="button" class="button" id="r2c-excluded-post-type-add"><?php esc_html_e( 'Add', 'r2c-ai-concierge' ); ?></button>
-		</p>
-		<p>
-			<label for="r2c-excluded-page-picker"><?php esc_html_e( 'Add a specific page:', 'r2c-ai-concierge' ); ?></label>
-			<?php
-			wp_dropdown_pages(
-				array(
-					'id'                => 'r2c-excluded-page-picker',
-					'show_option_none'  => esc_html__( 'Please choose', 'r2c-ai-concierge' ),
-					'option_none_value' => '',
-				)
-			);
-			?>
-			<button type="button" class="button" id="r2c-excluded-page-add"><?php esc_html_e( 'Add', 'r2c-ai-concierge' ); ?></button>
-		</p>
+		<?php if ( empty( $post_type_patterns ) && empty( $page_map ) ) : ?>
+			<p class="description">
+				<?php
+				printf(
+					/* translators: %s: link to the Permalinks settings screen */
+					esc_html__( 'Adding a specific page or post type here requires a "pretty" permalink structure — this site is currently using the default "Plain" one, under which every page and post type archive resolves to the same URL and can\'t be told apart. You can enable pretty permalinks on the %s screen, or type a pattern directly into the box above.', 'r2c-ai-concierge' ),
+					'<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Permalinks settings', 'r2c-ai-concierge' ) . '</a>'
+				);
+				?>
+			</p>
+		<?php else : ?>
+			<p>
+				<label for="r2c-excluded-post-type"><?php esc_html_e( 'Add a post type:', 'r2c-ai-concierge' ); ?></label>
+				<select id="r2c-excluded-post-type">
+					<option value=""><?php esc_html_e( 'Please choose', 'r2c-ai-concierge' ); ?></option>
+					<?php foreach ( $post_type_patterns as $pattern => $label ) : ?>
+						<option value="<?php echo esc_attr( $pattern ); ?>"><?php echo esc_html( $label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<button type="button" class="button" id="r2c-excluded-post-type-add"><?php esc_html_e( 'Add', 'r2c-ai-concierge' ); ?></button>
+			</p>
+			<p>
+				<label for="r2c-excluded-page-picker"><?php esc_html_e( 'Add a specific page:', 'r2c-ai-concierge' ); ?></label>
+				<?php
+				wp_dropdown_pages(
+					array(
+						'id'                => 'r2c-excluded-page-picker',
+						'show_option_none'  => esc_html__( 'Please choose', 'r2c-ai-concierge' ),
+						'option_none_value' => '',
+						// Keep this dropdown's options exactly in sync with $page_map
+						// (JS looks values up in r2cAdmin.pagePaths, built from that
+						// same map) — a page absent from the map has no path R2C's
+						// exclusion matching could distinguish from any other page.
+						'include'           => implode( ',', array_map( 'absint', array_keys( $page_map ) ) ),
+					)
+				);
+				?>
+				<button type="button" class="button" id="r2c-excluded-page-add"><?php esc_html_e( 'Add', 'r2c-ai-concierge' ); ?></button>
+			</p>
+		<?php endif; ?>
 		<?php
 	}
 
@@ -340,6 +359,14 @@ class R2C_Settings_Page {
 	 * パターン値(例: /blog/*)をキーにした投稿タイプ一覧。値はそのまま
 	 * excluded_page_patterns に入る文字列 — 選ばせる時点でR2C側の形式
 	 * (/から始まる、200文字以内)に合わせておき、保存時に別変換をしない。
+	 *
+	 * ★"Plain"パーマリンク構造への防御★ この構造の下では
+	 * get_post_type_archive_link() が `?post_type=xxx` のクエリ文字列に
+	 * フォールバックし、そこから取り出せるパスは常に「/」になる —
+	 * つまりどの投稿タイプを選んでも区別が付かない。そのまま
+	 * untrailingslashit('/') . '/*' = '/*' を返すと、選んだ投稿タイプ
+	 * ではなくサイト全体を除外するパターンになってしまうため、
+	 * パスが「/」しか取れない投稿タイプはこの一覧から除外する。
 	 */
 	private static function excludable_post_type_patterns() {
 		$patterns = array();
@@ -352,7 +379,7 @@ class R2C_Settings_Page {
 				continue;
 			}
 			$path = wp_parse_url( $archive_link, PHP_URL_PATH );
-			if ( ! $path ) {
+			if ( ! $path || '/' === $path ) {
 				continue;
 			}
 			$pattern              = untrailingslashit( $path ) . '/*';
@@ -366,6 +393,13 @@ class R2C_Settings_Page {
 	 * IDからパターン文字列を引くための対応表。300件で打ち切る — 大規模サイト
 	 * でも管理画面の1リクエストを肥大化させすぎない実用上の上限(WP標準の
 	 * wp_dropdown_pages自体には上限が無いため、対応表側で線引きする)。
+	 *
+	 * ★"Plain"パーマリンク構造への防御★ excludable_post_type_patterns()の
+	 * コメントと同じ理由で、get_permalink()が`?page_id=xxx`にフォールバック
+	 * する環境ではどのページも同じ「/」にしかならない。「/」しか取れない
+	 * ページはこの対応表から外し、選んだ1ページではなくサイト全体を除外
+	 * するパターンが追加されるのを防ぐ(render_excluded_pages_sectionが
+	 * この対応表を見てページ選択UI自体を出すかどうかを決める)。
 	 */
 	private static function page_id_to_path_map() {
 		$page_ids = get_posts(
@@ -383,7 +417,7 @@ class R2C_Settings_Page {
 		$map = array();
 		foreach ( $page_ids as $page_id ) {
 			$path = wp_parse_url( get_permalink( $page_id ), PHP_URL_PATH );
-			if ( $path ) {
+			if ( $path && '/' !== $path ) {
 				$map[ $page_id ] = $path;
 			}
 		}

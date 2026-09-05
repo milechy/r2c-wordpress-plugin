@@ -9,8 +9,19 @@ const ADMIN_PASS = 'password';
 
 const SETTINGS_URL = '/wp-admin/options-general.php?page=r2c-ai-concierge';
 
+/**
+ * Idempotent: WordPress auto-redirects an already-authenticated session
+ * straight from wp-login.php to wp-admin without showing the login form at
+ * all, so a second call in the same browser context (e.g.
+ * setPermalinkStructure() calling this from both a test.beforeEach() and
+ * that same test's later loginAsAdmin()) must not assume the form fields
+ * are present.
+ */
 async function loginAsAdmin( page, baseURL ) {
 	await page.goto( `${ baseURL }/wp-login.php` );
+	if ( /\/wp-admin\//.test( page.url() ) ) {
+		return;
+	}
 	await page.fill( '#user_login', ADMIN_USER );
 	await page.fill( '#user_pass', ADMIN_PASS );
 	await page.click( '#wp-submit' );
@@ -87,6 +98,19 @@ async function connectViaManualKey( page, baseURL, apiKey ) {
 	// render_connected() always shows this once R2C_Options::is_connected() is true.
 	await page.waitForSelector( '#r2c-disconnect-button' );
 }
+
+// A setPermalinkStructure() helper (switching this wp-env install's live
+// permalink structure to "pretty" via wp-admin, to E2E-test the positive
+// path of the class-r2c-settings-page.php fix) was tried here and removed.
+// Doing so reproducibly triggers a WordPress-core-level fatal in this
+// container on every request afterwards ("Call to a member function
+// using_index_permalinks() on null" in wp-includes/rest-api.php) — the
+// same class of rewrite-rule fragility this container already has (see
+// tests-e2e/README.md's note on why .wp-env.json pins no phpVersion), not
+// a bug in this plugin. The positive path is covered instead by
+// tests/test-settings-page-page-id-to-path-map.php and
+// tests/test-settings-page-helpers.php, which don't depend on this
+// container's rewrite support.
 
 module.exports = {
 	loginAsAdmin,

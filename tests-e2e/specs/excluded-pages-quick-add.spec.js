@@ -1,76 +1,41 @@
 // @ts-check
 const { test, expect } = require( '@playwright/test' );
-const {
-	loginAsAdmin,
-	gotoSettings,
-	resetMock,
-	connectViaManualKey,
-} = require( '../helpers/wp-admin' );
+const { loginAsAdmin, connectViaManualKey, resetMock } = require( '../helpers/wp-admin' );
 
-// FR-10's "Add a specific page" quick-add button (assets/js/admin-settings.js
-// initExcludedPagesHelpers/appendExcludedPattern) has no coverage anywhere
-// else — every other spec only edits #r2c-excluded-patterns directly.
-test.describe( 'excluded pages: "Add a specific page" quick-add', () => {
-	test( 'adding the default Sample Page appends a pattern to the textarea', async ( { page, baseURL } ) => {
-		await resetMock( baseURL, { seed_api_key: 'mock_quickadd_key' } );
-		await loginAsAdmin( page, baseURL );
-		await connectViaManualKey( page, baseURL, 'mock_quickadd_key' );
+// FR-10's "Add a specific page" / "Add a post type" quick-add buttons
+// (assets/js/admin-settings.js initExcludedPagesHelpers/appendExcludedPattern)
+// had no coverage anywhere else — every other spec only edits
+// #r2c-excluded-patterns directly.
+//
+// This install defaults to WordPress's own "Plain" permalink structure.
+// Under Plain, get_permalink()/get_post_type_archive_link() fall back to
+// `?page_id=`/`?post_type=` query strings, and every single page/post type
+// resolves to the exact same "/" path — page_id_to_path_map() and
+// excludable_post_type_patterns() (class-r2c-settings-page.php) used to
+// turn that into the pattern "/" or "/*" regardless of which page/post
+// type was actually selected, which would exclude the entire site rather
+// than the one page picked. Both helpers now skip any entry that only
+// resolves to "/", and render_excluded_pages_section() replaces the
+// pickers with an explanatory note when nothing is left to offer.
+//
+// ★What this file does NOT test, and why★ The positive path (quick-add
+// actually working under a "pretty" permalink structure) is covered by
+// tests/test-settings-page-page-id-to-path-map.php and
+// tests/test-settings-page-helpers.php instead of here. Actually switching
+// this wp-env install's live permalink structure via wp-admin was tried
+// and reproducibly triggers a WordPress-core-level fatal in this container
+// afterwards ("Call to a member function using_index_permalinks() on null"
+// in wp-includes/rest-api.php, on every subsequent request) — the same
+// class of rewrite-rule fragility this container already has (see
+// tests-e2e/README.md's note on why .wp-env.json pins no phpVersion), not
+// a bug in this plugin. Re-attempting that switch here would make the
+// whole suite unreliable rather than testing anything about the fix.
+test( 'the post-type/page pickers are replaced by an explanatory note instead of a footgun', async ( { page, baseURL } ) => {
+	await resetMock( baseURL, { seed_api_key: 'mock_quickadd_plain_key' } );
+	await loginAsAdmin( page, baseURL );
+	await connectViaManualKey( page, baseURL, 'mock_quickadd_plain_key' );
 
-		const textarea = page.locator( '#r2c-excluded-patterns' );
-		await expect( textarea ).toHaveValue( '' );
-
-		await page.selectOption( '#r2c-excluded-page-picker', { label: 'Sample Page' } );
-		await page.click( '#r2c-excluded-page-add' );
-
-		const value = await textarea.inputValue();
-		expect( value.trim().length, 'clicking Add must append something to the textarea' ).toBeGreaterThan( 0 );
-
-		// ★Risk finding (see PR description / test-settings-page-page-id-to-path-map.php)★
-		// This WordPress install uses the default "Plain" permalink structure
-		// (confirmed during WP-11's E2E debugging). Under that structure,
-		// get_permalink() for every page falls back to `?page_id={id}`, and
-		// page_id_to_path_map() (class-r2c-settings-page.php) turns that into
-		// the path "/" for every single page — not a pattern that identifies
-		// the selected page. If this assertion ever starts failing because
-		// the value is no longer "/", that means the underlying bug was
-		// fixed (page_id_to_path_map should be made to fall back to the
-		// page's slug) — update this test to match the fixed behaviour
-		// rather than re-asserting "/".
-		expect( value.trim() ).toBe( '/' );
-	} );
-
-	test( 'adding the same page twice does not create a duplicate line', async ( { page, baseURL } ) => {
-		await resetMock( baseURL, { seed_api_key: 'mock_quickadd_dedupe_key' } );
-		await loginAsAdmin( page, baseURL );
-		await connectViaManualKey( page, baseURL, 'mock_quickadd_dedupe_key' );
-
-		await page.selectOption( '#r2c-excluded-page-picker', { label: 'Sample Page' } );
-		await page.click( '#r2c-excluded-page-add' );
-		const afterFirstAdd = await page.locator( '#r2c-excluded-patterns' ).inputValue();
-
-		await page.selectOption( '#r2c-excluded-page-picker', { label: 'Sample Page' } );
-		await page.click( '#r2c-excluded-page-add' );
-		const afterSecondAdd = await page.locator( '#r2c-excluded-patterns' ).inputValue();
-
-		expect( afterSecondAdd ).toBe( afterFirstAdd );
-		expect( afterSecondAdd.split( '\n' ).filter( ( l ) => l.trim() !== '' ) ).toHaveLength( 1 );
-	} );
-
-	test( 'a manually-typed duplicate is not re-added by the quick-add button', async ( { page, baseURL } ) => {
-		await resetMock( baseURL, { seed_api_key: 'mock_quickadd_manual_key' } );
-		await loginAsAdmin( page, baseURL );
-		await connectViaManualKey( page, baseURL, 'mock_quickadd_manual_key' );
-
-		// Pre-seed the textarea with a pattern that (under this install's
-		// Plain permalinks) is exactly what the quick-add button would also
-		// produce — plus an unrelated, distinct manual entry.
-		await page.fill( '#r2c-excluded-patterns', '/cart\n/' );
-
-		await page.selectOption( '#r2c-excluded-page-picker', { label: 'Sample Page' } );
-		await page.click( '#r2c-excluded-page-add' );
-
-		const value = await page.locator( '#r2c-excluded-patterns' ).inputValue();
-		const lines = value.split( '\n' ).filter( ( l ) => l.trim() !== '' );
-		expect( lines ).toEqual( [ '/cart', '/' ] );
-	} );
+	await expect( page.locator( '#r2c-excluded-post-type' ) ).toHaveCount( 0 );
+	await expect( page.locator( '#r2c-excluded-page-picker' ) ).toHaveCount( 0 );
+	await expect( page.locator( 'body' ) ).toContainText( 'requires a "pretty" permalink structure' );
 } );

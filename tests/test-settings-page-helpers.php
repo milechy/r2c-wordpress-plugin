@@ -141,4 +141,42 @@ class SettingsPageHelpersTest extends TestCase {
 		$this->assertStringContainsString( '&lt;script&gt;', $output );
 		$this->assertStringNotContainsString( '<img src=x onerror=alert(2)>', $output );
 	}
+
+	/* ---- render_excluded_pages_section(): Plain-permalink guard ---- */
+
+	/**
+	 * When both quick-add lookups come back empty (this install has no
+	 * pages/post types with a distinguishable path — see
+	 * test-settings-page-page-id-to-path-map.php for why that happens under
+	 * WordPress's default "Plain" permalink structure), the pickers must
+	 * not render at all — an explanatory note takes their place instead.
+	 */
+	public function test_render_excluded_pages_section_shows_a_note_instead_of_pickers_when_no_page_or_post_type_has_a_distinguishable_path() {
+		Functions\when( 'esc_html_e' )->alias(
+			function ( $text ) {
+				echo $text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- test-only stand-in.
+			}
+		);
+		Functions\when( 'esc_html__' )->returnArg( 1 );
+		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'esc_html' )->returnArg( 1 );
+		Functions\when( 'esc_attr' )->returnArg( 1 );
+		Functions\when( 'esc_url' )->returnArg( 1 );
+		Functions\when( 'esc_textarea' )->returnArg( 1 );
+		Functions\when( 'admin_url' )->returnArg( 1 );
+
+		// Both lookups empty: no post types, no pages.
+		Functions\when( 'get_post_types' )->justReturn( array() );
+		Functions\when( 'get_posts' )->justReturn( array() );
+
+		Functions\expect( 'wp_dropdown_pages' )->never();
+
+		ob_start();
+		$this->call_private_static( 'render_excluded_pages_section', array( array() ) );
+		$output = ob_get_clean();
+
+		$this->assertStringNotContainsString( 'r2c-excluded-post-type-add', $output );
+		$this->assertStringNotContainsString( 'r2c-excluded-page-picker', $output );
+		$this->assertStringContainsString( 'pretty', $output );
+	}
 }
