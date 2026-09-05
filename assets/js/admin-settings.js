@@ -66,8 +66,13 @@
 				}
 				poll();
 			} ).catch( function () {
+				// fetch() itself failed (offline, CORS, etc.) — distinct from
+				// the poll loop's catch below, which deliberately keeps
+				// retrying. This is a one-shot action; leaving the earlier
+				// "Connecting…" text in place would look like it's still in
+				// progress rather than having failed.
 				button.disabled = false;
-				setStatusText( status, window.r2cAdmin.i18n.connecting );
+				setStatusText( status, window.r2cAdmin.i18n.networkError );
 			} );
 		} );
 
@@ -125,6 +130,7 @@
 				window.location.reload();
 			} ).catch( function () {
 				button.disabled = false;
+				setStatusText( status, window.r2cAdmin.i18n.networkError );
 			} );
 		} );
 	}
@@ -162,6 +168,7 @@
 			} ).catch( function () {
 				button.disabled = false;
 				confirming = false;
+				setStatusText( status, window.r2cAdmin.i18n.networkError );
 			} );
 		} );
 	}
@@ -202,6 +209,7 @@
 				setStatusText( status, window.r2cAdmin.i18n.saved );
 			} ).catch( function () {
 				button.disabled = false;
+				setStatusText( status, window.r2cAdmin.i18n.networkError );
 			} );
 		} );
 	}

@@ -22,6 +22,16 @@ class R2C_Settings_Page {
 	// 設置までが役割であり、FAQ登録・有人対応・課金はここに作らない(FR-28)。
 	const APP_URL = 'https://admin.r2c.biz/copilot-preview';
 
+	/**
+	 * page_id_to_path_map()のリクエスト単位メモ化。enqueue_assets()
+	 * (admin_enqueue_scripts)とrender_excluded_pages_section()(render()内)
+	 * が同一の設定画面リクエストで両方これを呼ぶため、get_posts()が
+	 * 2回走らないようにする。テストはtearDown()でnullに戻すこと
+	 * (PHPUnitは既定で全テストを同一プロセス内で実行するため、staticな
+	 * 値はテストをまたいで残ってしまう)。
+	 */
+	private static $page_id_to_path_map_cache = null;
+
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
@@ -63,6 +73,7 @@ class R2C_Settings_Page {
 					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted.', 'r2c-ai-concierge' ),
 					'saving'            => __( 'Saving…', 'r2c-ai-concierge' ),
 					'saved'             => __( 'Saved.', 'r2c-ai-concierge' ),
+					'networkError'      => __( 'Unable to reach the server. Please check your connection and try again.', 'r2c-ai-concierge' ),
 				),
 			)
 		);
@@ -314,13 +325,17 @@ class R2C_Settings_Page {
 		</p>
 		<?php if ( empty( $post_type_patterns ) && empty( $page_map ) ) : ?>
 			<p class="description">
-				<?php
-				printf(
-					/* translators: %s: link to the Permalinks settings screen */
-					esc_html__( 'Adding a specific page or post type here requires a "pretty" permalink structure — this site is currently using the default "Plain" one, under which every page and post type archive resolves to the same URL and can\'t be told apart. You can enable pretty permalinks on the %s screen, or type a pattern directly into the box above.', 'r2c-ai-concierge' ),
-					'<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Permalinks settings', 'r2c-ai-concierge' ) . '</a>'
-				);
-				?>
+				<?php if ( '' === get_option( 'permalink_structure' ) ) : ?>
+					<?php
+					printf(
+						/* translators: %s: link to the Permalinks settings screen */
+						esc_html__( 'Adding a specific page or post type here requires a "pretty" permalink structure — this site is currently using the default "Plain" one, under which every page and post type archive resolves to the same URL and can\'t be told apart. You can enable pretty permalinks on the %s screen, or type a pattern directly into the box above.', 'r2c-ai-concierge' ),
+						'<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Permalinks settings', 'r2c-ai-concierge' ) . '</a>'
+					);
+					?>
+				<?php else : ?>
+					<?php esc_html_e( 'There are no pages or post type archives available to add here yet. You can still type a pattern directly into the box above.', 'r2c-ai-concierge' ); ?>
+				<?php endif; ?>
 			</p>
 		<?php else : ?>
 			<p>
@@ -402,6 +417,10 @@ class R2C_Settings_Page {
 	 * この対応表を見てページ選択UI自体を出すかどうかを決める)。
 	 */
 	private static function page_id_to_path_map() {
+		if ( null !== self::$page_id_to_path_map_cache ) {
+			return self::$page_id_to_path_map_cache;
+		}
+
 		$page_ids = get_posts(
 			array(
 				'post_type'     => 'page',
@@ -421,6 +440,7 @@ class R2C_Settings_Page {
 				$map[ $page_id ] = $path;
 			}
 		}
+		self::$page_id_to_path_map_cache = $map;
 		return $map;
 	}
 

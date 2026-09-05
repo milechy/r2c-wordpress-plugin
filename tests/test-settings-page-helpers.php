@@ -37,6 +37,12 @@ class SettingsPageHelpersTest extends TestCase {
 
 	protected function tearDown(): void {
 		Monkey\tearDown();
+		// page_id_to_path_map() memoizes into a private static property
+		// (see test-settings-page-page-id-to-path-map.php's tearDown for
+		// why this must be reset between tests in the same PHP process).
+		$ref = new \ReflectionProperty( '\R2C_Settings_Page', 'page_id_to_path_map_cache' );
+		$ref->setAccessible( true );
+		$ref->setValue( null, null );
 		parent::tearDown();
 	}
 

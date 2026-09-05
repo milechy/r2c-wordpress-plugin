@@ -53,7 +53,22 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 
 	protected function tearDown(): void {
 		Monkey\tearDown();
+		self::reset_page_id_to_path_map_cache();
 		parent::tearDown();
+	}
+
+	/**
+	 * page_id_to_path_map() memoizes into a private static property so it
+	 * only queries once per real request (enqueue_assets() and
+	 * render_excluded_pages_section() both call it). PHPUnit runs every
+	 * test in this file in the same PHP process, so that cache must be
+	 * reset after each test or a later test would silently see an earlier
+	 * test's stubbed result instead of its own.
+	 */
+	private static function reset_page_id_to_path_map_cache() {
+		$ref = new \ReflectionProperty( '\R2C_Settings_Page', 'page_id_to_path_map_cache' );
+		$ref->setAccessible( true );
+		$ref->setValue( null, null );
 	}
 
 	private function call_page_id_to_path_map() {
