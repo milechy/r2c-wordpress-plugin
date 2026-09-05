@@ -345,7 +345,7 @@ class R2C_Settings_Page {
 						// (JS looks values up in r2cAdmin.pagePaths, built from that
 						// same map) — a page absent from the map has no path R2C's
 						// exclusion matching could distinguish from any other page.
-						'include'           => implode( ',', array_keys( $page_map ) ),
+						'include'           => implode( ',', array_map( 'absint', array_keys( $page_map ) ) ),
 					)
 				);
 				?>
