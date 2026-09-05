@@ -117,6 +117,11 @@ class SettingsPageHelpersTest extends TestCase {
 				return htmlspecialchars( (string) $text, ENT_QUOTES );
 			}
 		);
+		Functions\when( 'esc_html_e' )->alias(
+			function ( $text ) {
+				echo htmlspecialchars( (string) $text, ENT_QUOTES ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- test-only stand-in for the real esc_html_e(), which does exactly this.
+			}
+		);
 		Functions\when( '__' )->returnArg( 1 );
 		Functions\when( 'esc_url' )->returnArg( 1 );
 		Functions\when( 'get_option' )->justReturn( '' ); // mask_api_key: no key stored, row omitted.

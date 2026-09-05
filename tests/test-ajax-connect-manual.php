@@ -97,7 +97,7 @@ class AjaxConnectManualTest extends TestCase {
 		}
 	}
 
-	public function test_non_401_failure_falls_back_to_generic_verification_message() {
+	public function test_transport_failure_shows_the_unreachable_message() {
 		$error = new \WP_Error( 'http_request_failed', 'timed out' );
 		Functions\when( 'wp_remote_request' )->justReturn( $error );
 		Functions\when( 'is_wp_error' )->alias(
@@ -105,6 +105,28 @@ class AjaxConnectManualTest extends TestCase {
 				return $thing === $error;
 			}
 		);
+
+		$_POST['api_key'] = 'mock_some_key';
+
+		try {
+			\R2C_Ajax::handle_connect_manual();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'Unable to reach R2C right now. Please try again in a moment.', $e->data['message'] );
+		}
+	}
+
+	/**
+	 * A non-401, non-transport failure (R2C reachable, but returning e.g. a
+	 * 500 with no message body) must fall back to the generic verification
+	 * text — distinct from both the 401 "invalid key" and the transport
+	 * "unreachable" messages above.
+	 */
+	public function test_non_401_http_failure_falls_back_to_generic_verification_message() {
+		Functions\when( 'wp_remote_request' )->justReturn( array( 'fake' => 'response' ) );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( 500 );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{}' );
 
 		$_POST['api_key'] = 'mock_some_key';
 
