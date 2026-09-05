@@ -121,6 +121,29 @@ class AjaxConnectTest extends TestCase {
 		}
 	}
 
+	/**
+	 * sanitize_email() has no built-in guard against non-scalar input
+	 * (unlike sanitize_text_field()) — passing it an array reaches
+	 * strlen() internally, a fatal TypeError on PHP 8+. A hand-crafted
+	 * `email[]=x` submission (or a buggy client duplicating the field
+	 * name) must be rejected the same as a missing/invalid email, not
+	 * crash the request.
+	 */
+	public function test_email_submitted_as_an_array_is_rejected_gracefully() {
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$_POST['consent'] = '1';
+		$_POST['email']   = array( 'owner@example.com' );
+
+		try {
+			\R2C_Ajax::handle_connect();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertFalse( $e->success );
+			$this->assertSame( 'Please enter a valid email address.', $e->data['message'] );
+		}
+	}
+
 	public function test_provision_transport_failure_shows_unreachable_message() {
 		Functions\when( 'is_email' )->justReturn( true );
 

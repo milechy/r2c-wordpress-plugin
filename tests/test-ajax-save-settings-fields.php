@@ -119,6 +119,28 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$this->assertSame( 10, $captured['offset_x'] );
 	}
 
+	/**
+	 * sanitize_hex_color() has no built-in guard against non-scalar input
+	 * (unlike sanitize_text_field()/sanitize_textarea_field()) — passing it
+	 * an array reaches preg_match() internally, a fatal TypeError on PHP
+	 * 8+. A hand-crafted `primary_color[]=x` submission must be dropped
+	 * the same as any other invalid color, not crash the request.
+	 */
+	public function test_primary_color_submitted_as_an_array_is_dropped_gracefully() {
+		$this->stub_connected();
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$_POST['primary_color'] = array( '#336699' );
+
+		try {
+			\R2C_Ajax::handle_save_settings();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertFalse( $e->success );
+			$this->assertSame( 'There is nothing to change.', $e->data['message'] );
+		}
+	}
+
 	public function test_invalid_hex_color_is_dropped_not_forwarded() {
 		$this->stub_connected();
 		$captured = array();
