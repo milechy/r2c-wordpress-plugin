@@ -99,34 +99,18 @@ async function connectViaManualKey( page, baseURL, apiKey ) {
 	await page.waitForSelector( '#r2c-disconnect-button' );
 }
 
-/**
- * This wp-env install defaults to WordPress's own "Plain" permalink
- * structure (value=""), under which get_permalink()/
- * get_post_type_archive_link() fall back to `?page_id=`/`?post_type=`
- * query strings — the condition class-r2c-settings-page.php's
- * page_id_to_path_map()/excludable_post_type_patterns() specifically guard
- * against (see excluded-pages-quick-add.spec.js). `value` attributes for
- * WordPress core's built-in permalink presets are stable across versions,
- * unlike the radio inputs' element ids.
- *
- * Logs in itself rather than assuming the caller already did — every
- * Playwright test gets a fresh, unauthenticated browser context, and this
- * is called from test.beforeEach()/afterEach() hooks that run before a
- * test body's own loginAsAdmin() call. Navigating to options-permalink.php
- * while logged out silently lands on wp-login.php instead, where the
- * selection radios don't exist — that (not a selector mismatch) is what
- * actually caused this to hang for a full 30s the first time around.
- */
-async function setPermalinkStructure( page, baseURL, structure ) {
-	const value = 'pretty' === structure ? '/%postname%/' : '';
-	await loginAsAdmin( page, baseURL );
-	await page.goto( `${ baseURL }/wp-admin/options-permalink.php` );
-	await page.check( `input[name="selection"][value="${ value }"]` );
-	await Promise.all( [
-		page.waitForNavigation(),
-		page.click( '#submit' ),
-	] );
-}
+// A setPermalinkStructure() helper (switching this wp-env install's live
+// permalink structure to "pretty" via wp-admin, to E2E-test the positive
+// path of the class-r2c-settings-page.php fix) was tried here and removed.
+// Doing so reproducibly triggers a WordPress-core-level fatal in this
+// container on every request afterwards ("Call to a member function
+// using_index_permalinks() on null" in wp-includes/rest-api.php) — the
+// same class of rewrite-rule fragility this container already has (see
+// tests-e2e/README.md's note on why .wp-env.json pins no phpVersion), not
+// a bug in this plugin. The positive path is covered instead by
+// tests/test-settings-page-page-id-to-path-map.php and
+// tests/test-settings-page-helpers.php, which don't depend on this
+// container's rewrite support.
 
 module.exports = {
 	loginAsAdmin,
@@ -134,6 +118,5 @@ module.exports = {
 	resetMock,
 	configureMock,
 	connectViaManualKey,
-	setPermalinkStructure,
 	SETTINGS_URL,
 };

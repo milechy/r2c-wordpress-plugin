@@ -41,6 +41,23 @@ longer exists on Debian's security mirror, so `wp-env start` fails outright
 — confirmed in CI, not a one-off flake). Using wp-env's default PHP version
 avoids that entirely.
 
+## Don't switch this install's permalink structure mid-suite
+
+Every spec assumes WordPress's default "Plain" permalink structure (the
+state `wp-env start` leaves the site in) for the whole run. Switching to a
+"pretty" structure via wp-admin (Settings → Permalinks) — even
+successfully, via the UI, exactly as an admin would — reproducibly leaves
+this container's PHP process in a broken state afterwards: every
+subsequent request fatals with `Call to a member function
+using_index_permalinks() on null` in `wp-includes/rest-api.php`, including
+completely unrelated requests later in the run. This was found while
+adding a positive-path E2E test for the class-r2c-settings-page.php
+Plain-permalink fix (see `tests/test-settings-page-page-id-to-path-map.php`
+for that fix's actual test coverage, which doesn't depend on this
+container's rewrite support) and confirmed with a full stack trace in
+`wp-content/debug.log` — it's the same class of rewrite-rule fragility as
+the `phpVersion` issue above, not a bug in the plugin.
+
 ## Running locally
 
 ```bash
