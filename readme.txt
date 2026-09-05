@@ -1,5 +1,5 @@
 === R2C – AI Concierge & Chat for Customer Support ===
-Contributors: milechy
+Contributors: hkobayashi
 Tags: chatbot, live chat, ai, customer support, faq
 Requires at least: 6.0
 Tested up to: 7.1
