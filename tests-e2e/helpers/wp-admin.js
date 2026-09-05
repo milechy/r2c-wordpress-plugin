@@ -21,6 +21,16 @@ async function gotoSettings( page, baseURL ) {
 	await page.goto( `${ baseURL }${ SETTINGS_URL }` );
 }
 
+// このwp-envインストールはPermalink構造が既定のPlainのままで、
+// /wp-json/... のようなpretty形式はApacheのrewriteが効かず404になる
+// (wp-env run wordpressで実測済み)。プラグイン本体はrest_url()経由で
+// 正しく?rest_route=形式を使うが、テストヘルパー側はそれをハードコード
+// していなかったため、resetMock/configureMockが常に404で無言のまま
+// 失敗し続けていた実際の不具合(WP-11 E2E調査で判明)。
+function mockRoute( baseURL, path ) {
+	return `${ baseURL }/?rest_route=/r2c-mock${ path }`;
+}
+
 /**
  * Resets tests-e2e/mu-plugins/r2c-mock-api.php's stored state, optionally
  * applying `configure` in the same call (see that file's handle_test_configure
@@ -30,11 +40,17 @@ async function gotoSettings( page, baseURL ) {
 async function resetMock( baseURL, configure ) {
 	const ctx = await request.newContext();
 	try {
-		await ctx.post( `${ baseURL }/wp-json/r2c-mock/v1/__test__/reset` );
+		const resetRes = await ctx.post( mockRoute( baseURL, '/__test__/reset' ) );
+		if ( ! resetRes.ok() ) {
+			throw new Error( `resetMock: /__test__/reset returned ${ resetRes.status() }` );
+		}
 		if ( configure && Object.keys( configure ).length > 0 ) {
-			await ctx.post( `${ baseURL }/wp-json/r2c-mock/v1/__test__/configure`, {
+			const configureRes = await ctx.post( mockRoute( baseURL, '/__test__/configure' ), {
 				data: configure,
 			} );
+			if ( ! configureRes.ok() ) {
+				throw new Error( `resetMock: /__test__/configure returned ${ configureRes.status() }` );
+			}
 		}
 	} finally {
 		await ctx.dispose();
@@ -44,9 +60,12 @@ async function resetMock( baseURL, configure ) {
 async function configureMock( baseURL, configure ) {
 	const ctx = await request.newContext();
 	try {
-		await ctx.post( `${ baseURL }/wp-json/r2c-mock/v1/__test__/configure`, {
+		const res = await ctx.post( mockRoute( baseURL, '/__test__/configure' ), {
 			data: configure,
 		} );
+		if ( ! res.ok() ) {
+			throw new Error( `configureMock: /__test__/configure returned ${ res.status() }` );
+		}
 	} finally {
 		await ctx.dispose();
 	}
