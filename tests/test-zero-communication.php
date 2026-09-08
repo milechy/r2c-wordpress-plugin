@@ -4,9 +4,9 @@
  * api.r2c.biz — not from the front-end widget hook, not from the admin
  * notice (docs/WORDPRESS_PLUGIN_REQUIREMENTS.md GL#7 / NFR-05).
  *
- * R2C_Api_Client is the sole caller of wp_remote_request() (see its class
+ * R2C_AI_Concierge_Api_Client is the sole caller of wp_remote_request() (see its class
  * doc), so asserting wp_remote_request() is never invoked is equivalent to
- * asserting R2C_Api_Client is never invoked — without needing to reach into
+ * asserting R2C_AI_Concierge_Api_Client is never invoked — without needing to reach into
  * its private implementation.
  */
 
@@ -16,10 +16,10 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-widget.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-settings-page.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-notice.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-widget.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-settings-page.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-notice.php';
 
 class ZeroCommunicationTest extends TestCase {
 
@@ -37,12 +37,10 @@ class ZeroCommunicationTest extends TestCase {
 		Functions\expect( 'wp_remote_request' )->never();
 
 		Functions\when( 'is_admin' )->justReturn( false );
-		// R2C_Options::get_api_key() -> get_option( API_KEY, '' ); empty string means not connected.
+		// R2C_AI_Concierge_Options::get_api_key() -> get_option( API_KEY, '' ); empty string means not connected.
 		Functions\when( 'get_option' )->justReturn( '' );
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertSame( '', $output, 'Disconnected widget render must emit nothing.' );
 	}
@@ -60,7 +58,7 @@ class ZeroCommunicationTest extends TestCase {
 		Functions\when( 'wp_create_nonce' )->justReturn( 'test-nonce' );
 
 		ob_start();
-		\R2C_Notice::maybe_render();
+		\R2C_AI_Concierge_Notice::maybe_render();
 		$output = ob_get_clean();
 
 		$this->assertStringContainsString( 'r2c-connect-notice', $output, 'Disconnected + not dismissed must still show the connect notice.' );
@@ -76,7 +74,7 @@ class ZeroCommunicationTest extends TestCase {
 		Functions\expect( 'wp_enqueue_script' )->once();
 		Functions\expect( 'wp_localize_script' )->once();
 
-		\R2C_Notice::maybe_enqueue();
+		\R2C_AI_Concierge_Notice::maybe_enqueue();
 
 		// Functions\expect()->once()/->never() above are verified by Brain
 		// Monkey's own teardown, not by a PHPUnit assertion — bump the
@@ -93,13 +91,13 @@ class ZeroCommunicationTest extends TestCase {
 		// NOTICE_DISMISSED option truthy -> is_notice_dismissed() true -> should_show() false.
 		Functions\when( 'get_option' )->alias(
 			function ( $name, $default = false ) {
-				return \R2C_Options::NOTICE_DISMISSED === $name ? true : $default;
+				return \R2C_AI_Concierge_Options::NOTICE_DISMISSED === $name ? true : $default;
 			}
 		);
 		Functions\when( 'get_current_screen' )->justReturn( false );
 
 		ob_start();
-		\R2C_Notice::maybe_render();
+		\R2C_AI_Concierge_Notice::maybe_render();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', $output );

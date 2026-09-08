@@ -1,8 +1,8 @@
 <?php
 /**
- * FR-10: R2C_Ajax::handle_save_settings() must turn the excluded-pages
+ * FR-10: R2C_AI_Concierge_Ajax::handle_save_settings() must turn the excluded-pages
  * textarea (one pattern per line, possibly with helper-added duplicates or
- * blank lines) into the exact array R2C_Api_Client::patch_settings() sends —
+ * blank lines) into the exact array R2C_AI_Concierge_Api_Client::patch_settings() sends —
  * trimmed, de-duplicated, blank lines dropped — and must treat an
  * intentionally emptied textarea as "clear all patterns", not "no change".
  */
@@ -13,9 +13,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 
@@ -37,10 +37,10 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 			}
 		);
 
-		// R2C_Options::is_connected() / get_api_key() -> get_option( API_KEY ).
+		// R2C_AI_Concierge_Options::is_connected() / get_api_key() -> get_option( API_KEY ).
 		Functions\when( 'get_option' )->alias(
 			function ( $name, $default = false ) {
-				return \R2C_Options::API_KEY === $name ? 'connected-key' : $default;
+				return \R2C_AI_Concierge_Options::API_KEY === $name ? 'connected-key' : $default;
 			}
 		);
 
@@ -63,7 +63,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 	}
 
 	/**
-	 * Stubs the wp_remote_request transport so R2C_Api_Client::patch_settings()
+	 * Stubs the wp_remote_request transport so R2C_AI_Concierge_Api_Client::patch_settings()
 	 * "succeeds", and captures the JSON-decoded request body it was sent with.
 	 */
 	private function captureRemoteRequestBody( array &$capturedBody ) {
@@ -94,7 +94,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		$_POST['excluded_page_patterns'] = "/cart\n  /checkout/*  \n\n/cart\n/blog/*\n";
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -110,7 +110,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		$_POST['excluded_page_patterns'] = '';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -127,7 +127,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		$_POST['primary_color'] = '#3B82F6';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -150,7 +150,7 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		$_POST['excluded_page_patterns'] = "/cart\n   \n\t\n/checkout/*";
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );

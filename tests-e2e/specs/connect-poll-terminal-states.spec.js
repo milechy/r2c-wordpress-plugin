@@ -2,7 +2,7 @@
 const { test, expect } = require( '@playwright/test' );
 const { loginAsAdmin, gotoSettings, resetMock } = require( '../helpers/wp-admin' );
 
-// R2C_Ajax::handle_poll()'s 'expired' and 'failed' terminal states — the
+// R2C_AI_Concierge_Ajax::handle_poll()'s 'expired' and 'failed' terminal states — the
 // mock (r2c-mock-api.php) has supported forced_poll_status since it was
 // written, but no spec ever exercised either value; only the "immediately
 // provisioned" happy path (connect.spec.js) and the manual-key fallback

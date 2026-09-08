@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Settings_Page::page_id_to_path_map() / excludable_post_type_patterns()
+ * R2C_AI_Concierge_Settings_Page::page_id_to_path_map() / excludable_post_type_patterns()
  * — the lookup tables behind the "Add a specific page" / "Add a post type"
  * quick-add buttons (FR-10).
  *
@@ -28,10 +28,10 @@ use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-settings-page.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-settings-page.php';
 
 class SettingsPagePageIdToPathMapTest extends TestCase {
 
@@ -66,13 +66,13 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 	 * test's stubbed result instead of its own.
 	 */
 	private static function reset_page_id_to_path_map_cache() {
-		$ref = new \ReflectionProperty( '\R2C_Settings_Page', 'page_id_to_path_map_cache' );
+		$ref = new \ReflectionProperty( '\R2C_AI_Concierge_Settings_Page', 'page_id_to_path_map_cache' );
 		$ref->setAccessible( true );
 		$ref->setValue( null, null );
 	}
 
 	private function call_page_id_to_path_map() {
-		$ref = new ReflectionMethod( '\R2C_Settings_Page', 'page_id_to_path_map' );
+		$ref = new ReflectionMethod( '\R2C_AI_Concierge_Settings_Page', 'page_id_to_path_map' );
 		$ref->setAccessible( true );
 		return $ref->invokeArgs( null, array() );
 	}
@@ -110,7 +110,7 @@ class SettingsPagePageIdToPathMapTest extends TestCase {
 	/* ---- excludable_post_type_patterns(): same root cause ---- */
 
 	private function call_excludable_post_type_patterns() {
-		$ref = new ReflectionMethod( '\R2C_Settings_Page', 'excludable_post_type_patterns' );
+		$ref = new ReflectionMethod( '\R2C_AI_Concierge_Settings_Page', 'excludable_post_type_patterns' );
 		$ref->setAccessible( true );
 		return $ref->invokeArgs( null, array() );
 	}

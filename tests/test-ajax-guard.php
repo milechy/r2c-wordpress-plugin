@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Ajax::guard() is the entry point every AJAX handler shares: nonce
+ * R2C_AI_Concierge_Ajax::guard() is the entry point every AJAX handler shares: nonce
  * check, then a `manage_options` capability check. Every other test file
  * stubs current_user_can() to true so it can get on with testing its own
  * handler — nothing exercises the capability-denied branch itself. A
@@ -15,9 +15,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxGuardTest extends TestCase {
 
@@ -54,7 +54,7 @@ class AjaxGuardTest extends TestCase {
 		Functions\expect( 'get_option' )->never();
 
 		try {
-			\R2C_Ajax::handle_disconnect();
+			\R2C_AI_Concierge_Ajax::handle_disconnect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -80,7 +80,7 @@ class AjaxGuardTest extends TestCase {
 		$_POST = array( 'position' => 'bottom-left' );
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 403, $e->status_code );

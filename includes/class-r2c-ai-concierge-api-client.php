@@ -14,7 +14,7 @@
  *
  * ★No call in this file ever fires from a hook that runs unconditionally
  * (init, wp, admin_init, etc.)★ Every method here is invoked only from an
- * explicit, nonce-verified admin action (R2C_Ajax) or from rendering the
+ * explicit, nonce-verified admin action (R2C_AI_Concierge_Ajax) or from rendering the
  * settings screen itself (which the admin navigated to on purpose). This is
  * what keeps "zero communication while disconnected" true — see
  * docs/WORDPRESS_PLUGIN_REQUIREMENTS.md §7 A-2 / GL#7 in the parent repo.
@@ -24,7 +24,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class R2C_Api_Client {
+class R2C_AI_Concierge_Api_Client {
 
 	const TIMEOUT_SECONDS = 10;
 
@@ -57,9 +57,9 @@ class R2C_Api_Client {
 
 	/**
 	 * POST /v1/public/wp/disconnect — revoke the API key R2C-side.
-	 * Local credential removal (R2C_Options::clear_connection) is a
+	 * Local credential removal (R2C_AI_Concierge_Options::clear_connection) is a
 	 * separate step the caller performs regardless of this call's outcome
-	 * — see R2C_Ajax::handle_disconnect for the reasoning.
+	 * — see R2C_AI_Concierge_Ajax::handle_disconnect for the reasoning.
 	 */
 	public static function disconnect( $api_key ) {
 		return self::request( 'POST', '/v1/public/wp/disconnect', $api_key, null );

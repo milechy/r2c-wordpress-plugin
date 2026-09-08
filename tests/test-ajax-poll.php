@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Ajax::handle_poll() — the most branch-heavy method in the plugin, and
+ * R2C_AI_Concierge_Ajax::handle_poll() — the most branch-heavy method in the plugin, and
  * the least covered before this file: only the "already provisioned with a
  * key" happy path is reachable through the E2E connect spec (via the mock's
  * poll_attempts_until_provisioned:0 shortcut). Every other outcome —
@@ -22,9 +22,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxPollTest extends TestCase {
 
@@ -56,7 +56,7 @@ class AjaxPollTest extends TestCase {
 	}
 
 	/**
-	 * Stubs the transport as if R2C_Api_Client::poll() reached R2C and got a
+	 * Stubs the transport as if R2C_AI_Concierge_Api_Client::poll() reached R2C and got a
 	 * 2xx JSON body back.
 	 */
 	private function stub_poll_response( array $body, $status = 200 ) {
@@ -73,7 +73,7 @@ class AjaxPollTest extends TestCase {
 		Functions\expect( 'wp_remote_request' )->never();
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -95,7 +95,7 @@ class AjaxPollTest extends TestCase {
 		);
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -103,8 +103,8 @@ class AjaxPollTest extends TestCase {
 			$this->assertSame( 'The connection attempt could not be found. Please start over.', $e->data['message'] );
 		}
 
-		$this->assertContains( \R2C_Options::PENDING_POLL, $cleared );
-		$this->assertContains( \R2C_Options::PENDING_CHALLENGE, $cleared );
+		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_POLL, $cleared );
+		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_CHALLENGE, $cleared );
 	}
 
 	public function test_transport_failure_stays_pending_and_never_clears_state() {
@@ -120,7 +120,7 @@ class AjaxPollTest extends TestCase {
 		Functions\expect( 'delete_transient' )->never();
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success, 'a transient outage must not be reported as an error — JS keeps polling only on success:true' );
@@ -155,16 +155,16 @@ class AjaxPollTest extends TestCase {
 		);
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'connected', $e->data['status'] );
 		}
 
-		$this->assertSame( 'key_123', $options[ \R2C_Options::API_KEY ] );
-		$this->assertSame( 't_1', $options[ \R2C_Options::TENANT_ID ] );
-		$this->assertContains( \R2C_Options::PENDING_POLL, $cleared );
-		$this->assertContains( \R2C_Options::PENDING_CHALLENGE, $cleared );
+		$this->assertSame( 'key_123', $options[ \R2C_AI_Concierge_Options::API_KEY ] );
+		$this->assertSame( 't_1', $options[ \R2C_AI_Concierge_Options::TENANT_ID ] );
+		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_POLL, $cleared );
+		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_CHALLENGE, $cleared );
 	}
 
 	/**
@@ -192,15 +192,15 @@ class AjaxPollTest extends TestCase {
 		);
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'issued_without_key', $e->data['status'] );
 			$this->assertStringContainsString( 'Enter API key manually', $e->data['message'] );
 		}
 
-		$this->assertContains( \R2C_Options::PENDING_POLL, $cleared );
-		$this->assertContains( \R2C_Options::PENDING_CHALLENGE, $cleared );
+		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_POLL, $cleared );
+		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_CHALLENGE, $cleared );
 	}
 
 	public function test_expired_status_clears_pending_state() {
@@ -209,7 +209,7 @@ class AjaxPollTest extends TestCase {
 		Functions\expect( 'delete_transient' )->twice();
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'expired', $e->data['status'] );
@@ -228,7 +228,7 @@ class AjaxPollTest extends TestCase {
 		Functions\when( 'delete_transient' )->justReturn( true );
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'failed', $e->data['status'] );
@@ -247,7 +247,7 @@ class AjaxPollTest extends TestCase {
 		Functions\when( 'delete_transient' )->justReturn( true );
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Connection failed. Please try again.', $e->data['message'] );
@@ -267,7 +267,7 @@ class AjaxPollTest extends TestCase {
 		Functions\when( 'delete_transient' )->justReturn( true );
 
 		try {
-			\R2C_Ajax::handle_poll();
+			\R2C_AI_Concierge_Ajax::handle_poll();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'pending', $e->data['status'] );

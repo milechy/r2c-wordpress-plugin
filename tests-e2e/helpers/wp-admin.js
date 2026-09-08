@@ -95,13 +95,13 @@ async function connectViaManualKey( page, baseURL, apiKey ) {
 		page.waitForNavigation(),
 		page.click( '#r2c-manual-button' ),
 	] );
-	// render_connected() always shows this once R2C_Options::is_connected() is true.
+	// render_connected() always shows this once R2C_AI_Concierge_Options::is_connected() is true.
 	await page.waitForSelector( '#r2c-disconnect-button' );
 }
 
 // A setPermalinkStructure() helper (switching this wp-env install's live
 // permalink structure to "pretty" via wp-admin, to E2E-test the positive
-// path of the class-r2c-settings-page.php fix) was tried here and removed.
+// path of the class-r2c-ai-concierge-settings-page.php fix) was tried here and removed.
 // Doing so reproducibly triggers a WordPress-core-level fatal in this
 // container on every request afterwards ("Call to a member function
 // using_index_permalinks() on null" in wp-includes/rest-api.php) — the

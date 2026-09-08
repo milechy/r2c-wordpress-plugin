@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Settings_Page's small pure(ish) private helpers — mask_api_key() and
+ * R2C_AI_Concierge_Settings_Page's small pure(ish) private helpers — mask_api_key() and
  * plan_label() — plus an escaping regression test for render_status_summary().
  * None of these had any direct test; the settings screen is otherwise only
  * exercised end-to-end via Playwright, which never tries a malformed or
@@ -23,10 +23,10 @@ use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-settings-page.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-settings-page.php';
 
 class SettingsPageHelpersTest extends TestCase {
 
@@ -40,14 +40,14 @@ class SettingsPageHelpersTest extends TestCase {
 		// page_id_to_path_map() memoizes into a private static property
 		// (see test-settings-page-page-id-to-path-map.php's tearDown for
 		// why this must be reset between tests in the same PHP process).
-		$ref = new \ReflectionProperty( '\R2C_Settings_Page', 'page_id_to_path_map_cache' );
+		$ref = new \ReflectionProperty( '\R2C_AI_Concierge_Settings_Page', 'page_id_to_path_map_cache' );
 		$ref->setAccessible( true );
 		$ref->setValue( null, null );
 		parent::tearDown();
 	}
 
 	private function call_private_static( $method, array $args ) {
-		$ref = new ReflectionMethod( '\R2C_Settings_Page', $method );
+		$ref = new ReflectionMethod( '\R2C_AI_Concierge_Settings_Page', $method );
 		$ref->setAccessible( true );
 		return $ref->invokeArgs( null, $args );
 	}

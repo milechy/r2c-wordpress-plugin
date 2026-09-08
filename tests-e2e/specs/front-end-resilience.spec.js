@@ -8,7 +8,7 @@ const {
 } = require( '../helpers/wp-admin' );
 
 // E-1 / NFR-06: the front-end widget tag comes entirely from locally stored
-// settings (R2C_Options::get_cached_theme / get_tenant_id) — R2C_Widget
+// settings (R2C_AI_Concierge_Options::get_cached_theme / get_tenant_id) — R2C_AI_Concierge_Widget
 // never calls the API at request time, so an outage on R2C's side must not
 // take the visitor-facing widget down with it.
 test( 'front-end widget keeps rendering even while R2C is unreachable', async ( { page, baseURL } ) => {

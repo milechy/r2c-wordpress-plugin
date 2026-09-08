@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Ajax::handle_connect() — FR-02's server-side consent backstop, email
+ * R2C_AI_Concierge_Ajax::handle_connect() — FR-02's server-side consent backstop, email
  * validation, and the provision() failure/success branches.
  *
  * None of this is exercised anywhere else: the E2E "connect" spec only
@@ -18,9 +18,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxConnectTest extends TestCase {
 
@@ -66,7 +66,7 @@ class AjaxConnectTest extends TestCase {
 		// consent intentionally absent.
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -84,7 +84,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['consent'] = '0';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -99,7 +99,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = '';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Please enter a valid email address.', $e->data['message'] );
@@ -114,7 +114,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = 'not-an-email';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Please enter a valid email address.', $e->data['message'] );
@@ -136,7 +136,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = array( 'owner@example.com' );
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -159,7 +159,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = 'owner@example.com';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Unable to reach R2C right now. Please try again in a moment.', $e->data['message'] );
@@ -178,7 +178,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = 'owner@example.com';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Too many attempts, please wait.', $e->data['message'] );
@@ -197,7 +197,7 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = 'owner@example.com';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Failed to start the connection.', $e->data['message'] );
@@ -233,14 +233,14 @@ class AjaxConnectTest extends TestCase {
 		$_POST['email']   = 'owner@example.com';
 
 		try {
-			\R2C_Ajax::handle_connect();
+			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
 			$this->assertTrue( $e->data['waiting'] );
 		}
 
-		$this->assertSame( array( 'poll_abc', 24 * HOUR_IN_SECONDS ), $captured[ \R2C_Options::PENDING_POLL ] );
-		$this->assertSame( array( 'chal_xyz', 15 * MINUTE_IN_SECONDS ), $captured[ \R2C_Options::PENDING_CHALLENGE ] );
+		$this->assertSame( array( 'poll_abc', 24 * HOUR_IN_SECONDS ), $captured[ \R2C_AI_Concierge_Options::PENDING_POLL ] );
+		$this->assertSame( array( 'chal_xyz', 15 * MINUTE_IN_SECONDS ), $captured[ \R2C_AI_Concierge_Options::PENDING_CHALLENGE ] );
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * R2C_Widget::render()'s data-* attribute logic (placement_attributes() is
+ * R2C_AI_Concierge_Widget::render_tag()'s data-* attribute logic (placement_attributes() is
  * private, so this exercises it the same way production traffic does — via
- * the public render() entry point and its captured output).
+ * the public render_tag() entry point and its return value).
  *
  * Matching R2C's own defaults (bottom-right, 24px) must emit no attributes
  * at all — same convention as get_embed_code() in the parent repo.
@@ -14,8 +14,8 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-widget.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-widget.php';
 
 class WidgetPlacementAttributesTest extends TestCase {
 
@@ -37,11 +37,11 @@ class WidgetPlacementAttributesTest extends TestCase {
 		Functions\when( 'get_option' )->alias(
 			function ( $name, $default = false ) use ( $cached_theme ) {
 				switch ( $name ) {
-					case \R2C_Options::API_KEY:
+					case \R2C_AI_Concierge_Options::API_KEY:
 						return 'connected-key';
-					case \R2C_Options::TENANT_ID:
+					case \R2C_AI_Concierge_Options::TENANT_ID:
 						return 't_abc';
-					case \R2C_Options::CACHED_THEME:
+					case \R2C_AI_Concierge_Options::CACHED_THEME:
 						return $cached_theme;
 					default:
 						return $default;
@@ -53,9 +53,7 @@ class WidgetPlacementAttributesTest extends TestCase {
 	public function test_default_theme_emits_no_placement_attributes() {
 		$this->stub_options( array() );
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertStringContainsString( 'data-tenant="t_abc"', $output );
 		$this->assertStringNotContainsString( 'data-position', $output );
@@ -73,9 +71,7 @@ class WidgetPlacementAttributesTest extends TestCase {
 			)
 		);
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertStringContainsString( 'data-position="bottom-left"', $output );
 		$this->assertStringContainsString( 'data-offset-x="100"', $output );
@@ -86,9 +82,7 @@ class WidgetPlacementAttributesTest extends TestCase {
 	public function test_out_of_range_offset_is_ignored() {
 		$this->stub_options( array( 'offset_x' => 500 ) );
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertStringNotContainsString( 'data-offset-x', $output );
 	}
@@ -96,9 +90,7 @@ class WidgetPlacementAttributesTest extends TestCase {
 	public function test_invalid_color_is_ignored() {
 		$this->stub_options( array( 'primary_color' => 'not-a-color' ) );
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertStringNotContainsString( 'data-accent-color', $output );
 	}
@@ -106,9 +98,7 @@ class WidgetPlacementAttributesTest extends TestCase {
 	public function test_renders_nothing_when_disconnected() {
 		Functions\when( 'get_option' )->justReturn( '' );
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertSame( '', $output );
 	}
@@ -116,25 +106,23 @@ class WidgetPlacementAttributesTest extends TestCase {
 	/**
 	 * An API key can exist locally (is_connected() true) while tenant_id is
 	 * somehow empty — e.g. a partially-completed manual connection, or a
-	 * corrupted option row. render() must still emit nothing rather than a
+	 * corrupted option row. render_tag() must still emit nothing rather than a
 	 * script tag with an empty/garbage tenant id in its URL.
 	 */
 	public function test_renders_nothing_when_connected_but_tenant_id_is_empty() {
 		Functions\when( 'get_option' )->alias(
 			function ( $name, $default = false ) {
-				if ( \R2C_Options::API_KEY === $name ) {
+				if ( \R2C_AI_Concierge_Options::API_KEY === $name ) {
 					return 'connected-key';
 				}
-				if ( \R2C_Options::TENANT_ID === $name ) {
+				if ( \R2C_AI_Concierge_Options::TENANT_ID === $name ) {
 					return '';
 				}
 				return $default;
 			}
 		);
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertSame( '', $output );
 	}
@@ -147,9 +135,7 @@ class WidgetPlacementAttributesTest extends TestCase {
 			)
 		);
 
-		ob_start();
-		\R2C_Widget::render();
-		$output = ob_get_clean();
+		$output = \R2C_AI_Concierge_Widget::render_tag();
 
 		$this->assertSame( '', $output );
 	}

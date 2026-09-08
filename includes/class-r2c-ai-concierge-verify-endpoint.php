@@ -10,14 +10,14 @@
  * credential yet at this point). The security property here is not "who
  * is allowed to read this" but "this value only exists while a connection
  * attempt this WordPress admin explicitly started is pending" — see
- * R2C_Options::set_pending_challenge / clear_pending_challenge.
+ * R2C_AI_Concierge_Options::set_pending_challenge / clear_pending_challenge.
  *
  * @package R2C_AI_Concierge
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class R2C_Verify_Endpoint {
+class R2C_AI_Concierge_Verify_Endpoint {
 
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_route' ) );
@@ -36,7 +36,7 @@ class R2C_Verify_Endpoint {
 	}
 
 	public static function handle() {
-		$challenge = R2C_Options::get_pending_challenge();
+		$challenge = R2C_AI_Concierge_Options::get_pending_challenge();
 
 		if ( empty( $challenge ) ) {
 			// No connection attempt in flight (or it already expired) —

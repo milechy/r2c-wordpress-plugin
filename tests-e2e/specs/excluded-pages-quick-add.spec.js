@@ -11,7 +11,7 @@ const { loginAsAdmin, connectViaManualKey, resetMock } = require( '../helpers/wp
 // Under Plain, get_permalink()/get_post_type_archive_link() fall back to
 // `?page_id=`/`?post_type=` query strings, and every single page/post type
 // resolves to the exact same "/" path — page_id_to_path_map() and
-// excludable_post_type_patterns() (class-r2c-settings-page.php) used to
+// excludable_post_type_patterns() (class-r2c-ai-concierge-settings-page.php) used to
 // turn that into the pattern "/" or "/*" regardless of which page/post
 // type was actually selected, which would exclude the entire site rather
 // than the one page picked. Both helpers now skip any entry that only

@@ -10,9 +10,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class R2C_Ajax {
+class R2C_AI_Concierge_Ajax {
 
-	const NONCE_ACTION = 'r2c_admin_action';
+	const NONCE_ACTION = 'r2c_ai_concierge_admin_action';
 
 	public static function init() {
 		add_action( 'wp_ajax_r2c_connect', array( __CLASS__, 'handle_connect' ) );
@@ -75,7 +75,7 @@ class R2C_Ajax {
 		// サイトURLは入力させない — このWPサイト自身のURLで確定させる
 		// (admin以外がここに任意のドメインを指定できても、R2C側のサイト
 		// 所有証明が失敗するだけだが、そもそも選ばせる項目にしない)。
-		$result = R2C_Api_Client::provision(
+		$result = R2C_AI_Concierge_Api_Client::provision(
 			home_url( '/' ),
 			$email,
 			get_bloginfo( 'name' ),
@@ -89,8 +89,8 @@ class R2C_Ajax {
 		}
 
 		$body = $result['body'];
-		R2C_Options::set_pending_poll_token( $body['poll_token'], $body['provisioning_expires_in_hours'] );
-		R2C_Options::set_pending_challenge( $body['challenge'], $body['challenge_expires_in_minutes'] );
+		R2C_AI_Concierge_Options::set_pending_poll_token( $body['poll_token'], $body['provisioning_expires_in_hours'] );
+		R2C_AI_Concierge_Options::set_pending_challenge( $body['challenge'], $body['challenge_expires_in_minutes'] );
 
 		wp_send_json_success( array( 'waiting' => true ) );
 	}
@@ -100,7 +100,7 @@ class R2C_Ajax {
 	public static function handle_poll() {
 		self::guard();
 
-		$poll_token = R2C_Options::get_pending_poll_token();
+		$poll_token = R2C_AI_Concierge_Options::get_pending_poll_token();
 		if ( empty( $poll_token ) ) {
 			wp_send_json_error(
 				array(
@@ -110,13 +110,13 @@ class R2C_Ajax {
 			);
 		}
 
-		$result = R2C_Api_Client::poll( $poll_token );
+		$result = R2C_AI_Concierge_Api_Client::poll( $poll_token );
 
 		// トークンが見つからない(サーバ側で期限切れ掃除された等) → こちら側も
 		// 未確定状態を片付けて、最初からやり直させる。
 		if ( ! $result['ok'] && 404 === $result['status'] ) {
-			R2C_Options::clear_pending_poll_token();
-			R2C_Options::clear_pending_challenge();
+			R2C_AI_Concierge_Options::clear_pending_poll_token();
+			R2C_AI_Concierge_Options::clear_pending_challenge();
 			wp_send_json_error(
 				array(
 					'message'  => __( 'The connection attempt could not be found. Please start over.', 'r2c-ai-concierge' ),
@@ -141,16 +141,16 @@ class R2C_Ajax {
 
 		if ( 'provisioned' === $status ) {
 			if ( ! empty( $body['api_key'] ) ) {
-				R2C_Options::set_connection( $body['api_key'], $body['tenant_id'], home_url( '/' ) );
-				R2C_Options::clear_pending_poll_token();
-				R2C_Options::clear_pending_challenge();
+				R2C_AI_Concierge_Options::set_connection( $body['api_key'], $body['tenant_id'], home_url( '/' ) );
+				R2C_AI_Concierge_Options::clear_pending_poll_token();
+				R2C_AI_Concierge_Options::clear_pending_challenge();
 				wp_send_json_success( array( 'status' => 'connected' ) );
 			}
 			// 発行は完了しているが平文キーを受け取れなかった(再ポーリング等の
-			// 取りこぼし)。R2C_Options::is_connected() はまだ false のままなので、
+			// 取りこぼし)。R2C_AI_Concierge_Options::is_connected() はまだ false のままなので、
 			// 手動キー貼り付け(FR-05)へ案内する — これがこの穴の安全網。
-			R2C_Options::clear_pending_poll_token();
-			R2C_Options::clear_pending_challenge();
+			R2C_AI_Concierge_Options::clear_pending_poll_token();
+			R2C_AI_Concierge_Options::clear_pending_challenge();
 			wp_send_json_success(
 				array(
 					'status'  => 'issued_without_key',
@@ -160,8 +160,8 @@ class R2C_Ajax {
 		}
 
 		if ( 'expired' === $status ) {
-			R2C_Options::clear_pending_poll_token();
-			R2C_Options::clear_pending_challenge();
+			R2C_AI_Concierge_Options::clear_pending_poll_token();
+			R2C_AI_Concierge_Options::clear_pending_challenge();
 			wp_send_json_success(
 				array(
 					'status'  => 'expired',
@@ -171,8 +171,8 @@ class R2C_Ajax {
 		}
 
 		if ( 'failed' === $status ) {
-			R2C_Options::clear_pending_poll_token();
-			R2C_Options::clear_pending_challenge();
+			R2C_AI_Concierge_Options::clear_pending_poll_token();
+			R2C_AI_Concierge_Options::clear_pending_challenge();
 			wp_send_json_success(
 				array(
 					'status'  => 'failed',
@@ -201,7 +201,7 @@ class R2C_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Please enter an API key.', 'r2c-ai-concierge' ) ) );
 		}
 
-		$result = R2C_Api_Client::get_settings( $api_key );
+		$result = R2C_AI_Concierge_Api_Client::get_settings( $api_key );
 
 		if ( ! $result['ok'] ) {
 			if ( 401 === $result['status'] ) {
@@ -211,8 +211,8 @@ class R2C_Ajax {
 		}
 
 		$body = $result['body'];
-		R2C_Options::set_connection( $api_key, $body['tenant_id'], home_url( '/' ) );
-		R2C_Options::set_cached_theme(
+		R2C_AI_Concierge_Options::set_connection( $api_key, $body['tenant_id'], home_url( '/' ) );
+		R2C_AI_Concierge_Options::set_cached_theme(
 			isset( $body['position'] ) ? $body['position'] : null,
 			isset( $body['offset_x'] ) ? $body['offset_x'] : null,
 			isset( $body['offset_y'] ) ? $body['offset_y'] : null,
@@ -227,11 +227,11 @@ class R2C_Ajax {
 	public static function handle_disconnect() {
 		self::guard();
 
-		$api_key = R2C_Options::get_api_key();
+		$api_key = R2C_AI_Concierge_Options::get_api_key();
 		$warning = null;
 
 		if ( ! empty( $api_key ) ) {
-			$result = R2C_Api_Client::disconnect( $api_key );
+			$result = R2C_AI_Concierge_Api_Client::disconnect( $api_key );
 			if ( ! $result['ok'] ) {
 				// ★ローカルの資格情報削除は、R2C側の失効の成否とは切り離す★
 				// FR-07の「ローカル資格情報を削除」は利用者が今すぐ止められる
@@ -241,7 +241,7 @@ class R2C_Ajax {
 			}
 		}
 
-		R2C_Options::clear_connection();
+		R2C_AI_Concierge_Options::clear_connection();
 
 		wp_send_json_success(
 			array(
@@ -256,7 +256,7 @@ class R2C_Ajax {
 	public static function handle_save_settings() {
 		self::guard();
 
-		if ( ! R2C_Options::is_connected() ) {
+		if ( ! R2C_AI_Concierge_Options::is_connected() ) {
 			wp_send_json_error( array( 'message' => __( 'Not connected.', 'r2c-ai-concierge' ) ) );
 		}
 
@@ -295,14 +295,14 @@ class R2C_Ajax {
 			wp_send_json_error( array( 'message' => __( 'There is nothing to change.', 'r2c-ai-concierge' ) ) );
 		}
 
-		$result = R2C_Api_Client::patch_settings( R2C_Options::get_api_key(), $fields );
+		$result = R2C_AI_Concierge_Api_Client::patch_settings( R2C_AI_Concierge_Options::get_api_key(), $fields );
 
 		if ( ! $result['ok'] ) {
 			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to save the settings.', 'r2c-ai-concierge' ) ) ) );
 		}
 
 		$body = $result['body'];
-		R2C_Options::set_cached_theme(
+		R2C_AI_Concierge_Options::set_cached_theme(
 			isset( $body['position'] ) ? $body['position'] : null,
 			isset( $body['offset_x'] ) ? $body['offset_x'] : null,
 			isset( $body['offset_y'] ) ? $body['offset_y'] : null,

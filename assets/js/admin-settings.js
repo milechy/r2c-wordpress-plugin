@@ -1,14 +1,14 @@
 /**
  * Settings → R2C page behaviour: connect flow (with polling), manual API
  * key fallback, widget settings form, disconnect. Loaded only on this one
- * admin screen (R2C_Settings_Page::enqueue_assets).
+ * admin screen (R2C_AI_Concierge_Settings_Page::enqueue_assets).
  *
  * No build step, no framework — plain fetch() against admin-ajax.php.
  */
 ( function () {
 	'use strict';
 
-	if ( typeof window.r2cAdmin === 'undefined' ) {
+	if ( typeof window.r2cAiConciergeAdmin === 'undefined' ) {
 		return;
 	}
 
@@ -16,13 +16,13 @@
 	var TERMINAL_STATUSES = [ 'connected', 'issued_without_key', 'expired', 'failed' ];
 
 	function post( action, fields ) {
-		var body = 'action=' + encodeURIComponent( action ) + '&nonce=' + encodeURIComponent( window.r2cAdmin.nonce );
+		var body = 'action=' + encodeURIComponent( action ) + '&nonce=' + encodeURIComponent( window.r2cAiConciergeAdmin.nonce );
 		for ( var key in fields ) {
 			if ( Object.prototype.hasOwnProperty.call( fields, key ) ) {
 				body += '&' + encodeURIComponent( key ) + '=' + encodeURIComponent( fields[ key ] );
 			}
 		}
-		return fetch( window.r2cAdmin.ajaxUrl, {
+		return fetch( window.r2cAiConciergeAdmin.ajaxUrl, {
 			method: 'POST',
 			credentials: 'same-origin',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -53,12 +53,12 @@
 		form.addEventListener( 'submit', function ( e ) {
 			e.preventDefault();
 			button.disabled = true;
-			setStatusText( status, window.r2cAdmin.i18n.connecting );
+			setStatusText( status, window.r2cAiConciergeAdmin.i18n.connecting );
 
 			var email = document.getElementById( 'r2c-email' ).value;
 			var consent = document.getElementById( 'r2c-consent' ).checked ? '1' : '0';
 
-			post( 'r2c_connect', { email: email, consent: consent } ).then( function ( json ) {
+			post( 'r2c_ai_concierge_connect', { email: email, consent: consent } ).then( function ( json ) {
 				if ( ! json.success ) {
 					button.disabled = false;
 					setStatusText( status, ( json.data && json.data.message ) || '' );
@@ -72,12 +72,12 @@
 				// "Connecting…" text in place would look like it's still in
 				// progress rather than having failed.
 				button.disabled = false;
-				setStatusText( status, window.r2cAdmin.i18n.networkError );
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.networkError );
 			} );
 		} );
 
 		function poll() {
-			post( 'r2c_poll', {} ).then( function ( json ) {
+			post( 'r2c_ai_concierge_poll', {} ).then( function ( json ) {
 				if ( ! json.success ) {
 					button.disabled = false;
 					setStatusText( status, ( json.data && json.data.message ) || '' );
@@ -121,7 +121,7 @@
 			button.disabled = true;
 			var apiKey = document.getElementById( 'r2c-manual-key' ).value;
 
-			post( 'r2c_connect_manual', { api_key: apiKey } ).then( function ( json ) {
+			post( 'r2c_ai_concierge_connect_manual', { api_key: apiKey } ).then( function ( json ) {
 				if ( ! json.success ) {
 					button.disabled = false;
 					setStatusText( status, ( json.data && json.data.message ) || '' );
@@ -130,7 +130,7 @@
 				window.location.reload();
 			} ).catch( function () {
 				button.disabled = false;
-				setStatusText( status, window.r2cAdmin.i18n.networkError );
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.networkError );
 			} );
 		} );
 	}
@@ -150,12 +150,12 @@
 		button.addEventListener( 'click', function () {
 			if ( ! confirming ) {
 				confirming = true;
-				button.textContent = window.r2cAdmin.i18n.confirmDisconnect;
+				button.textContent = window.r2cAiConciergeAdmin.i18n.confirmDisconnect;
 				return;
 			}
 
 			button.disabled = true;
-			post( 'r2c_disconnect', {} ).then( function ( json ) {
+			post( 'r2c_ai_concierge_disconnect', {} ).then( function ( json ) {
 				var data = ( json && json.data ) || {};
 				if ( data.warning ) {
 					setStatusText( status, data.warning );
@@ -168,7 +168,7 @@
 			} ).catch( function () {
 				button.disabled = false;
 				confirming = false;
-				setStatusText( status, window.r2cAdmin.i18n.networkError );
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.networkError );
 			} );
 		} );
 	}
@@ -188,7 +188,7 @@
 		form.addEventListener( 'submit', function ( e ) {
 			e.preventDefault();
 			button.disabled = true;
-			setStatusText( status, window.r2cAdmin.i18n.saving );
+			setStatusText( status, window.r2cAiConciergeAdmin.i18n.saving );
 
 			var excludedPatterns = document.getElementById( 'r2c-excluded-patterns' );
 
@@ -200,16 +200,16 @@
 				excluded_page_patterns: excludedPatterns ? excludedPatterns.value : '',
 			};
 
-			post( 'r2c_save_settings', fields ).then( function ( json ) {
+			post( 'r2c_ai_concierge_save_settings', fields ).then( function ( json ) {
 				button.disabled = false;
 				if ( ! json.success ) {
 					setStatusText( status, ( json.data && json.data.message ) || '' );
 					return;
 				}
-				setStatusText( status, window.r2cAdmin.i18n.saved );
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.saved );
 			} ).catch( function () {
 				button.disabled = false;
-				setStatusText( status, window.r2cAdmin.i18n.networkError );
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.networkError );
 			} );
 		} );
 	}
@@ -249,7 +249,7 @@
 		var pageAdd = document.getElementById( 'r2c-excluded-page-add' );
 		if ( pagePicker && pageAdd ) {
 			pageAdd.addEventListener( 'click', function () {
-				var pagePaths = window.r2cAdmin.pagePaths || {};
+				var pagePaths = window.r2cAiConciergeAdmin.pagePaths || {};
 				appendExcludedPattern( pagePaths[ pagePicker.value ] );
 				pagePicker.value = '';
 			} );
