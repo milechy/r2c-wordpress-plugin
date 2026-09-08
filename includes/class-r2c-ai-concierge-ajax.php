@@ -15,11 +15,11 @@ class R2C_AI_Concierge_Ajax {
 	const NONCE_ACTION = 'r2c_ai_concierge_admin_action';
 
 	public static function init() {
-		add_action( 'wp_ajax_r2c_connect', array( __CLASS__, 'handle_connect' ) );
-		add_action( 'wp_ajax_r2c_poll', array( __CLASS__, 'handle_poll' ) );
-		add_action( 'wp_ajax_r2c_connect_manual', array( __CLASS__, 'handle_connect_manual' ) );
-		add_action( 'wp_ajax_r2c_disconnect', array( __CLASS__, 'handle_disconnect' ) );
-		add_action( 'wp_ajax_r2c_save_settings', array( __CLASS__, 'handle_save_settings' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_connect', array( __CLASS__, 'handle_connect' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_poll', array( __CLASS__, 'handle_poll' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_connect_manual', array( __CLASS__, 'handle_connect_manual' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_disconnect', array( __CLASS__, 'handle_disconnect' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_save_settings', array( __CLASS__, 'handle_save_settings' ) );
 	}
 
 	/**
