@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Ajax::handle_connect_manual() — the FR-05 "I already have an account"
+ * R2C_AI_Concierge_Ajax::handle_connect_manual() — the FR-05 "I already have an account"
  * fallback. The E2E manual-connect spec only covers a non-empty valid key
  * and a non-empty invalid (401) key; the empty-key guard, non-401 failures,
  * and a response body missing the optional theme fields were untested.
@@ -18,9 +18,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxConnectManualTest extends TestCase {
 
@@ -62,7 +62,7 @@ class AjaxConnectManualTest extends TestCase {
 		$_POST['api_key'] = '';
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
@@ -74,7 +74,7 @@ class AjaxConnectManualTest extends TestCase {
 		// $_POST['api_key'] intentionally never set.
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
@@ -90,7 +90,7 @@ class AjaxConnectManualTest extends TestCase {
 		$_POST['api_key'] = 'mock_not_a_real_key';
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'This API key is invalid.', $e->data['message'] );
@@ -109,7 +109,7 @@ class AjaxConnectManualTest extends TestCase {
 		$_POST['api_key'] = 'mock_some_key';
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Unable to reach R2C right now. Please try again in a moment.', $e->data['message'] );
@@ -131,7 +131,7 @@ class AjaxConnectManualTest extends TestCase {
 		$_POST['api_key'] = 'mock_some_key';
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Failed to verify the API key.', $e->data['message'] );
@@ -165,15 +165,15 @@ class AjaxConnectManualTest extends TestCase {
 		$_POST['api_key'] = 'mock_good_key';
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'connected', $e->data['status'] );
 		}
 
-		$this->assertSame( 'mock_good_key', $options[ \R2C_Options::API_KEY ] );
-		$this->assertSame( 't_manual', $options[ \R2C_Options::TENANT_ID ] );
-		$theme = $options[ \R2C_Options::CACHED_THEME ];
+		$this->assertSame( 'mock_good_key', $options[ \R2C_AI_Concierge_Options::API_KEY ] );
+		$this->assertSame( 't_manual', $options[ \R2C_AI_Concierge_Options::TENANT_ID ] );
+		$theme = $options[ \R2C_AI_Concierge_Options::CACHED_THEME ];
 		$this->assertSame( 'bottom-left', $theme['position'] );
 		$this->assertSame( 88, $theme['offset_x'] );
 		$this->assertSame( '#abcdef', $theme['primary_color'] );
@@ -201,13 +201,13 @@ class AjaxConnectManualTest extends TestCase {
 		$_POST['api_key'] = 'mock_bare_key';
 
 		try {
-			\R2C_Ajax::handle_connect_manual();
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'connected', $e->data['status'] );
 		}
 
-		$theme = $options[ \R2C_Options::CACHED_THEME ];
+		$theme = $options[ \R2C_AI_Concierge_Options::CACHED_THEME ];
 		$this->assertNull( $theme['position'] );
 		$this->assertNull( $theme['offset_x'] );
 		$this->assertNull( $theme['offset_y'] );

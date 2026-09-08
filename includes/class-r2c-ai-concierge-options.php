@@ -19,15 +19,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class R2C_Options {
+class R2C_AI_Concierge_Options {
 
-	const API_KEY           = 'r2c_api_key';
-	const TENANT_ID         = 'r2c_tenant_id';
-	const SITE_ORIGIN       = 'r2c_site_origin';
-	const CACHED_THEME      = 'r2c_cached_widget_theme';
-	const PENDING_POLL      = 'r2c_pending_poll_token';
-	const PENDING_CHALLENGE = 'r2c_pending_challenge';
-	const NOTICE_DISMISSED  = 'r2c_connect_notice_dismissed';
+	const API_KEY           = 'r2c_ai_concierge_api_key';
+	const TENANT_ID         = 'r2c_ai_concierge_tenant_id';
+	const SITE_ORIGIN       = 'r2c_ai_concierge_site_origin';
+	const CACHED_THEME      = 'r2c_ai_concierge_cached_widget_theme';
+	const PENDING_POLL      = 'r2c_ai_concierge_pending_poll_token';
+	const PENDING_CHALLENGE = 'r2c_ai_concierge_pending_challenge';
+	const NOTICE_DISMISSED  = 'r2c_ai_concierge_connect_notice_dismissed';
 
 	/**
 	 * True once a connection exists locally. Does not confirm the key is
@@ -118,7 +118,7 @@ class R2C_Options {
 
 	/**
 	 * The site-ownership challenge R2C expects to read back from
-	 * `/wp-json/r2c/v1/verify` (R2C_Verify_Endpoint). Stored separately
+	 * `/wp-json/r2c/v1/verify` (R2C_AI_Concierge_Verify_Endpoint). Stored separately
 	 * from the poll token — the two are different secrets with different
 	 * directions of travel (this one WP serves outbound to R2C; the poll
 	 * token WP sends to R2C). TTL matches `challenge_expires_in_minutes`

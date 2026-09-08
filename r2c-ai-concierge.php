@@ -7,7 +7,7 @@
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            R2C
- * Author URI:        https://r2c.biz
+ * Author URI:        https://r2c.biz/lp/
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       r2c-ai-concierge
@@ -24,8 +24,8 @@ defined( 'ABSPATH' ) || exit;
  * repository for the requirements this plugin implements (WP-1..WP-15).
  *
  * ★No network request fires until the admin explicitly connects★
- * Every class that talks to R2C (R2C_Api_Client) is only ever invoked from
- * R2C_Ajax's nonce-verified handlers, which only run when an admin submits
+ * Every class that talks to R2C (R2C_AI_Concierge_Api_Client) is only ever invoked from
+ * R2C_AI_Concierge_Ajax's nonce-verified handlers, which only run when an admin submits
  * the connect form or an already-connected settings action — never from a
  * hook that runs unconditionally (init, wp, admin_init). Guideline #7
  * (wordpress.org Detailed Plugin Guidelines) requires exactly this.
@@ -60,23 +60,23 @@ if ( ! defined( 'R2C_AI_CONCIERGE_API_BASE' ) ) {
 // (https://make.wordpress.org/core/2016/07/06/i18n-improvements-in-4-6/)
 // and flagged by Plugin Check.
 
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-options.php';
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-api-client.php';
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-verify-endpoint.php';
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ajax.php';
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-settings-page.php';
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-notice.php';
-require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-widget.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-options.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-api-client.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-verify-endpoint.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-ajax.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-settings-page.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-notice.php';
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-widget.php';
 
-R2C_Verify_Endpoint::init();
-R2C_Ajax::init();
-R2C_Settings_Page::init();
-R2C_Notice::init();
-R2C_Widget::init();
+R2C_AI_Concierge_Verify_Endpoint::init();
+R2C_AI_Concierge_Ajax::init();
+R2C_AI_Concierge_Settings_Page::init();
+R2C_AI_Concierge_Notice::init();
+R2C_AI_Concierge_Widget::init();
 
 /**
  * Nothing to do on activation — every option this plugin writes is created
- * lazily by the connect flow (R2C_Ajax::handle_connect /
+ * lazily by the connect flow (R2C_AI_Concierge_Ajax::handle_connect /
  * handle_connect_manual), not up front. Kept as an explicit no-op (rather
  * than omitted) so a future option that genuinely needs activation-time
  * setup has an obvious place to go, and so uninstall.php's "nothing to

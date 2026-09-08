@@ -1,8 +1,8 @@
 <?php
 /**
- * R2C_Options — every other test file exercises this class only indirectly,
+ * R2C_AI_Concierge_Options — every other test file exercises this class only indirectly,
  * through whichever get_option()/update_option() stub each of them happens
- * to set up. Nothing tests R2C_Options' own logic directly: is_connected()'s
+ * to set up. Nothing tests R2C_AI_Concierge_Options' own logic directly: is_connected()'s
  * truthiness rule, clear_connection()'s completeness, the TTL floor on the
  * two transients, or get_cached_theme()'s defensive type check.
  */
@@ -13,7 +13,7 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
 
 class OptionsTest extends TestCase {
 
@@ -29,12 +29,12 @@ class OptionsTest extends TestCase {
 
 	public function test_is_connected_true_with_a_real_looking_key() {
 		Functions\when( 'get_option' )->justReturn( 'r2c_live_abcdef123456' );
-		$this->assertTrue( \R2C_Options::is_connected() );
+		$this->assertTrue( \R2C_AI_Concierge_Options::is_connected() );
 	}
 
 	public function test_is_connected_false_with_no_key_stored() {
 		Functions\when( 'get_option' )->justReturn( '' );
-		$this->assertFalse( \R2C_Options::is_connected() );
+		$this->assertFalse( \R2C_AI_Concierge_Options::is_connected() );
 	}
 
 	/**
@@ -47,7 +47,7 @@ class OptionsTest extends TestCase {
 	 */
 	public function test_is_connected_has_a_known_false_negative_for_the_literal_string_zero() {
 		Functions\when( 'get_option' )->justReturn( '0' );
-		$this->assertFalse( \R2C_Options::is_connected() );
+		$this->assertFalse( \R2C_AI_Concierge_Options::is_connected() );
 	}
 
 	public function test_set_connection_persists_all_three_fields_without_autoload() {
@@ -59,11 +59,11 @@ class OptionsTest extends TestCase {
 			}
 		);
 
-		\R2C_Options::set_connection( 'key_abc', 't_123', 'https://site.example/' );
+		\R2C_AI_Concierge_Options::set_connection( 'key_abc', 't_123', 'https://site.example/' );
 
-		$this->assertSame( array( 'key_abc', false ), $calls[ \R2C_Options::API_KEY ] );
-		$this->assertSame( array( 't_123', false ), $calls[ \R2C_Options::TENANT_ID ] );
-		$this->assertSame( array( 'https://site.example/', false ), $calls[ \R2C_Options::SITE_ORIGIN ] );
+		$this->assertSame( array( 'key_abc', false ), $calls[ \R2C_AI_Concierge_Options::API_KEY ] );
+		$this->assertSame( array( 't_123', false ), $calls[ \R2C_AI_Concierge_Options::TENANT_ID ] );
+		$this->assertSame( array( 'https://site.example/', false ), $calls[ \R2C_AI_Concierge_Options::SITE_ORIGIN ] );
 	}
 
 	/**
@@ -81,14 +81,14 @@ class OptionsTest extends TestCase {
 			}
 		);
 
-		\R2C_Options::clear_connection();
+		\R2C_AI_Concierge_Options::clear_connection();
 
 		sort( $deleted );
 		$expected = array(
-			\R2C_Options::API_KEY,
-			\R2C_Options::CACHED_THEME,
-			\R2C_Options::SITE_ORIGIN,
-			\R2C_Options::TENANT_ID,
+			\R2C_AI_Concierge_Options::API_KEY,
+			\R2C_AI_Concierge_Options::CACHED_THEME,
+			\R2C_AI_Concierge_Options::SITE_ORIGIN,
+			\R2C_AI_Concierge_Options::TENANT_ID,
 		);
 		sort( $expected );
 		$this->assertSame( $expected, $deleted );
@@ -96,18 +96,18 @@ class OptionsTest extends TestCase {
 
 	public function test_get_cached_theme_defaults_to_empty_array_when_never_set() {
 		Functions\when( 'get_option' )->justReturn( array() );
-		$this->assertSame( array(), \R2C_Options::get_cached_theme() );
+		$this->assertSame( array(), \R2C_AI_Concierge_Options::get_cached_theme() );
 	}
 
 	/**
 	 * Defensive is_array() guard in get_cached_theme(): if the option value
 	 * were ever corrupted into a non-array (a bad migration, a manual DB
-	 * edit, a plugin conflict overwriting the row with a scalar), R2C_Widget
+	 * edit, a plugin conflict overwriting the row with a scalar), R2C_AI_Concierge_Widget
 	 * must still get an array back rather than fataling on array access.
 	 */
 	public function test_get_cached_theme_falls_back_to_empty_array_for_corrupted_non_array_value() {
 		Functions\when( 'get_option' )->justReturn( 'not-an-array' );
-		$this->assertSame( array(), \R2C_Options::get_cached_theme() );
+		$this->assertSame( array(), \R2C_AI_Concierge_Options::get_cached_theme() );
 	}
 
 	public function test_pending_poll_token_ttl_uses_the_provided_hours() {
@@ -119,9 +119,9 @@ class OptionsTest extends TestCase {
 			}
 		);
 
-		\R2C_Options::set_pending_poll_token( 'tok_1', 24 );
+		\R2C_AI_Concierge_Options::set_pending_poll_token( 'tok_1', 24 );
 
-		$this->assertSame( array( \R2C_Options::PENDING_POLL, 'tok_1', 24 * HOUR_IN_SECONDS ), $captured );
+		$this->assertSame( array( \R2C_AI_Concierge_Options::PENDING_POLL, 'tok_1', 24 * HOUR_IN_SECONDS ), $captured );
 	}
 
 	/**
@@ -139,10 +139,10 @@ class OptionsTest extends TestCase {
 			}
 		);
 
-		\R2C_Options::set_pending_poll_token( 'tok_1', 0 );
+		\R2C_AI_Concierge_Options::set_pending_poll_token( 'tok_1', 0 );
 		$this->assertSame( 1 * HOUR_IN_SECONDS, $captured );
 
-		\R2C_Options::set_pending_poll_token( 'tok_1', -5 );
+		\R2C_AI_Concierge_Options::set_pending_poll_token( 'tok_1', -5 );
 		$this->assertSame( 1 * HOUR_IN_SECONDS, $captured );
 	}
 
@@ -155,7 +155,7 @@ class OptionsTest extends TestCase {
 			}
 		);
 
-		\R2C_Options::set_pending_challenge( 'chal_1', 0 );
+		\R2C_AI_Concierge_Options::set_pending_challenge( 'chal_1', 0 );
 		$this->assertSame( 1 * MINUTE_IN_SECONDS, $captured );
 	}
 
@@ -167,10 +167,10 @@ class OptionsTest extends TestCase {
 				return true;
 			}
 		);
-		\R2C_Options::dismiss_notice();
+		\R2C_AI_Concierge_Options::dismiss_notice();
 		$this->assertTrue( $stored );
 
 		Functions\when( 'get_option' )->justReturn( $stored );
-		$this->assertTrue( \R2C_Options::is_notice_dismissed() );
+		$this->assertTrue( \R2C_AI_Concierge_Options::is_notice_dismissed() );
 	}
 }

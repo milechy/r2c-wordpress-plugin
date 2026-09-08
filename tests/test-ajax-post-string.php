@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Ajax::post_string() — the single choke point every raw $_POST read in
+ * R2C_AI_Concierge_Ajax::post_string() — the single choke point every raw $_POST read in
  * this class now goes through (introduced after a code review found that
  * sanitize_email()/sanitize_hex_color() have no built-in guard against
  * non-scalar input, unlike sanitize_text_field()/sanitize_textarea_field(),
@@ -20,9 +20,9 @@ use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxPostStringTest extends TestCase {
 
@@ -39,7 +39,7 @@ class AjaxPostStringTest extends TestCase {
 	}
 
 	private function call_post_string( $key ) {
-		$ref = new ReflectionMethod( '\R2C_Ajax', 'post_string' );
+		$ref = new ReflectionMethod( '\R2C_AI_Concierge_Ajax', 'post_string' );
 		$ref->setAccessible( true );
 		return $ref->invokeArgs( null, array( $key ) );
 	}

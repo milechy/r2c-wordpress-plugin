@@ -28,9 +28,9 @@ test( 'disconnecting while R2C is unreachable still removes the connection and t
 
 	// render_connected() shows the "unable to reach" notice and hides the
 	// settings form while down (api-down.spec.js), but the disconnect
-	// button must still be present and functional (R2C_Ajax::handle_disconnect
+	// button must still be present and functional (R2C_AI_Concierge_Ajax::handle_disconnect
 	// clears local state unconditionally per FR-07 regardless of the
-	// R2C_Api_Client::disconnect() outcome).
+	// R2C_AI_Concierge_Api_Client::disconnect() outcome).
 	await expect( page.locator( '#r2c-disconnect-button' ) ).toBeVisible();
 
 	await page.click( '#r2c-disconnect-button' );

@@ -4,7 +4,7 @@
  *
  * ★No local persistence of position/offset/color/excluded-pages as
  * authority★ On every render, if connected, this fetches the current
- * values from R2C (R2C_Api_Client::get_settings) and displays those —
+ * values from R2C (R2C_AI_Concierge_Api_Client::get_settings) and displays those —
  * never a locally-remembered value pretending to be current (D9 / FR-23).
  * If that fetch fails, the settings form is not shown at all rather than
  * shown with stale or fabricated defaults (FR-24 / NFR-06).
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class R2C_Settings_Page {
+class R2C_AI_Concierge_Settings_Page {
 
 	const SLUG = 'r2c-ai-concierge';
 
@@ -54,18 +54,18 @@ class R2C_Settings_Page {
 			return;
 		}
 		wp_enqueue_script(
-			'r2c-admin-settings',
+			'r2c-ai-concierge-settings',
 			R2C_AI_CONCIERGE_URL . 'assets/js/admin-settings.js',
 			array(),
 			R2C_AI_CONCIERGE_VERSION,
 			true
 		);
 		wp_localize_script(
-			'r2c-admin-settings',
-			'r2cAdmin',
+			'r2c-ai-concierge-settings',
+			'r2cAiConciergeAdmin',
 			array(
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( R2C_Ajax::NONCE_ACTION ),
+				'nonce'     => wp_create_nonce( R2C_AI_Concierge_Ajax::NONCE_ACTION ),
 				// FR-10の「特定の固定ページ」選択肢: wp_dropdown_pages()はページIDしか
 				// 渡せないため、パターン変換(パーマリンク→パス)はサーバ側でここにまとめて
 				// 済ませ、JS側は選ばれたIDでこのマップを引くだけにする。
@@ -80,7 +80,7 @@ class R2C_Settings_Page {
 			)
 		);
 		wp_enqueue_style(
-			'r2c-admin-settings',
+			'r2c-ai-concierge-settings',
 			R2C_AI_CONCIERGE_URL . 'assets/css/admin-settings.css',
 			array(),
 			R2C_AI_CONCIERGE_VERSION
@@ -94,7 +94,7 @@ class R2C_Settings_Page {
 		echo '<div class="wrap r2c-settings">';
 		echo '<h1>' . esc_html__( 'R2C', 'r2c-ai-concierge' ) . '</h1>';
 
-		if ( R2C_Options::is_connected() ) {
+		if ( R2C_AI_Concierge_Options::is_connected() ) {
 			self::render_connected();
 		} else {
 			self::render_disconnected();
@@ -154,7 +154,7 @@ class R2C_Settings_Page {
 	/* 接続済み */
 
 	private static function render_connected() {
-		$result = R2C_Api_Client::get_settings( R2C_Options::get_api_key() );
+		$result = R2C_AI_Concierge_Api_Client::get_settings( R2C_AI_Concierge_Options::get_api_key() );
 
 		echo '<p>' . esc_html__( 'Status: Connected', 'r2c-ai-concierge' ) . '</p>';
 
@@ -181,11 +181,11 @@ class R2C_Settings_Page {
 	 * GETをそのまま表示するだけで、ローカルに権威を持たせない(D9)。
 	 */
 	private static function render_status_summary( $body ) {
-		$tenant_id    = isset( $body['tenant_id'] ) ? $body['tenant_id'] : R2C_Options::get_tenant_id();
+		$tenant_id    = isset( $body['tenant_id'] ) ? $body['tenant_id'] : R2C_AI_Concierge_Options::get_tenant_id();
 		$is_active    = ! empty( $body['is_active'] );
 		$plan         = isset( $body['plan'] ) ? (string) $body['plan'] : '';
 		$status_label = $is_active ? __( 'Active', 'r2c-ai-concierge' ) : __( 'Inactive', 'r2c-ai-concierge' );
-		$masked_key   = self::mask_api_key( R2C_Options::get_api_key() );
+		$masked_key   = self::mask_api_key( R2C_AI_Concierge_Options::get_api_key() );
 		?>
 		<table class="form-table" role="presentation">
 			<tbody>
@@ -359,7 +359,7 @@ class R2C_Settings_Page {
 						'show_option_none'  => esc_html__( 'Please choose', 'r2c-ai-concierge' ),
 						'option_none_value' => '',
 						// Keep this dropdown's options exactly in sync with $page_map
-						// (JS looks values up in r2cAdmin.pagePaths, built from that
+						// (JS looks values up in r2cAiConciergeAdmin.pagePaths, built from that
 						// same map) — a page absent from the map has no path R2C's
 						// exclusion matching could distinguish from any other page.
 						'include'           => implode( ',', array_map( 'absint', array_keys( $page_map ) ) ),

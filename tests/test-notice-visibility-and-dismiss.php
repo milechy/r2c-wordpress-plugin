@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Notice::should_show()'s other two gates, and handle_dismiss() itself.
+ * R2C_AI_Concierge_Notice::should_show()'s other two gates, and handle_dismiss() itself.
  * test-zero-communication.php already covers the disconnected+not-dismissed
  * case; this file covers the remaining should_show() branches (connected;
  * already on the settings page) and the dismiss AJAX handler, none of which
@@ -13,9 +13,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-settings-page.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-notice.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-settings-page.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-notice.php';
 
 class NoticeVisibilityAndDismissTest extends TestCase {
 
@@ -31,12 +31,12 @@ class NoticeVisibilityAndDismissTest extends TestCase {
 
 	public function test_notice_is_silent_once_connected_even_if_never_dismissed() {
 		Functions\when( 'current_user_can' )->justReturn( true );
-		// R2C_Options::is_connected() -> get_option( API_KEY ) truthy.
+		// R2C_AI_Concierge_Options::is_connected() -> get_option( API_KEY ) truthy.
 		Functions\when( 'get_option' )->justReturn( 'connected-key' );
 		Functions\expect( 'get_current_screen' )->never();
 
 		ob_start();
-		\R2C_Notice::maybe_render();
+		\R2C_AI_Concierge_Notice::maybe_render();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', $output );
@@ -47,11 +47,11 @@ class NoticeVisibilityAndDismissTest extends TestCase {
 		Functions\when( 'get_option' )->justReturn( '' ); // not connected, not dismissed.
 
 		$screen     = new \stdClass();
-		$screen->id = 'settings_page_' . \R2C_Settings_Page::SLUG;
+		$screen->id = 'settings_page_' . \R2C_AI_Concierge_Settings_Page::SLUG;
 		Functions\when( 'get_current_screen' )->justReturn( $screen );
 
 		ob_start();
-		\R2C_Notice::maybe_render();
+		\R2C_AI_Concierge_Notice::maybe_render();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', $output );
@@ -71,7 +71,7 @@ class NoticeVisibilityAndDismissTest extends TestCase {
 		Functions\when( 'get_current_screen' )->justReturn( $screen );
 
 		ob_start();
-		\R2C_Notice::maybe_render();
+		\R2C_AI_Concierge_Notice::maybe_render();
 		$output = ob_get_clean();
 
 		$this->assertStringContainsString( 'r2c-connect-notice', $output );
@@ -89,7 +89,7 @@ class NoticeVisibilityAndDismissTest extends TestCase {
 		);
 
 		try {
-			\R2C_Notice::handle_dismiss();
+			\R2C_AI_Concierge_Notice::handle_dismiss();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -104,7 +104,7 @@ class NoticeVisibilityAndDismissTest extends TestCase {
 		$stored = null;
 		Functions\when( 'update_option' )->alias(
 			function ( $name, $value ) use ( &$stored ) {
-				if ( \R2C_Options::NOTICE_DISMISSED === $name ) {
+				if ( \R2C_AI_Concierge_Options::NOTICE_DISMISSED === $name ) {
 					$stored = $value;
 				}
 				return true;
@@ -118,7 +118,7 @@ class NoticeVisibilityAndDismissTest extends TestCase {
 		);
 
 		try {
-			\R2C_Notice::handle_dismiss();
+			\R2C_AI_Concierge_Notice::handle_dismiss();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );

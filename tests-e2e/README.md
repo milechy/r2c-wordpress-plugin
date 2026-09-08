@@ -51,7 +51,7 @@ this container's PHP process in a broken state afterwards: every
 subsequent request fatals with `Call to a member function
 using_index_permalinks() on null` in `wp-includes/rest-api.php`, including
 completely unrelated requests later in the run. This was found while
-adding a positive-path E2E test for the class-r2c-settings-page.php
+adding a positive-path E2E test for the class-r2c-ai-concierge-settings-page.php
 Plain-permalink fix (see `tests/test-settings-page-page-id-to-path-map.php`
 for that fix's actual test coverage, which doesn't depend on this
 container's rewrite support) and confirmed with a full stack trace in

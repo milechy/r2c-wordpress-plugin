@@ -1,6 +1,6 @@
 <?php
 /**
- * R2C_Ajax::handle_save_settings() — the position/offset/color validation
+ * R2C_AI_Concierge_Ajax::handle_save_settings() — the position/offset/color validation
  * and the "not connected" / "nothing to change" guards. Complements
  * test-ajax-save-settings.php, which only covers excluded_page_patterns.
  *
@@ -16,9 +16,9 @@ use Brain\Monkey;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__ ) . '/includes/class-r2c-options.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-api-client.php';
-require_once dirname( __DIR__ ) . '/includes/class-r2c-ajax.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-options.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-api-client.php';
+require_once dirname( __DIR__ ) . '/includes/class-r2c-ai-concierge-ajax.php';
 
 class AjaxSaveSettingsFieldsTest extends TestCase {
 
@@ -62,7 +62,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 	private function stub_connected( $connected = true ) {
 		Functions\when( 'get_option' )->alias(
 			function ( $name, $default = false ) use ( $connected ) {
-				if ( \R2C_Options::API_KEY === $name ) {
+				if ( \R2C_AI_Concierge_Options::API_KEY === $name ) {
 					return $connected ? 'connected-key' : '';
 				}
 				return $default;
@@ -91,7 +91,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['position'] = 'bottom-left';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'Not connected.', $e->data['message'] );
@@ -109,7 +109,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['offset_x']  = '10';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -133,7 +133,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['primary_color'] = array( '#336699' );
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -152,7 +152,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['offset_y']      = '5';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -176,7 +176,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['offset_x'] = '-50';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -186,7 +186,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 	}
 
 	/**
-	 * Neither the AJAX handler nor R2C_Api_Client clamps to the 0-320 range
+	 * Neither the AJAX handler nor R2C_AI_Concierge_Api_Client clamps to the 0-320 range
 	 * the settings screen's `min`/`max` attributes suggest — that range is
 	 * a browser-side hint only. A value submitted outside it (e.g. via
 	 * devtools, or a future JS bug) is forwarded to R2C completely as-is.
@@ -201,7 +201,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['offset_x'] = '99999';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -218,7 +218,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['offset_x'] = 'not-a-number';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -237,7 +237,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		Functions\when( 'sanitize_hex_color' )->returnArg( 1 );
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertTrue( $e->success );
@@ -262,7 +262,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['primary_color'] = 'javascript:alert(1)';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertFalse( $e->success );
@@ -274,7 +274,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 	 * A PATCH failure must not overwrite the read-through widget cache with
 	 * whatever partial/garbage data might otherwise be in scope — the
 	 * front-end must keep serving the last known-good theme rather than a
-	 * blank one, per R2C_Options' own "cache is refreshed only on success"
+	 * blank one, per R2C_AI_Concierge_Options' own "cache is refreshed only on success"
 	 * contract.
 	 */
 	public function test_patch_failure_surfaces_error_and_does_not_touch_the_cached_theme() {
@@ -296,12 +296,12 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		$_POST['offset_x'] = '10';
 
 		try {
-			\R2C_Ajax::handle_save_settings();
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'mocked outage', $e->data['message'] );
 		}
 
-		$this->assertNotContains( \R2C_Options::CACHED_THEME, $updatedOptionNames );
+		$this->assertNotContains( \R2C_AI_Concierge_Options::CACHED_THEME, $updatedOptionNames );
 	}
 }

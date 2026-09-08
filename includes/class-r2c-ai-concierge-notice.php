@@ -10,9 +10,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class R2C_Notice {
+class R2C_AI_Concierge_Notice {
 
-	const DISMISS_ACTION = 'r2c_dismiss_notice';
+	const DISMISS_ACTION = 'r2c_ai_concierge_dismiss_notice';
 
 	public static function init() {
 		add_action( 'admin_notices', array( __CLASS__, 'maybe_render' ) );
@@ -22,14 +22,14 @@ class R2C_Notice {
 
 	private static function should_show() {
 		return current_user_can( 'manage_options' )
-			&& ! R2C_Options::is_connected()
-			&& ! R2C_Options::is_notice_dismissed()
+			&& ! R2C_AI_Concierge_Options::is_connected()
+			&& ! R2C_AI_Concierge_Options::is_notice_dismissed()
 			&& ! self::is_on_settings_page();
 	}
 
 	private static function is_on_settings_page() {
 		$screen = get_current_screen();
-		return $screen && 'settings_page_' . R2C_Settings_Page::SLUG === $screen->id;
+		return $screen && 'settings_page_' . R2C_AI_Concierge_Settings_Page::SLUG === $screen->id;
 	}
 
 	/**
@@ -41,15 +41,15 @@ class R2C_Notice {
 			return;
 		}
 		wp_enqueue_script(
-			'r2c-admin-notice',
+			'r2c-ai-concierge-notice',
 			R2C_AI_CONCIERGE_URL . 'assets/js/admin-notice.js',
 			array(),
 			R2C_AI_CONCIERGE_VERSION,
 			true
 		);
 		wp_localize_script(
-			'r2c-admin-notice',
-			'r2cNotice',
+			'r2c-ai-concierge-notice',
+			'r2cAiConciergeNotice',
 			array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ) )
 		);
 	}
@@ -63,7 +63,7 @@ class R2C_Notice {
 		// wp-admin/js/common.js の内部実装依存で、サードパーティが確実に
 		// フックできるイベントを発火する保証がない。代わりに自前のボタンと
 		// 自前のJSハンドラ(assets/js/admin-settings.js)で完結させる。
-		$settings_url = admin_url( 'options-general.php?page=' . R2C_Settings_Page::SLUG );
+		$settings_url = admin_url( 'options-general.php?page=' . R2C_AI_Concierge_Settings_Page::SLUG );
 		printf(
 			'<div class="notice notice-info r2c-connect-notice"><p>%s <a href="%s">%s</a> <button type="button" class="notice-dismiss r2c-notice-dismiss" data-nonce="%s"><span class="screen-reader-text">%s</span></button></p></div>',
 			esc_html__( 'The R2C plugin is not connected yet.', 'r2c-ai-concierge' ),
@@ -79,7 +79,7 @@ class R2C_Notice {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( null, 403 );
 		}
-		R2C_Options::dismiss_notice();
+		R2C_AI_Concierge_Options::dismiss_notice();
 		wp_send_json_success();
 	}
 }
