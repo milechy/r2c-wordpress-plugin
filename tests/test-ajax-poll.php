@@ -203,6 +203,33 @@ class AjaxPollTest extends TestCase {
 		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_CHALLENGE, $cleared );
 	}
 
+	/**
+	 * already_connected は 2026-09-10 にサーバ側へ追加された終端状態。
+	 * 同一ドメインに確定済みテナントがある場合、以前は申告(POST)の時点で 409 が
+	 * 返っていたが、未認証で WordPress 顧客のドメイン一覧が列挙できたため、
+	 * サイト所有証明を通したこのポーリングでのみ開示する仕様になった。
+	 *
+	 * この分岐が無いと未知 status として pending に落ち、「待機中」の表示のまま
+	 * 永久にポーリングし続ける(利用者には何も伝わらない)。
+	 */
+	public function test_already_connected_is_terminal_and_guides_to_manual_key() {
+		Functions\when( 'get_transient' )->justReturn( 'tok_abc' );
+		$this->stub_poll_response( array( 'status' => 'already_connected' ) );
+		Functions\expect( 'delete_transient' )->twice();
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_poll();
+			$this->fail( 'expected wp_send_json_success to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'already_connected', $e->data['status'] );
+			// pending に落ちていないこと(落ちると永久ポーリングになる)。
+			$this->assertNotSame( 'pending', $e->data['status'] );
+			// 次に何をすればよいかが書かれていること(手動キー貼り付けへの導線)。
+			$this->assertStringContainsString( 'already connected', $e->data['message'] );
+			$this->assertStringContainsString( 'Enter API key manually', $e->data['message'] );
+		}
+	}
+
 	public function test_expired_status_clears_pending_state() {
 		Functions\when( 'get_transient' )->justReturn( 'tok_abc' );
 		$this->stub_poll_response( array( 'status' => 'expired' ) );

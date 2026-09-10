@@ -13,7 +13,11 @@
 	}
 
 	var POLL_INTERVAL_MS = 3000;
-	var TERMINAL_STATUSES = [ 'connected', 'issued_without_key', 'expired', 'failed' ];
+	// already_connected: 同一ドメインに確定済みテナントが既にある(要件書 X-3 / I-3)。
+	// 2026-09-10 にサーバ側が「申告(POST)では答えず、サイト所有証明を通した
+	// ポーリングでのみ開示する」仕様へ変わったため、ここで終端として扱う。
+	// 登録し忘れると未知 status として pending 扱いになり、永久にポーリングし続ける。
+	var TERMINAL_STATUSES = [ 'connected', 'issued_without_key', 'already_connected', 'expired', 'failed' ];
 
 	function post( action, fields ) {
 		var body = 'action=' + encodeURIComponent( action ) + '&nonce=' + encodeURIComponent( window.r2cAiConciergeAdmin.nonce );

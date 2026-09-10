@@ -181,6 +181,29 @@ class R2C_AI_Concierge_Ajax {
 			);
 		}
 
+		// 同一ドメインに確定済みテナントが既にある(要件書 X-3 / I-3)。
+		//
+		// ★2026-09-10 追加★ サーバ側は以前、申告(POST)の時点で 409 を返していたが、
+		// この経路は未認証で誰でも任意のドメインを投げられるため、409 と 201 の差だけで
+		// WordPress 顧客のドメイン一覧が列挙できた。よって申告では接続済み・未接続を
+		// 問わず同一の 201 を返し、already_connected は**サイト所有証明(challenge の
+		// 設置)を通したこのポーリングでのみ**開示する仕様に変わった。
+		//
+		// この分岐が無いと未知の status として下の pending に落ち、「待機中」のまま
+		// 永久にポーリングし続けて利用者に何も伝わらない。終端状態なので
+		// issued_without_key と同じく手動キー貼り付け(FR-05)へ案内する。
+		// tenant_id はサーバが返さない(所有者にも返す理由が無い)。
+		if ( 'already_connected' === $status ) {
+			R2C_AI_Concierge_Options::clear_pending_poll_token();
+			R2C_AI_Concierge_Options::clear_pending_challenge();
+			wp_send_json_success(
+				array(
+					'status'  => 'already_connected',
+					'message' => __( 'This site is already connected to R2C. Please paste the key issued in your R2C dashboard using "Enter API key manually" below.', 'r2c-ai-concierge' ),
+				)
+			);
+		}
+
 		// pending。verify_reason / wait_reason があれば、それに応じた
 		// 状況説明を出す(要件書 I-8 / I-9: 「なぜ待っているか」を具体的に)。
 		wp_send_json_success(
