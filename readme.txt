@@ -40,7 +40,10 @@ the settings screen.
 * **Opening the settings screen** (once connected): fetches your widget's
   current display settings — position, offset, brand color, and the list
   of pages/post types where the widget is hidden — from R2C, so the
-  screen never shows stale values.
+  screen never shows stale values. Also fetches a read-only usage summary
+  — this week's conversation count, things the AI learned this week,
+  your current plan, avatar on/off status, published FAQ count, and
+  unresolved inquiry count — to display on the same screen.
 * **Saving a change**: sends only the fields you changed back to R2C.
 * **Every front-end page view** (once connected): loads
   `https://api.r2c.biz/widget/{your-tenant-id}.js`, R2C's own script that

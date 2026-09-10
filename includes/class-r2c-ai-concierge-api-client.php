@@ -83,6 +83,17 @@ class R2C_AI_Concierge_Api_Client {
 	}
 
 	/**
+	 * GET /v1/public/wp/status — read-only usage summary for the settings
+	 * screen (WP-17/D13): this week's conversation/learning counts, plan,
+	 * avatar state, FAQ count, unresolved inquiry count. Deliberately a
+	 * separate call from get_settings() — this endpoint never returns
+	 * anything the settings form writes back (D9/D10 stay untouched).
+	 */
+	public static function get_status( $api_key ) {
+		return self::request( 'GET', '/v1/public/wp/status', $api_key, null );
+	}
+
+	/**
 	 * Shared request builder every public method above funnels through.
 	 *
 	 * @param string      $method   HTTP method.
