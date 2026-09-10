@@ -159,6 +159,7 @@ class R2C_AI_Concierge_Settings_Page {
 		echo '<p>' . esc_html__( 'Status: Connected', 'r2c-ai-concierge' ) . '</p>';
 
 		self::render_next_steps();
+		self::render_usage_status();
 
 		if ( ! $result['ok'] ) {
 			// FR-24: 取得できない値で「保存できるように見える」フォームを出さない。
@@ -226,6 +227,93 @@ class R2C_AI_Concierge_Settings_Page {
 				esc_html__( 'Register FAQs', 'r2c-ai-concierge' )
 			);
 		}
+	}
+
+	/**
+	 * WP-18/D13(FR-34〜40): 「今週の状況」表示専用ブロック。取得は WP-17
+	 * (GET /v1/public/wp/status)のみを使い、render_status_summary()が使う
+	 * get_settings()のレスポンスとは混ぜない(この画面から呼ぶ操作ボタンは
+	 * 一切置かない — D10を維持し、アバターON/OFF等のTier B操作はここに置かない)。
+	 * 到達不能・タイムアウト時は「取得できません」を表示し、直前の値をそのまま
+	 * 表示し続けたり無限ローディングを残したりしない(FR-40) — このプラグインは
+	 * PHPのサーバサイドレンダリングのみでJSポーリングを持たないため、1回の
+	 * リクエストで成功か失敗のどちらかが必ず確定する。
+	 */
+	private static function render_usage_status() {
+		$result = R2C_AI_Concierge_Api_Client::get_status( R2C_AI_Concierge_Options::get_api_key() );
+
+		echo '<h2>' . esc_html__( 'This week', 'r2c-ai-concierge' ) . '</h2>';
+
+		if ( ! $result['ok'] || ! is_array( $result['body'] ) ) {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html__( 'Unable to retrieve this information right now.', 'r2c-ai-concierge' )
+			);
+			return;
+		}
+
+		$body             = $result['body'];
+		$weekly           = isset( $body['weekly_summary'] ) && is_array( $body['weekly_summary'] ) ? $body['weekly_summary'] : array();
+		$sessions         = isset( $weekly['sessions_this_week'] ) ? (int) $weekly['sessions_this_week'] : 0;
+		$learned          = isset( $weekly['learned_this_week'] ) ? (int) $weekly['learned_this_week'] : 0;
+		$plan             = isset( $body['plan'] ) ? (string) $body['plan'] : '';
+		$avatar_active    = ! empty( $body['avatar_active'] );
+		$faq_count        = isset( $body['faq_published_count'] ) ? (int) $body['faq_published_count'] : 0;
+		$open_escalations = isset( $body['open_escalations_count'] ) ? (int) $body['open_escalations_count'] : 0;
+		?>
+		<table class="form-table" role="presentation">
+			<tbody>
+				<tr>
+					<th><?php esc_html_e( 'Conversations', 'r2c-ai-concierge' ); ?></th>
+					<td>
+						<?php
+						printf(
+							/* translators: 1: conversation count this week, 2: count of things the AI learned this week */
+							esc_html__( '%1$d this week / %2$d things the AI learned this week', 'r2c-ai-concierge' ),
+							(int) $sessions,
+							(int) $learned
+						);
+						?>
+					</td>
+				</tr>
+				<?php if ( '' !== $plan ) : ?>
+				<tr>
+					<th><?php esc_html_e( 'Current plan', 'r2c-ai-concierge' ); ?></th>
+					<td><?php echo esc_html( self::plan_label( $plan ) ); ?></td>
+				</tr>
+				<?php endif; ?>
+				<tr>
+					<th><?php esc_html_e( 'Avatar', 'r2c-ai-concierge' ); ?></th>
+					<td><?php echo esc_html( $avatar_active ? __( 'Active', 'r2c-ai-concierge' ) : __( 'Inactive', 'r2c-ai-concierge' ) ); ?></td>
+				</tr>
+				<tr>
+					<th><?php esc_html_e( 'FAQs', 'r2c-ai-concierge' ); ?></th>
+					<td>
+						<?php
+						printf(
+							/* translators: %d: number of published FAQs */
+							esc_html__( '%d registered', 'r2c-ai-concierge' ),
+							(int) $faq_count
+						);
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th><?php esc_html_e( 'Unhandled inquiries', 'r2c-ai-concierge' ); ?></th>
+					<td>
+						<?php
+						printf(
+							/* translators: %d: number of unresolved inquiries */
+							esc_html__( '%d unresolved', 'r2c-ai-concierge' ),
+							(int) $open_escalations
+						);
+						?>
+						<a href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Respond in R2C App', 'r2c-ai-concierge' ); ?></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
 	}
 
 	/**

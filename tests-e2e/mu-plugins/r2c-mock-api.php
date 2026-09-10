@@ -39,6 +39,19 @@ class R2C_Mock_Api {
 				'excluded_page_patterns' => array(),
 				'allowed_origins'        => array(),
 			),
+			// WP-17/D13: GET /v1/public/wp/status のモック応答。'settings' とは
+			// 独立した別エンドポイントの状態(D9のとおり、この画面から書き込む
+			// 値は一切含まない)。
+			'status' => array(
+				'plan'                   => 'starter',
+				'avatar_active'          => false,
+				'faq_published_count'    => 0,
+				'open_escalations_count' => 0,
+				'weekly_summary'         => array(
+					'sessions_this_week' => 0,
+					'learned_this_week'  => 0,
+				),
+			),
 			'controls' => array(
 				'poll_attempts_until_provisioned' => 1,
 				'forced_poll_status'              => null, // null | 'expired' | 'failed'
@@ -99,6 +112,15 @@ class R2C_Mock_Api {
 			array(
 				'methods'             => 'PATCH',
 				'callback'            => array( __CLASS__, 'handle_patch_settings' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+		register_rest_route(
+			'r2c-mock',
+			'/v1/public/wp/status',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( __CLASS__, 'handle_get_status' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -238,6 +260,20 @@ class R2C_Mock_Api {
 		return new WP_REST_Response( $state['settings'], 200 );
 	}
 
+	public static function handle_get_status( WP_REST_Request $req ) {
+		$state = self::get_state();
+		if ( $state['controls']['force_settings_down'] ) {
+			return new WP_REST_Response( array( 'error' => 'service_unavailable', 'message' => 'mocked outage' ), 503 );
+		}
+
+		$api_key = $req->get_header( 'x-api-key' );
+		if ( ! in_array( $api_key, $state['active_api_keys'], true ) ) {
+			return new WP_REST_Response( array( 'error' => 'invalid_api_key' ), 401 );
+		}
+
+		return new WP_REST_Response( $state['status'], 200 );
+	}
+
 	/* ---- テスト制御専用(本物のAPIには存在しない) ---- */
 
 	/**
@@ -266,6 +302,7 @@ class R2C_Mock_Api {
 	 *   { "forced_poll_status": "expired" }       毎回expiredを返す
 	 *   { "force_settings_down": true }           settings/disconnectを503に落とす
 	 *   { "seed_api_key": "mock_xxx" }            手動キー貼り付けテスト用に有効キーを事前登録
+	 *   { "status": { "avatar_active": true } }   GET /v1/public/wp/status の応答を部分上書き
 	 */
 	public static function handle_test_configure( WP_REST_Request $req ) {
 		$state = self::get_state();
@@ -284,6 +321,9 @@ class R2C_Mock_Api {
 		}
 		if ( isset( $body['settings'] ) && is_array( $body['settings'] ) ) {
 			$state['settings'] = array_merge( $state['settings'], $body['settings'] );
+		}
+		if ( isset( $body['status'] ) && is_array( $body['status'] ) ) {
+			$state['status'] = array_merge( $state['status'], $body['status'] );
 		}
 
 		self::save_state( $state );

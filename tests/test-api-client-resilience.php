@@ -84,4 +84,46 @@ class ApiClientResilienceTest extends TestCase {
 		$this->assertSame( 401, $result['status'] );
 		$this->assertSame( 'invalid api key', $result['body']['message'] );
 	}
+
+	/**
+	 * WP-17: get_status() must hit the dedicated status endpoint with the
+	 * given api key, not silently reuse get_settings()'s path.
+	 */
+	public function test_get_status_requests_the_status_endpoint_with_the_api_key() {
+		Functions\expect( 'wp_remote_request' )
+			->once()
+			->withArgs(
+				function ( $url, $args ) {
+					return 'https://api.r2c.biz/v1/public/wp/status' === $url
+						&& 'GET' === $args['method']
+						&& 'fake-key' === $args['headers']['x-api-key'];
+				}
+			)
+			->andReturn( array( 'fake' => 'response' ) );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( 200 );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"plan":"growth"}' );
+
+		$result = \R2C_AI_Concierge_Api_Client::get_status( 'fake-key' );
+
+		$this->assertTrue( $result['ok'] );
+		$this->assertSame( 'growth', $result['body']['plan'] );
+	}
+
+	public function test_get_status_transport_failure_returns_graceful_failure_shape() {
+		$error = new \WP_Error( 'http_request_failed', 'Connection timed out' );
+
+		Functions\when( 'wp_remote_request' )->justReturn( $error );
+		Functions\when( 'is_wp_error' )->alias(
+			function ( $thing ) use ( $error ) {
+				return $thing === $error;
+			}
+		);
+
+		$result = \R2C_AI_Concierge_Api_Client::get_status( 'fake-key' );
+
+		$this->assertFalse( $result['ok'] );
+		$this->assertNull( $result['body'] );
+		$this->assertSame( 'Connection timed out', $result['error'] );
+	}
 }

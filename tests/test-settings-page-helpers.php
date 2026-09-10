@@ -148,6 +148,119 @@ class SettingsPageHelpersTest extends TestCase {
 		$this->assertStringNotContainsString( '<img src=x onerror=alert(2)>', $output );
 	}
 
+	/* ---- render_usage_status() (WP-18/D13) ---- */
+
+	private function stub_common_i18n_passthroughs() {
+		Functions\when( 'esc_html' )->returnArg( 1 );
+		Functions\when( 'esc_html__' )->returnArg( 1 );
+		Functions\when( 'esc_html_e' )->alias(
+			function ( $text ) {
+				echo $text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- test-only stand-in.
+			}
+		);
+		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'esc_url' )->returnArg( 1 );
+	}
+
+	/**
+	 * render_usage_status() calls the real R2C_AI_Concierge_Api_Client::get_status()
+	 * (a plain PHP static method Brain\Monkey cannot intercept), so these
+	 * tests stub the WordPress functions that method itself calls through —
+	 * the same boundary test-api-client-resilience.php stubs at.
+	 */
+	private function stub_status_endpoint_response( $status_code, $json_body ) {
+		Functions\when( 'get_option' )->justReturn( 'fake-key' ); // R2C_AI_Concierge_Options::get_api_key()
+		Functions\when( 'wp_remote_request' )->justReturn( array( 'fake' => 'response' ) );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( $status_code );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( json_encode( $json_body ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- test-only stand-in for the real wp_json_encode().
+	}
+
+	/**
+	 * F-2/F-5/禁止48: 到達できた場合、5項目(会話数・学習件数・プラン・
+	 * アバター稼働状態・FAQ件数・未対応件数)のみを表示し、USDセント原価等
+	 * 余分な値を含めない。
+	 */
+	public function test_render_usage_status_shows_the_five_fields_on_success() {
+		$this->stub_common_i18n_passthroughs();
+		$this->stub_status_endpoint_response(
+			200,
+			array(
+				'plan'                   => 'growth',
+				'avatar_active'          => true,
+				'faq_published_count'    => 5,
+				'open_escalations_count' => 2,
+				'weekly_summary'         => array(
+					'sessions_this_week' => 12,
+					'learned_this_week'  => 3,
+				),
+			)
+		);
+
+		ob_start();
+		$this->call_private_static( 'render_usage_status', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( '12', $output );
+		$this->assertStringContainsString( '3', $output );
+		$this->assertStringContainsString( 'Growth plan', $output );
+		$this->assertStringContainsString( 'Active', $output );
+		$this->assertStringContainsString( '5', $output );
+		$this->assertStringContainsString( '2', $output );
+		$this->assertStringNotContainsString( 'cents', $output );
+		$this->assertStringNotContainsString( 'cost_total', $output );
+	}
+
+	/**
+	 * 母数0は0のまま表示する(禁止34)。0件を「効果なし」等に丸めない。
+	 */
+	public function test_render_usage_status_shows_zero_counts_as_zero() {
+		$this->stub_common_i18n_passthroughs();
+		$this->stub_status_endpoint_response(
+			200,
+			array(
+				'plan'                   => 'starter',
+				'avatar_active'          => false,
+				'faq_published_count'    => 0,
+				'open_escalations_count' => 0,
+				'weekly_summary'         => array(
+					'sessions_this_week' => 0,
+					'learned_this_week'  => 0,
+				),
+			)
+		);
+
+		ob_start();
+		$this->call_private_static( 'render_usage_status', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'Inactive', $output );
+		$this->assertStringContainsString( '0', $output );
+	}
+
+	/**
+	 * FR-40: API到達不能時は「取得できません」を表示し、直前の値を出し
+	 * 続けたり無限ローディングを残したりしない。
+	 */
+	public function test_render_usage_status_shows_unavailable_message_on_failure() {
+		$this->stub_common_i18n_passthroughs();
+		Functions\when( 'get_option' )->justReturn( 'fake-key' );
+		$error = new \WP_Error( 'http_request_failed', 'Connection timed out' );
+		Functions\when( 'wp_remote_request' )->justReturn( $error );
+		Functions\when( 'is_wp_error' )->alias(
+			function ( $thing ) use ( $error ) {
+				return $thing === $error;
+			}
+		);
+
+		ob_start();
+		$this->call_private_static( 'render_usage_status', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'Unable to retrieve this information right now.', $output );
+		$this->assertStringNotContainsString( 'form-table', $output );
+	}
+
 	/* ---- render_excluded_pages_section(): Plain-permalink guard ---- */
 
 	/**
