@@ -4,7 +4,7 @@ Tags: chatbot, live chat, ai, customer support, faq
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,7 +48,10 @@ the settings screen.
 * **Every front-end page view** (once connected): loads
   `https://api.r2c.biz/widget/{your-tenant-id}.js`, R2C's own script that
   renders the chat bubble and generates AI responses to your visitors'
-  questions. That script's traffic goes to R2C's own AI providers
+  questions. The script tag also carries your site's R2C widget API key
+  (`data-api-key`), which the script sends to R2C to identify your site;
+  this key is designed to be public and is visible in your page's HTML.
+  That script's traffic goes to R2C's own AI providers
   (OpenAI, Groq, and Google Gemini) and, for the optional voice/avatar
   feature, LiveKit — not to this plugin.
 
@@ -89,6 +92,9 @@ disconnect first from the settings screen if you also want to revoke the
 API key on R2C's side immediately.
 
 == Changelog ==
+
+= 0.1.1 =
+* Fix: the chat widget could not answer questions because the API key was not passed to the widget script. The widget is now only shown when both the tenant ID and the API key are stored.
 
 = 0.1.0 =
 * Connect a WordPress site to R2C (new or existing account) with explicit consent, or by pasting an existing API key.
