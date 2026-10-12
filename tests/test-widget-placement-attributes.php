@@ -139,4 +139,83 @@ class WidgetPlacementAttributesTest extends TestCase {
 
 		$this->assertSame( '', $output );
 	}
+
+	private function stub_options_with_key( $api_key, $tenant_id = 't_abc' ) {
+		Functions\when( 'get_option' )->alias(
+			function ( $name, $default = false ) use ( $api_key, $tenant_id ) {
+				switch ( $name ) {
+					case \R2C_AI_Concierge_Options::API_KEY:
+						return $api_key;
+					case \R2C_AI_Concierge_Options::TENANT_ID:
+						return $tenant_id;
+					default:
+						return $default;
+				}
+			}
+		);
+	}
+
+	/**
+	 * widget.js reads the key only from document.currentScript's
+	 * `data-api-key` and sends it as `x-api-key`; without it every chat
+	 * request is a 401.
+	 */
+	public function test_tag_includes_data_api_key() {
+		$this->stub_options_with_key( 'r2c_live_key_123' );
+
+		$output = \R2C_AI_Concierge_Widget::render_tag();
+
+		$this->assertStringContainsString( 'data-api-key="r2c_live_key_123"', $output );
+		$this->assertStringContainsString( 'data-tenant="t_abc"', $output );
+	}
+
+	public function test_data_api_key_value_is_escaped() {
+		Functions\when( 'esc_attr' )->alias(
+			function ( $text ) {
+				return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+			}
+		);
+		$this->stub_options_with_key( 'k"><script>alert(1)</script>' );
+
+		$output = \R2C_AI_Concierge_Widget::render_tag();
+
+		$this->assertStringContainsString( 'data-api-key="k&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;"', $output );
+		$this->assertStringNotContainsString( 'k"><script>', $output );
+	}
+
+	public function test_renders_nothing_when_tenant_id_set_but_api_key_empty() {
+		$this->stub_options_with_key( '' );
+
+		$this->assertSame( '', \R2C_AI_Concierge_Widget::render_tag() );
+	}
+
+	public function test_enqueue_registers_script_when_key_and_tenant_present() {
+		$this->stub_options_with_key( 'r2c_live_key_123' );
+		Functions\expect( 'wp_enqueue_script' )->once();
+
+		\R2C_AI_Concierge_Widget::enqueue();
+
+		// The Brain Monkey expectation above is verified in tearDown().
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function test_enqueue_registers_nothing_when_api_key_empty() {
+		$this->stub_options_with_key( '' );
+		Functions\expect( 'wp_enqueue_script' )->never();
+
+		\R2C_AI_Concierge_Widget::enqueue();
+
+		// The Brain Monkey expectation above is verified in tearDown().
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function test_enqueue_registers_nothing_when_tenant_id_empty() {
+		$this->stub_options_with_key( 'r2c_live_key_123', '' );
+		Functions\expect( 'wp_enqueue_script' )->never();
+
+		\R2C_AI_Concierge_Widget::enqueue();
+
+		// The Brain Monkey expectation above is verified in tearDown().
+		$this->addToAssertionCount( 1 );
+	}
 }

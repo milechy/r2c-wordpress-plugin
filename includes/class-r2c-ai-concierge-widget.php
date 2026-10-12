@@ -42,8 +42,11 @@ class R2C_AI_Concierge_Widget {
 			return;
 		}
 
+		// The widget needs both: widget.js sends the key as `x-api-key` on
+		// every chat request, so a button that cannot answer is worse than none.
 		$tenant_id = R2C_AI_Concierge_Options::get_tenant_id();
-		if ( empty( $tenant_id ) ) {
+		$api_key   = R2C_AI_Concierge_Options::get_api_key();
+		if ( empty( $tenant_id ) || empty( $api_key ) ) {
 			return;
 		}
 
@@ -77,16 +80,18 @@ class R2C_AI_Concierge_Widget {
 		}
 
 		$tenant_id = R2C_AI_Concierge_Options::get_tenant_id();
-		if ( empty( $tenant_id ) ) {
+		$api_key   = R2C_AI_Concierge_Options::get_api_key();
+		if ( empty( $tenant_id ) || empty( $api_key ) ) {
 			return '';
 		}
 
 		$attrs = self::placement_attributes();
 
 		return sprintf(
-			'<script src="%s" data-tenant="%s"%s async></script>' . "\n", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- false positive: this string is the `script_loader_tag` filter's return value for a handle already registered via wp_enqueue_script() in enqueue() above, not a bare unenqueued script tag. The sniff's text-pattern check for `<script` cannot see that context.
+			'<script src="%s" data-tenant="%s" data-api-key="%s"%s async></script>' . "\n", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- false positive: this string is the `script_loader_tag` filter's return value for a handle already registered via wp_enqueue_script() in enqueue() above, not a bare unenqueued script tag. The sniff's text-pattern check for `<script` cannot see that context.
 			esc_url( self::widget_src( $tenant_id ) ),
 			esc_attr( $tenant_id ),
+			esc_attr( $api_key ),
 			$attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped attribute-by-attribute in placement_attributes().
 		);
 	}
