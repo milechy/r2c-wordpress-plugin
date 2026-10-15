@@ -55,6 +55,19 @@ class R2C_AI_Concierge_Ajax {
 		return wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- deliberately returns the raw unslashed value; every call site applies the sanitizer appropriate to that specific field (sanitize_email, sanitize_hex_color, sanitize_text_field, ...).
 	}
 
+	/**
+	 * 手入力欄の値から接続キーを取り出す。`data-api-key="..."`(シングル
+	 * クォートも可)を含む文字列なら、その属性値だけを返す。含まなければ
+	 * 入力をそのまま(前後の空白だけ除いて)返す — 素のキーは従来どおり。
+	 * 検証は一切ここでは行わない(呼び出し側が sanitize・R2C への確認を行う)。
+	 */
+	private static function extract_api_key( $raw ) {
+		if ( preg_match( '/data-api-key\s*=\s*(["\'])(.*?)\1/is', $raw, $matches ) ) {
+			return trim( $matches[2] );
+		}
+		return trim( $raw );
+	}
+
 	/* 接続開始 */
 
 	public static function handle_connect() {
@@ -219,7 +232,12 @@ class R2C_AI_Concierge_Ajax {
 	public static function handle_connect_manual() {
 		self::guard();
 
-		$api_key = sanitize_text_field( self::post_string( 'api_key' ) );
+		// R2C の管理画面は接続キーを script タグごとコピーさせるため、手入力欄に
+		// タグ丸ごと貼られることが多い。sanitize_text_field() はタグを除去して
+		// 中身を空にしてしまうので、その前に data-api-key の値だけを取り出す。
+		// 取り出した値も、素のキーと同じ sanitize・同じ以降の検証(R2C への
+		// 問い合わせ)を通す。
+		$api_key = sanitize_text_field( self::extract_api_key( self::post_string( 'api_key' ) ) );
 		if ( empty( $api_key ) ) {
 			wp_send_json_error( array( 'message' => __( 'Please enter an API key.', 'r2c-ai-concierge' ) ) );
 		}
