@@ -136,6 +136,19 @@ class R2C_AI_Concierge_Settings_Page {
 
 			<details style="margin-top: 24px;">
 				<summary><?php esc_html_e( 'If you already have an R2C account', 'r2c-ai-concierge' ); ?></summary>
+				<?php self::render_manual_key_form(); ?>
+			</details>
+		</div>
+		<?php
+	}
+
+	/**
+	 * 手動キー貼り付けフォーム(FR-05)。未接続画面の<details>内と、キー失効
+	 * 画面(render_key_revoked)の2か所から同じ要素IDで出す — どちらの画面でも
+	 * 同じJS(initManualForm)と同じAJAXハンドラで動かし、経路を増やさない。
+	 */
+	private static function render_manual_key_form() {
+		?>
 				<form id="r2c-manual-form" style="margin-top: 12px;">
 					<p>
 						<label for="r2c-manual-key"><?php esc_html_e( 'API key', 'r2c-ai-concierge' ); ?></label><br />
@@ -146,15 +159,34 @@ class R2C_AI_Concierge_Settings_Page {
 					</p>
 					<p id="r2c-manual-status" role="status" aria-live="polite"></p>
 				</form>
-			</details>
-		</div>
 		<?php
 	}
 
 	/* 接続済み */
 
+	/**
+	 * R2C が保存済みキーに 401 を返したとき(キーが失効・再発行された)。
+	 * 到達不能・5xx(一時的な不調。「しばらくしてから」で足りる)とは原因も
+	 * 次の行動も違うため、別の文言・別の画面にする。このとき「接続済み」とは
+	 * 表示しない — キーはもう使えず、ウィジェットも応答できていない。
+	 * 再接続は未接続画面と同じ手動キー貼り付けフォーム(FR-05)で行う。
+	 */
+	private static function render_key_revoked() {
+		echo '<p>' . esc_html__( 'Status: Connection is no longer valid', 'r2c-ai-concierge' ) . '</p>';
+		printf(
+			'<div class="notice notice-error"><p>%s</p></div>',
+			esc_html__( 'The connection key is no longer valid. In the R2C dashboard, ask the assistant to "issue a WordPress connection key", then paste the code it shows into the box below to reconnect.', 'r2c-ai-concierge' )
+		);
+		self::render_manual_key_form();
+		self::render_disconnect_button();
+	}
 	private static function render_connected() {
 		$result = R2C_AI_Concierge_Api_Client::get_settings( R2C_AI_Concierge_Options::get_api_key() );
+
+		if ( ! $result['ok'] && 401 === $result['status'] ) {
+			self::render_key_revoked();
+			return;
+		}
 
 		echo '<p>' . esc_html__( 'Status: Connected', 'r2c-ai-concierge' ) . '</p>';
 

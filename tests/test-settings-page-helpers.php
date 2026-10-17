@@ -261,6 +261,90 @@ class SettingsPageHelpersTest extends TestCase {
 		$this->assertStringNotContainsString( 'form-table', $output );
 	}
 
+	/* ---- render_connected(): キー失効(401)と一時的な不調の区別(WP-UX-07) ---- */
+
+	/**
+	 * Stubs every R2C GET with the given status and counts how many HTTP
+	 * requests the render makes. get_option returns a fake key for the
+	 * api-key read.
+	 *
+	 * @param int $status_code HTTP status returned by every R2C request.
+	 * @return \ArrayObject Holds ->count of wp_remote_request() calls.
+	 */
+	private function stub_connected_render_with_status( $status_code ) {
+		$this->stub_common_i18n_passthroughs();
+		Functions\when( 'esc_attr' )->returnArg( 1 );
+		Functions\when( 'get_option' )->justReturn( 'fake-key' );
+		$calls        = new \ArrayObject();
+		$calls->count = 0;
+		Functions\when( 'wp_remote_request' )->alias(
+			function () use ( $calls ) {
+				++$calls->count;
+				return array( 'fake' => 'response' );
+			}
+		);
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( $status_code );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"error":"invalid_api_key"}' );
+		return $calls;
+	}
+
+	public function test_render_connected_shows_key_revoked_state_on_401_and_not_connected() {
+		$calls = $this->stub_connected_render_with_status( 401 );
+
+		ob_start();
+		$this->call_private_static( 'render_connected', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'Status: Connection is no longer valid', $output );
+		$this->assertStringContainsString( 'The connection key is no longer valid.', $output );
+		$this->assertStringNotContainsString( 'Status: Connected', $output );
+		// The temporary-outage wording must not be used for a revoked key.
+		$this->assertStringNotContainsString( 'reopen this page in a moment', $output );
+		// A way to paste a new key right there, and a way to disconnect.
+		$this->assertStringContainsString( 'id="r2c-manual-form"', $output );
+		$this->assertStringContainsString( 'id="r2c-disconnect-button"', $output );
+		// No settings form built on a key R2C refuses; and no second
+		// request (usage status) is fired at a key already known bad.
+		$this->assertStringNotContainsString( 'r2c-settings-form', $output );
+		$this->assertSame( 1, $calls->count );
+	}
+
+	public function test_render_connected_keeps_connected_status_and_retry_wording_on_5xx() {
+		$this->stub_connected_render_with_status( 503 );
+
+		ob_start();
+		$this->call_private_static( 'render_connected', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'Status: Connected', $output );
+		$this->assertStringContainsString( 'reopen this page in a moment', $output );
+		$this->assertStringNotContainsString( 'no longer valid', $output );
+		$this->assertStringNotContainsString( 'id="r2c-manual-form"', $output );
+		$this->assertStringNotContainsString( 'r2c-settings-form', $output );
+		$this->assertStringContainsString( 'id="r2c-disconnect-button"', $output );
+	}
+
+	public function test_render_connected_keeps_connected_status_and_retry_wording_on_transport_failure() {
+		$this->stub_common_i18n_passthroughs();
+		Functions\when( 'get_option' )->justReturn( 'fake-key' );
+		$error = new \WP_Error( 'http_request_failed', 'Connection timed out' );
+		Functions\when( 'wp_remote_request' )->justReturn( $error );
+		Functions\when( 'is_wp_error' )->alias(
+			function ( $thing ) use ( $error ) {
+				return $thing === $error;
+			}
+		);
+
+		ob_start();
+		$this->call_private_static( 'render_connected', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'Status: Connected', $output );
+		$this->assertStringContainsString( 'reopen this page in a moment', $output );
+		$this->assertStringNotContainsString( 'no longer valid', $output );
+	}
+
 	/* ---- render_excluded_pages_section(): Plain-permalink guard ---- */
 
 	/**
