@@ -154,7 +154,9 @@
 		button.addEventListener( 'click', function () {
 			if ( ! confirming ) {
 				confirming = true;
-				button.textContent = window.r2cAiConciergeAdmin.i18n.confirmDisconnect;
+				// 長い確認文(解約ではない旨)はボタンに詰めず status 領域へ出す。
+				button.textContent = window.r2cAiConciergeAdmin.i18n.confirmButton;
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.confirmDisconnect );
 				return;
 			}
 

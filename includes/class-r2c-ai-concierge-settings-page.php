@@ -72,7 +72,8 @@ class R2C_AI_Concierge_Settings_Page {
 				'pagePaths' => self::page_id_to_path_map(),
 				'i18n'      => array(
 					'connecting'        => __( 'Connecting…', 'r2c-ai-concierge' ),
-					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted.', 'r2c-ai-concierge' ),
+					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant "I want to cancel".', 'r2c-ai-concierge' ),
+					'confirmButton'     => __( 'Click again to disconnect', 'r2c-ai-concierge' ),
 					'saving'            => __( 'Saving…', 'r2c-ai-concierge' ),
 					'saved'             => __( 'Saved.', 'r2c-ai-concierge' ),
 					'networkError'      => __( 'Unable to reach the server. Please check your connection and try again.', 'r2c-ai-concierge' ),
@@ -110,6 +111,32 @@ class R2C_AI_Concierge_Settings_Page {
 		<div id="r2c-connect-panel">
 			<p><?php esc_html_e( 'R2C is an AI concierge widget that automatically chats with your site\'s visitors. Connect using the button below to display the widget with no theme editing required.', 'r2c-ai-concierge' ); ?></p>
 
+			<?php self::render_entry_new(); ?>
+			<?php self::render_entry_existing(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * 入口①: 初めての方。無料プランの条件は同意チェックの「前」に出す(WP-UX-05)。
+	 * 機能ロックではなく条件の説明のみ(GL#5)。バッジ/広告の描画は widget.js 側
+	 * (GL#10)なので、ここは文章で伝えるだけ。
+	 */
+	private static function render_entry_new() {
+		?>
+		<div id="r2c-entry-new" class="r2c-entry">
+			<h2><?php esc_html_e( 'First time using R2C? Start for free', 'r2c-ai-concierge' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Already an R2C customer? Please use "I already have an R2C contract" below instead. This button creates a new free account.', 'r2c-ai-concierge' ); ?></p>
+
+			<h3><?php esc_html_e( 'About the free plan', 'r2c-ai-concierge' ); ?></h3>
+			<ul class="r2c-free-terms" style="list-style:disc;margin-left:20px;">
+				<li><?php esc_html_e( 'Ads and R2C branding appear on the chat widget.', 'r2c-ai-concierge' ); ?></li>
+				<li><?php esc_html_e( 'The widget pauses after 200 conversations per month and starts again on the 1st of the next month.', 'r2c-ai-concierge' ); ?></li>
+				<li><?php esc_html_e( 'Conversation data is used for R2C\'s shared learning. This cannot be changed on the free plan.', 'r2c-ai-concierge' ); ?></li>
+				<li><?php esc_html_e( 'If you move to a paid plan and cancel it later, your site returns to this free plan and the widget keeps running with ads.', 'r2c-ai-concierge' ); ?></li>
+			</ul>
+			<p><a href="https://r2c.biz/lp/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'See plans and pricing', 'r2c-ai-concierge' ); ?></a></p>
+
 			<form id="r2c-connect-form">
 				<p>
 					<label for="r2c-email"><?php esc_html_e( 'Email address', 'r2c-ai-concierge' ); ?></label><br />
@@ -133,11 +160,6 @@ class R2C_AI_Concierge_Settings_Page {
 				</p>
 				<p id="r2c-connect-status" role="status" aria-live="polite"></p>
 			</form>
-
-			<details style="margin-top: 24px;">
-				<summary><?php esc_html_e( 'If you already have an R2C account', 'r2c-ai-concierge' ); ?></summary>
-				<?php self::render_manual_key_form(); ?>
-			</details>
 		</div>
 		<?php
 	}
@@ -159,6 +181,29 @@ class R2C_AI_Concierge_Settings_Page {
 					</p>
 					<p id="r2c-manual-status" role="status" aria-live="polite"></p>
 				</form>
+		<?php
+	}
+
+	/**
+	 * 入口②: すでに契約中の方。メール照合の自動紐付けはしない(他人の契約に
+	 * 繋がるのを防ぐため)。R2C 管理画面で発行した接続キーを貼る。
+	 * <summary> は E2E(wp-admin.js)が開く目印として、この1つだけにしてある。
+	 */
+	private static function render_entry_existing() {
+		?>
+		<details id="r2c-entry-existing" class="r2c-entry" style="margin-top: 24px;">
+			<summary><strong><?php esc_html_e( 'I already have an R2C contract (connect with a connection key)', 'r2c-ai-concierge' ); ?></strong></summary>
+			<p style="margin-top: 12px;">
+				<?php
+				printf(
+					/* translators: %s: link to the R2C dashboard */
+					esc_html__( 'Open the %s and tell the assistant: "Issue a connection key for WordPress." Then paste the key into the box below.', 'r2c-ai-concierge' ),
+					'<a href="' . esc_url( self::APP_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'R2C dashboard', 'r2c-ai-concierge' ) . '</a>'
+				);
+				?>
+			</p>
+			<?php self::render_manual_key_form(); ?>
+		</details>
 		<?php
 	}
 
@@ -374,8 +419,9 @@ class R2C_AI_Concierge_Settings_Page {
 
 	private static function render_next_steps() {
 		printf(
-			'<div class="notice notice-info r2c-next-steps"><p><strong>%s</strong></p><ul style="list-style:disc;margin-left:20px;"><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li></ul></div>',
+			'<div class="notice notice-info r2c-next-steps"><p><strong>%s</strong></p><ul style="list-style:disc;margin-left:20px;"><li>%s</li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li></ul></div>',
 			esc_html__( 'Next steps', 'r2c-ai-concierge' ),
+			esc_html__( 'If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder.', 'r2c-ai-concierge' ),
 			esc_url( self::APP_URL ),
 			esc_html__( 'Register FAQs', 'r2c-ai-concierge' ),
 			esc_url( self::APP_URL ),

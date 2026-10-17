@@ -19,8 +19,27 @@ class R2C_Mock_Api {
 
 	const OPTION_KEY = 'r2c_mock_state';
 
+	const HITS_OPTION = 'r2c_mock_hits';
+
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
+		add_filter( 'rest_pre_dispatch', array( __CLASS__, 'count_hit' ), 10, 3 );
+	}
+
+	/**
+	 * プラグインが R2C に話しかけた回数(GL#7「未接続ゼロ通信」のE2E用)。
+	 * /__test__/ 配下(テスト自身の操作)は数えない。
+	 */
+	public static function count_hit( $result, $server, $request ) {
+		$route = $request->get_route();
+		if ( 0 === strpos( $route, '/r2c-mock/' ) && false === strpos( $route, '/__test__/' ) ) {
+			update_option( self::HITS_OPTION, (int) get_option( self::HITS_OPTION, 0 ) + 1, false );
+		}
+		return $result;
+	}
+
+	public static function handle_test_hits() {
+		return new WP_REST_Response( array( 'hits' => (int) get_option( self::HITS_OPTION, 0 ) ), 200 );
 	}
 
 	private static function default_state() {
@@ -121,6 +140,15 @@ class R2C_Mock_Api {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( __CLASS__, 'handle_get_status' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+		register_rest_route(
+			'r2c-mock',
+			'/__test__/hits',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( __CLASS__, 'handle_test_hits' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -288,6 +316,7 @@ class R2C_Mock_Api {
 	 */
 	public static function handle_test_reset() {
 		self::save_state( self::default_state() );
+		delete_option( self::HITS_OPTION );
 		if ( class_exists( 'R2C_AI_Concierge_Options' ) ) {
 			R2C_AI_Concierge_Options::clear_connection();
 			R2C_AI_Concierge_Options::clear_pending_poll_token();

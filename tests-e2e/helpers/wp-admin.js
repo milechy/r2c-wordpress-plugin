@@ -68,6 +68,20 @@ async function resetMock( baseURL, configure ) {
 	}
 }
 
+/**
+ * How many times the plugin has called the (mock) R2C API since the last
+ * resetMock(). Used to prove the disconnected screen talks to nobody (GL#7).
+ */
+async function mockHits( baseURL ) {
+	const ctx = await request.newContext();
+	try {
+		const res = await ctx.get( mockRoute( baseURL, '/__test__/hits' ) );
+		return ( await res.json() ).hits;
+	} finally {
+		await ctx.dispose();
+	}
+}
+
 async function configureMock( baseURL, configure ) {
 	const ctx = await request.newContext();
 	try {
@@ -117,6 +131,7 @@ module.exports = {
 	gotoSettings,
 	resetMock,
 	configureMock,
+	mockHits,
 	connectViaManualKey,
 	SETTINGS_URL,
 };
