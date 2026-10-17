@@ -410,3 +410,28 @@ msgstr "接続が無効になっています。このページを開き直して
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "The email could not be sent right now. Please try again in a moment."
 msgstr "いま、メールを送信できませんでした。しばらくしてからもう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "R2C is having a temporary problem. We will keep trying. Please wait a moment."
+msgstr "R2C 側で一時的な問題が起きています。自動でやり直しますので、少しお待ちください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The time to confirm your site has run out. Please press \"Connect\" again."
+msgstr "サイトの確認の有効時間が過ぎました。もう一度「接続する」を押してください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press \"Disconnect\" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant \"Add %2$s to the allowed domains\"."
+msgstr "接続したときのサイトのアドレス（%1$s）と現在のアドレス（%2$s）が違います。このままではチャットが表示されません。サイトを複製した場合は、この画面で「接続を解除」を押すと本番サイトも止まります。アドレスを変えた場合は、R2C の管理画面で「許可ドメインに %2$s を追加して」と話しかけてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "This site's address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key."
+msgstr "このサイトのアドレスは、接続したときのアドレスと違います。このサイトが別のサイトの複製である場合、ここで接続を解除すると、同じキーを使っている元のサイトのチャットも止まります。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "A display position you changed in the R2C dashboard is applied to your site when you open this screen."
+msgstr "R2C の管理画面で変えた表示位置は、この画面を開くとサイトに反映されます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Could not be retrieved"
+msgstr "取得できませんでした"

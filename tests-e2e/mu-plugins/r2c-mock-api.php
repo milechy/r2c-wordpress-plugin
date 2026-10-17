@@ -73,7 +73,9 @@ class R2C_Mock_Api {
 			),
 			'controls' => array(
 				'poll_attempts_until_provisioned' => 1,
-				'forced_poll_status'              => null, // null | 'expired' | 'failed'
+				'forced_poll_status'              => null, // null | 'expired' | 'failed' | 'server_error'(500)
+				// true: ポーリングの応答前に、WP 側の challenge(15分で消える合言葉)を消す。
+				'clear_challenge_on_poll'         => false,
 				'force_settings_down'              => false,
 				// POST /v1/public/wp/resend-invite の結果(WP-UX-09)。
 				// null=成功 | 'rate_limit'(429) | 'no_recipient'(404) | 'send_failed'(502)
@@ -219,7 +221,14 @@ class R2C_Mock_Api {
 			return new WP_REST_Response( array( 'status' => 'not_found' ), 404 );
 		}
 
+		if ( ! empty( $state['controls']['clear_challenge_on_poll'] ) && class_exists( 'R2C_AI_Concierge_Options' ) ) {
+			R2C_AI_Concierge_Options::clear_pending_challenge();
+		}
+
 		$forced = $state['controls']['forced_poll_status'];
+		if ( 'server_error' === $forced ) {
+			return new WP_REST_Response( array( 'error' => 'internal_error' ), 500 );
+		}
 		if ( 'expired' === $forced || 'failed' === $forced ) {
 			$body = array( 'status' => $forced );
 			if ( 'failed' === $forced ) {
@@ -367,7 +376,9 @@ class R2C_Mock_Api {
 	/**
 	 * body例:
 	 *   { "poll_attempts_until_provisioned": 0 }  即座にprovisionedにする
-	 *   { "forced_poll_status": "expired" }       毎回expiredを返す
+	 *   { "forced_poll_status": "expired" }       毎回expiredを返す("server_error" なら 500)
+	 *   { "clear_challenge_on_poll": true }       ポーリングのたびに WP 側の challenge を消す(15分経過の再現)
+	 *   { "site_origin": "https://old.example" } 接続時のサイトのアドレスとして保存されている値を差し替える(ドメイン変更・複製の再現)
 	 *   { "force_settings_down": true }           settings/disconnectを503に落とす
 	 *   { "resend_invite_result": "rate_limit" }  招待再送の応答を 429 に(no_recipient=404 / send_failed=502)
 	 *   { "seed_api_key": "mock_xxx" }            手動キー貼り付けテスト用に有効キーを事前登録
@@ -381,10 +392,13 @@ class R2C_Mock_Api {
 			return new WP_REST_Response( array( 'error' => 'invalid_body' ), 400 );
 		}
 
-		foreach ( array( 'poll_attempts_until_provisioned', 'forced_poll_status', 'force_settings_down', 'resend_invite_result' ) as $key ) {
+		foreach ( array( 'poll_attempts_until_provisioned', 'forced_poll_status', 'clear_challenge_on_poll', 'force_settings_down', 'resend_invite_result' ) as $key ) {
 			if ( array_key_exists( $key, $body ) ) {
 				$state['controls'][ $key ] = $body[ $key ];
 			}
+		}
+		if ( ! empty( $body['site_origin'] ) && class_exists( 'R2C_AI_Concierge_Options' ) ) {
+			update_option( R2C_AI_Concierge_Options::SITE_ORIGIN, (string) $body['site_origin'], false );
 		}
 		if ( ! empty( $body['seed_api_key'] ) ) {
 			$state['active_api_keys'][] = $body['seed_api_key'];

@@ -139,6 +139,17 @@ class R2C_AI_Concierge_Ajax {
 			);
 		}
 
+		// R2C 側の一時的な不調(5xx・HTML のエラーページ)。ネットワークの不調とは
+		// 原因が違い、利用者の側でできることも無いので、文言を分ける。終端にはしない。
+		if ( ! $result['ok'] && null !== $result['status'] && $result['status'] >= 500 ) {
+			wp_send_json_success(
+				array(
+					'status'  => 'pending',
+					'message' => __( 'R2C is having a temporary problem. We will keep trying. Please wait a moment.', 'r2c-ai-concierge' ),
+				)
+			);
+		}
+
 		// 到達不能はまだ終端にしない — ネットワークの一時的な不調かもしれず、
 		// JS側は次のポーリングを続ける(要件書 NFR-06 と同じ「サイトを壊さない」方針)。
 		if ( ! $result['ok'] ) {
@@ -158,6 +169,13 @@ class R2C_AI_Concierge_Ajax {
 				R2C_AI_Concierge_Options::set_connection( $body['api_key'], $body['tenant_id'], home_url( '/' ) );
 				R2C_AI_Concierge_Options::clear_pending_poll_token();
 				R2C_AI_Concierge_Options::clear_pending_challenge();
+				// 接続した時点で R2C に保存されている位置・色を取り込む。これをしないと、
+				// 既存テナントの位置が、設定画面を次に開くまでサイトに出ない。取得に失敗
+				// しても接続自体は成功のまま(次に設定画面を開いたときに取り込まれる)。
+				$settings = R2C_AI_Concierge_Api_Client::get_settings( $body['api_key'] );
+				if ( $settings['ok'] ) {
+					R2C_AI_Concierge_Options::cache_theme_from_settings( $settings['body'] );
+				}
 				wp_send_json_success( array( 'status' => 'connected' ) );
 			}
 			// 発行は完了しているが平文キーを受け取れなかった(再ポーリング等の
@@ -218,6 +236,20 @@ class R2C_AI_Concierge_Ajax {
 			);
 		}
 
+		// pending のまま、こちら側の challenge(サイト所有証明の合言葉)が消えている。
+		// WP 側は15分で消すが、R2C は最大24時間ポーリングに答え続けるため、放置すると
+		// R2C が /verify を読めず 404 になり続け、「Basic認証を解除してください」と
+		// 誤案内したまま終わらない。ここで終端にして、最初からやり直してもらう。
+		if ( ! R2C_AI_Concierge_Options::get_pending_challenge() ) {
+			R2C_AI_Concierge_Options::clear_pending_poll_token();
+			wp_send_json_success(
+				array(
+					'status'  => 'failed',
+					'message' => __( 'The time to confirm your site has run out. Please press "Connect" again.', 'r2c-ai-concierge' ),
+				)
+			);
+		}
+
 		// pending。verify_reason / wait_reason があれば、それに応じた
 		// 状況説明を出す(要件書 I-8 / I-9: 「なぜ待っているか」を具体的に)。
 		wp_send_json_success(
@@ -254,12 +286,7 @@ class R2C_AI_Concierge_Ajax {
 
 		$body = $result['body'];
 		R2C_AI_Concierge_Options::set_connection( $api_key, $body['tenant_id'], home_url( '/' ) );
-		R2C_AI_Concierge_Options::set_cached_theme(
-			isset( $body['position'] ) ? $body['position'] : null,
-			isset( $body['offset_x'] ) ? $body['offset_x'] : null,
-			isset( $body['offset_y'] ) ? $body['offset_y'] : null,
-			isset( $body['primary_color'] ) ? $body['primary_color'] : null
-		);
+		R2C_AI_Concierge_Options::cache_theme_from_settings( $body );
 
 		wp_send_json_success( array( 'status' => 'connected' ) );
 	}
@@ -344,12 +371,7 @@ class R2C_AI_Concierge_Ajax {
 		}
 
 		$body = $result['body'];
-		R2C_AI_Concierge_Options::set_cached_theme(
-			isset( $body['position'] ) ? $body['position'] : null,
-			isset( $body['offset_x'] ) ? $body['offset_x'] : null,
-			isset( $body['offset_y'] ) ? $body['offset_y'] : null,
-			isset( $body['primary_color'] ) ? $body['primary_color'] : null
-		);
+		R2C_AI_Concierge_Options::cache_theme_from_settings( $body );
 
 		wp_send_json_success( array( 'settings' => $body ) );
 	}

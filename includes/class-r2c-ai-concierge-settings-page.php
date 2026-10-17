@@ -77,6 +77,7 @@ class R2C_AI_Concierge_Settings_Page {
 					'sending'           => __( 'Sending…', 'r2c-ai-concierge' ),
 					'saving'            => __( 'Saving…', 'r2c-ai-concierge' ),
 					'saved'             => __( 'Saved.', 'r2c-ai-concierge' ),
+					'nothingToChange'   => __( 'There is nothing to change.', 'r2c-ai-concierge' ),
 					'networkError'      => __( 'Unable to reach the server. Please check your connection and try again.', 'r2c-ai-concierge' ),
 				),
 			)
@@ -236,8 +237,12 @@ class R2C_AI_Concierge_Settings_Page {
 
 		echo '<p>' . esc_html__( 'Status: Connected', 'r2c-ai-concierge' ) . '</p>';
 
+		self::render_origin_mismatch_notice();
 		self::render_next_steps();
-		self::render_usage_status();
+
+		// プランの表示元はこの1回の取得に一本化する(設定の取得結果には載せない)。
+		$status_result = R2C_AI_Concierge_Api_Client::get_status( R2C_AI_Concierge_Options::get_api_key() );
+		self::render_usage_status( $status_result );
 
 		if ( ! $result['ok'] ) {
 			// FR-24: 取得できない値で「保存できるように見える」フォームを出さない。
@@ -249,9 +254,63 @@ class R2C_AI_Concierge_Settings_Page {
 			return;
 		}
 
-		self::render_status_summary( $result['body'] );
+		// ウィジェットは位置・色をタグの data 属性からしか読まない。R2C 側(管理画面)で
+		// 変えた値がサイトに出るよう、画面を開いて取得できたときに取り込む。
+		R2C_AI_Concierge_Options::cache_theme_from_settings( $result['body'] );
+
+		self::render_status_summary( $result['body'], $status_result );
 		self::render_widget_settings_form( $result['body'] );
 		self::render_disconnect_button();
+	}
+
+	/**
+	 * URL から「スキーム://ホスト[:ポート]」だけを取り出す(小文字化。既定ポートは省く)。
+	 */
+	private static function origin_of( $url ) {
+		$parts = wp_parse_url( (string) $url );
+		if ( empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+			return '';
+		}
+		$scheme = strtolower( $parts['scheme'] );
+		$origin = $scheme . '://' . strtolower( $parts['host'] );
+		if ( ! empty( $parts['port'] ) && ! ( 'http' === $scheme && 80 === (int) $parts['port'] ) && ! ( 'https' === $scheme && 443 === (int) $parts['port'] ) ) {
+			$origin .= ':' . (int) $parts['port'];
+		}
+		return $origin;
+	}
+
+	/**
+	 * 接続したときのサイトのアドレスと、今のアドレスのオリジンが違うときだけ
+	 * array( 接続時, 現在 ) を返す(WP-UX-18 d)。接続時の記録が無い古い接続は比べない。
+	 * ローカルの値どうしの比較なので通信しない。
+	 */
+	private static function origin_mismatch() {
+		$saved = self::origin_of( R2C_AI_Concierge_Options::get_site_origin() );
+		if ( '' === $saved ) {
+			return null;
+		}
+		$current = self::origin_of( home_url( '/' ) );
+		return ( '' !== $current && $saved !== $current ) ? array( $saved, $current ) : null;
+	}
+
+	/**
+	 * ドメイン変更・サイト複製(I-1 / I-2)。このままだとウィジェットが無言で止まる。
+	 * 複製先で「接続を解除」すると、同じキーを使う本番も止まるため、その注意も添える。
+	 */
+	private static function render_origin_mismatch_notice() {
+		$mismatch = self::origin_mismatch();
+		if ( null === $mismatch ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-warning inline r2c-origin-mismatch"><p>%s</p></div>',
+			sprintf(
+				/* translators: 1: the site address when it was connected, 2: the current site address */
+				esc_html__( 'The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press "Disconnect" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant "Add %2$s to the allowed domains".', 'r2c-ai-concierge' ),
+				esc_html( $mismatch[0] ),
+				esc_html( $mismatch[1] )
+			)
+		);
 	}
 
 	/**
@@ -259,10 +318,10 @@ class R2C_AI_Concierge_Settings_Page {
 	 * は設定画面内に限定しサイト全体のadmin noticeにしない)。どちらもWP-13の
 	 * GETをそのまま表示するだけで、ローカルに権威を持たせない(D9)。
 	 */
-	private static function render_status_summary( $body ) {
+	private static function render_status_summary( $body, $status_result = null ) {
 		$tenant_id    = isset( $body['tenant_id'] ) ? $body['tenant_id'] : R2C_AI_Concierge_Options::get_tenant_id();
 		$is_active    = ! empty( $body['is_active'] );
-		$plan         = isset( $body['plan'] ) ? (string) $body['plan'] : '';
+		$plan         = self::plan_from_status( $status_result );
 		$status_label = $is_active ? __( 'Active', 'r2c-ai-concierge' ) : __( 'Inactive', 'r2c-ai-concierge' );
 		$masked_key   = self::mask_api_key( R2C_AI_Concierge_Options::get_api_key() );
 		?>
@@ -282,12 +341,10 @@ class R2C_AI_Concierge_Settings_Page {
 					<td><code><?php echo esc_html( $masked_key ); ?></code></td>
 				</tr>
 				<?php endif; ?>
-				<?php if ( '' !== $plan ) : ?>
 				<tr>
 					<th><?php esc_html_e( 'Plan', 'r2c-ai-concierge' ); ?></th>
-					<td><?php echo esc_html( self::plan_label( $plan ) ); ?></td>
+					<td><?php echo esc_html( null === $plan ? __( 'Could not be retrieved', 'r2c-ai-concierge' ) : self::plan_label( $plan ) ); ?></td>
 				</tr>
-				<?php endif; ?>
 			</tbody>
 		</table>
 		<?php
@@ -317,8 +374,10 @@ class R2C_AI_Concierge_Settings_Page {
 	 * PHPのサーバサイドレンダリングのみでJSポーリングを持たないため、1回の
 	 * リクエストで成功か失敗のどちらかが必ず確定する。
 	 */
-	private static function render_usage_status() {
-		$result = R2C_AI_Concierge_Api_Client::get_status( R2C_AI_Concierge_Options::get_api_key() );
+	private static function render_usage_status( $result = null ) {
+		if ( null === $result ) {
+			$result = R2C_AI_Concierge_Api_Client::get_status( R2C_AI_Concierge_Options::get_api_key() );
+		}
 
 		echo '<h2>' . esc_html__( 'This week', 'r2c-ai-concierge' ) . '</h2>';
 
@@ -330,14 +389,14 @@ class R2C_AI_Concierge_Settings_Page {
 			return;
 		}
 
-		$body             = $result['body'];
-		$weekly           = isset( $body['weekly_summary'] ) && is_array( $body['weekly_summary'] ) ? $body['weekly_summary'] : array();
-		$sessions         = isset( $weekly['sessions_this_week'] ) ? (int) $weekly['sessions_this_week'] : 0;
-		$learned          = isset( $weekly['learned_this_week'] ) ? (int) $weekly['learned_this_week'] : 0;
-		$plan             = isset( $body['plan'] ) ? (string) $body['plan'] : '';
-		$avatar_active    = ! empty( $body['avatar_active'] );
-		$faq_count        = isset( $body['faq_published_count'] ) ? (int) $body['faq_published_count'] : 0;
-		$open_escalations = isset( $body['open_escalations_count'] ) ? (int) $body['open_escalations_count'] : 0;
+		$body        = $result['body'];
+		$weekly      = isset( $body['weekly_summary'] ) && is_array( $body['weekly_summary'] ) ? $body['weekly_summary'] : array();
+		$sessions    = self::status_count( $weekly, 'sessions_this_week' );
+		$learned     = self::status_count( $weekly, 'learned_this_week' );
+		$avatar      = array_key_exists( 'avatar_active', $body ) ? $body['avatar_active'] : null;
+		$faq_count   = self::status_count( $body, 'faq_published_count' );
+		$open_count  = self::status_count( $body, 'open_escalations_count' );
+		$unavailable = __( 'Could not be retrieved', 'r2c-ai-concierge' );
 		?>
 		<table class="form-table" role="presentation">
 			<tbody>
@@ -345,34 +404,44 @@ class R2C_AI_Concierge_Settings_Page {
 					<th><?php esc_html_e( 'Conversations', 'r2c-ai-concierge' ); ?></th>
 					<td>
 						<?php
-						printf(
-							/* translators: 1: conversation count this week, 2: count of things the AI learned this week */
-							esc_html__( '%1$d this week / %2$d things the AI learned this week', 'r2c-ai-concierge' ),
-							(int) $sessions,
-							(int) $learned
-						);
+						if ( null === $sessions || null === $learned ) {
+							echo esc_html( $unavailable );
+						} else {
+							printf(
+								/* translators: 1: conversation count this week, 2: count of things the AI learned this week */
+								esc_html__( '%1$d this week / %2$d things the AI learned this week', 'r2c-ai-concierge' ),
+								(int) $sessions,
+								(int) $learned
+							);
+						}
 						?>
 					</td>
 				</tr>
-				<?php if ( '' !== $plan ) : ?>
-				<tr>
-					<th><?php esc_html_e( 'Current plan', 'r2c-ai-concierge' ); ?></th>
-					<td><?php echo esc_html( self::plan_label( $plan ) ); ?></td>
-				</tr>
-				<?php endif; ?>
 				<tr>
 					<th><?php esc_html_e( 'Avatar', 'r2c-ai-concierge' ); ?></th>
-					<td><?php echo esc_html( $avatar_active ? __( 'Active', 'r2c-ai-concierge' ) : __( 'Inactive', 'r2c-ai-concierge' ) ); ?></td>
+					<td>
+						<?php
+						if ( null === $avatar ) {
+							echo esc_html( $unavailable );
+						} else {
+							echo esc_html( $avatar ? __( 'Active', 'r2c-ai-concierge' ) : __( 'Inactive', 'r2c-ai-concierge' ) );
+						}
+						?>
+					</td>
 				</tr>
 				<tr>
 					<th><?php esc_html_e( 'FAQs', 'r2c-ai-concierge' ); ?></th>
 					<td>
 						<?php
-						printf(
-							/* translators: %d: number of published FAQs */
-							esc_html__( '%d registered', 'r2c-ai-concierge' ),
-							(int) $faq_count
-						);
+						if ( null === $faq_count ) {
+							echo esc_html( $unavailable );
+						} else {
+							printf(
+								/* translators: %d: number of published FAQs */
+								esc_html__( '%d registered', 'r2c-ai-concierge' ),
+								(int) $faq_count
+							);
+						}
 						?>
 					</td>
 				</tr>
@@ -380,11 +449,15 @@ class R2C_AI_Concierge_Settings_Page {
 					<th><?php esc_html_e( 'Unhandled inquiries', 'r2c-ai-concierge' ); ?></th>
 					<td>
 						<?php
-						printf(
-							/* translators: %d: number of unresolved inquiries */
-							esc_html__( '%d unresolved', 'r2c-ai-concierge' ),
-							(int) $open_escalations
-						);
+						if ( null === $open_count ) {
+							echo esc_html( $unavailable );
+						} else {
+							printf(
+								/* translators: %d: number of unresolved inquiries */
+								esc_html__( '%d unresolved', 'r2c-ai-concierge' ),
+								(int) $open_count
+							);
+						}
 						?>
 						<a href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Respond in R2C App', 'r2c-ai-concierge' ); ?></a>
 					</td>
@@ -392,6 +465,26 @@ class R2C_AI_Concierge_Settings_Page {
 			</tbody>
 		</table>
 		<?php
+	}
+
+	/**
+	 * /v1/public/wp/status の件数。サーバは取得できなかった項目を null で返す
+	 * (WP-UX-17)ので、null・欠落は「0件」ではなく null(=取得できなかった)のまま扱う。
+	 */
+	private static function status_count( $source, $key ) {
+		return ( is_array( $source ) && isset( $source[ $key ] ) && is_numeric( $source[ $key ] ) ) ? (int) $source[ $key ] : null;
+	}
+
+	/**
+	 * プラン表示の唯一の取得元は /v1/public/wp/status。取得に失敗した・プランが
+	 * null のときは null(「無料プラン」などに化けさせない)。
+	 */
+	private static function plan_from_status( $status_result ) {
+		if ( ! is_array( $status_result ) || empty( $status_result['ok'] ) || ! is_array( $status_result['body'] ) ) {
+			return null;
+		}
+		$plan = isset( $status_result['body']['plan'] ) ? $status_result['body']['plan'] : null;
+		return ( is_string( $plan ) && '' !== $plan ) ? $plan : null;
 	}
 
 	/**
@@ -474,6 +567,7 @@ class R2C_AI_Concierge_Settings_Page {
 			</p>
 		</form>
 		<p class="description"><?php esc_html_e( 'Changes may take up to 5 minutes to take effect.', 'r2c-ai-concierge' ); ?></p>
+		<p class="description"><?php esc_html_e( 'A display position you changed in the R2C dashboard is applied to your site when you open this screen.', 'r2c-ai-concierge' ); ?></p>
 		<?php
 	}
 
@@ -617,6 +711,9 @@ class R2C_AI_Concierge_Settings_Page {
 	private static function render_disconnect_button() {
 		?>
 		<hr />
+		<?php if ( null !== self::origin_mismatch() ) : ?>
+			<p class="description r2c-origin-mismatch-disconnect"><?php esc_html_e( 'This site\'s address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key.', 'r2c-ai-concierge' ); ?></p>
+		<?php endif; ?>
 		<p>
 			<button type="button" class="button" id="r2c-disconnect-button"><?php esc_html_e( 'Disconnect', 'r2c-ai-concierge' ); ?></button>
 			<span id="r2c-disconnect-status" role="status" aria-live="polite"></span>
