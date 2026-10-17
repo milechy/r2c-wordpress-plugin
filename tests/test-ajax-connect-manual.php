@@ -213,4 +213,113 @@ class AjaxConnectManualTest extends TestCase {
 		$this->assertNull( $theme['offset_y'] );
 		$this->assertNull( $theme['primary_color'] );
 	}
+
+	/* ---- WP-UX-07: コード丸ごと貼り付けでも接続できる ---- */
+
+	/**
+	 * Runs handle_connect_manual() against a mocked R2C that accepts exactly
+	 * $accepted_key, and returns the x-api-key header value the plugin
+	 * actually sent plus the resulting JSON response — so these tests assert
+	 * on what reached R2C, not just on what was typed.
+	 */
+	private function submit_manual_input( $typed, $accepted_key ) {
+		$sent_keys = array();
+		Functions\when( 'wp_remote_request' )->alias(
+			function ( $url, $args ) use ( &$sent_keys ) {
+				$sent_keys[] = isset( $args['headers']['x-api-key'] ) ? $args['headers']['x-api-key'] : null;
+				return array( 'fake' => 'response' );
+			}
+		);
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->alias(
+			function () use ( &$sent_keys, $accepted_key ) {
+				return end( $sent_keys ) === $accepted_key ? 200 : 401;
+			}
+		);
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"tenant_id":"t_paste"}' );
+
+		$_POST['api_key'] = $typed;
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
+			$this->fail( 'expected a JSON response to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			return array( $e, $sent_keys );
+		}
+	}
+
+	public function test_whole_script_tag_pasted_connects_with_the_data_api_key_value() {
+		$tag = '<script src="https://api.r2c.biz/widget/t_paste.js" data-api-key="r2c_live_abcdef123456" async></script>';
+
+		list( $e, $sent ) = $this->submit_manual_input( $tag, 'r2c_live_abcdef123456' );
+
+		$this->assertTrue( $e->success );
+		$this->assertSame( 'connected', $e->data['status'] );
+		$this->assertSame( array( 'r2c_live_abcdef123456' ), $sent );
+	}
+
+	public function test_single_quoted_data_api_key_is_also_extracted() {
+		$tag = "<script src='https://api.r2c.biz/widget.js' data-api-key='r2c_live_single'></script>";
+
+		list( $e, $sent ) = $this->submit_manual_input( $tag, 'r2c_live_single' );
+
+		$this->assertTrue( $e->success );
+		$this->assertSame( array( 'r2c_live_single' ), $sent );
+	}
+
+	public function test_bare_key_still_works_unchanged() {
+		list( $e, $sent ) = $this->submit_manual_input( 'r2c_live_barekey', 'r2c_live_barekey' );
+
+		$this->assertTrue( $e->success );
+		$this->assertSame( array( 'r2c_live_barekey' ), $sent );
+	}
+
+	public function test_bare_key_with_surrounding_whitespace_is_trimmed() {
+		list( $e, $sent ) = $this->submit_manual_input( "  \n r2c_live_spaced \t ", 'r2c_live_spaced' );
+
+		$this->assertTrue( $e->success );
+		$this->assertSame( array( 'r2c_live_spaced' ), $sent );
+	}
+
+	/**
+	 * No data-api-key attribute: nothing is extracted, so this behaves
+	 * exactly as before — the pasted tag is stripped by sanitize_text_field()
+	 * (stood in for here with strip_tags(), which is what removes the tag in
+	 * production), leaving nothing, and no remote call is made. A different
+	 * attribute's value (data-tenant) must never be mistaken for the key.
+	 */
+	public function test_text_without_data_api_key_is_not_extracted_and_is_rejected_without_a_remote_call() {
+		Functions\when( 'sanitize_text_field' )->alias(
+			function ( $text ) {
+				return trim( strip_tags( $text ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- test-only stand-in for sanitize_text_field()'s tag removal.
+			}
+		);
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$_POST['api_key'] = '<script src="https://api.r2c.biz/widget.js" data-tenant="t_paste"></script>';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
+		}
+	}
+
+	/**
+	 * An extracted value is not exempt from the usual checks: an empty
+	 * data-api-key is the same "enter a key" error with no remote call.
+	 */
+	public function test_empty_data_api_key_attribute_is_rejected_before_any_remote_call() {
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$_POST['api_key'] = '<script src="https://api.r2c.biz/widget.js" data-api-key=""></script>';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
+		}
+	}
 }

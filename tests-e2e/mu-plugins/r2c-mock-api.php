@@ -331,6 +331,7 @@ class R2C_Mock_Api {
 	 *   { "forced_poll_status": "expired" }       毎回expiredを返す
 	 *   { "force_settings_down": true }           settings/disconnectを503に落とす
 	 *   { "seed_api_key": "mock_xxx" }            手動キー貼り付けテスト用に有効キーを事前登録
+	 *   { "revoke_api_key": "mock_xxx" }          そのキーを失効させる(以後の呼び出しは401)
 	 *   { "status": { "avatar_active": true } }   GET /v1/public/wp/status の応答を部分上書き
 	 */
 	public static function handle_test_configure( WP_REST_Request $req ) {
@@ -347,6 +348,9 @@ class R2C_Mock_Api {
 		}
 		if ( ! empty( $body['seed_api_key'] ) ) {
 			$state['active_api_keys'][] = $body['seed_api_key'];
+		}
+		if ( ! empty( $body['revoke_api_key'] ) ) {
+			$state['active_api_keys'] = array_values( array_diff( $state['active_api_keys'], array( $body['revoke_api_key'] ) ) );
 		}
 		if ( isset( $body['settings'] ) && is_array( $body['settings'] ) ) {
 			$state['settings'] = array_merge( $state['settings'], $body['settings'] );

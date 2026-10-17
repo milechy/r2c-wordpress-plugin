@@ -386,3 +386,11 @@ msgstr ""
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
 msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php:175
+msgid "Status: Connection is no longer valid"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php:178
+msgid "The connection key is no longer valid. In the R2C dashboard, ask the assistant to \"issue a WordPress connection key\", then paste the code it shows into the box below to reconnect."
+msgstr ""
