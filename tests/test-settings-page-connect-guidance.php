@@ -169,4 +169,41 @@ class SettingsPageConnectGuidanceTest extends TestCase {
 		// 既存の安心材料(データは消えない)も残す。
 		$this->assertStringContainsString( 'will not be deleted', $confirm );
 	}
+
+	/* ---- ⑤ 翻訳(NFR-07): 画面に出す英語ソースは、すべて ja.po / .pot にある ---- */
+
+	/**
+	 * この画面の文言の1つでも翻訳の入れ忘れがあると、日本語の店主にだけ英語が
+	 * 混ざる。画面を組み立てる関数のソースからリテラルを拾って突き合わせる。
+	 */
+	public function test_every_connect_screen_string_is_translated_in_ja_po_and_pot() {
+		$methods = array( 'render_entry_new', 'render_entry_existing', 'render_next_steps', 'enqueue_assets' );
+		$source  = '';
+		foreach ( $methods as $method ) {
+			$ref    = new ReflectionMethod( '\R2C_AI_Concierge_Settings_Page', $method );
+			$lines  = file( $ref->getFileName() );
+			$body   = array_slice( $lines, $ref->getStartLine() - 1, $ref->getEndLine() - $ref->getStartLine() + 1 );
+			// enqueue_assets() も他画面の既存文言(翻訳は別タスク)を含むので、今回足した確認文だけ見る。
+			if ( 'enqueue_assets' === $method ) {
+				$body = preg_grep( '/confirm/', $body );
+			}
+			$source .= implode( '', $body );
+		}
+		preg_match_all( "/(?:esc_html_e|esc_html__|__)\\(\\s*'((?:[^'\\\\\\\\]|\\\\\\\\.)*)'/", $source, $m );
+		$msgids = array_unique( array_map( 'stripslashes', $m[1] ) );
+		$this->assertGreaterThan( 15, count( $msgids ), 'The source scan found suspiciously few strings.' );
+
+		$po  = file_get_contents( dirname( __DIR__ ) . '/languages/ja.po' );
+		$pot = file_get_contents( dirname( __DIR__ ) . '/languages/r2c-ai-concierge.pot' );
+		foreach ( $msgids as $msgid ) {
+			// PO 側の表記(" は \" )に直して、ja.po は msgstr が空でないことまで見る。
+			$escaped = str_replace( '"', '\\"', $msgid );
+			$this->assertMatchesRegularExpression(
+				'/^msgid "' . preg_quote( $escaped, '/' ) . '"\nmsgstr "(?!")[^\n]+"$/m',
+				$po,
+				"Not translated in ja.po: $msgid"
+			);
+			$this->assertStringContainsString( 'msgid "' . $escaped . '"', $pot, "Missing from the .pot: $msgid" );
+		}
+	}
 }

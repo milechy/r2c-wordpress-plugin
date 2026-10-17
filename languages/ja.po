@@ -136,8 +136,8 @@ msgid "Connecting…"
 msgstr "接続しています…"
 
 #: includes/class-r2c-settings-page.php:63
-msgid "Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted."
-msgstr "本当に接続を解除しますか？会話データとR2Cテナントは削除されません。"
+msgid "Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant \"I want to cancel\"."
+msgstr "本当に接続を解除しますか？会話データとR2Cテナントは削除されません。なお、接続を解除してもご契約（お支払い）は解約されません。解約するときは、R2C の管理画面で「解約したい」と話しかけてください。"
 
 #: includes/class-r2c-settings-page.php:64
 msgid "Saving…"
@@ -168,9 +168,6 @@ msgstr "利用規約"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: includes/class-r2c-settings-page.php:125
-msgid "If you already have an R2C account"
-msgstr "すでに R2C アカウントをお持ちの場合"
 
 #: includes/class-r2c-settings-page.php:128
 #: includes/class-r2c-settings-page.php:189
@@ -316,3 +313,55 @@ msgstr "特定の固定ページを追加:"
 msgid "Disconnect"
 msgstr "接続を解除する"
 
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Click again to disconnect"
+msgstr "もう一度押すと接続を解除します"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "First time using R2C? Start for free"
+msgstr "はじめて R2C をお使いの方（無料で始める）"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Already an R2C customer? Please use \"I already have an R2C contract\" below instead. This button creates a new free account."
+msgstr "すでに R2C をご契約中の方は、この下の「すでに R2C をご契約中の方」から接続してください。このボタンでは、新しい無料アカウントが作られます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "About the free plan"
+msgstr "無料プランについて"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Ads and R2C branding appear on the chat widget."
+msgstr "チャットウィジェットに、広告と R2C の表示が出ます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "The widget pauses after 200 conversations per month and starts again on the 1st of the next month."
+msgstr "会話は月に200件までです。上限に達するとウィジェットは一時停止し、翌月1日に再開します。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Conversation data is used for R2C's shared learning. This cannot be changed on the free plan."
+msgstr "会話データは R2C の共有学習に使われます。無料プランでは変更できません。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you move to a paid plan and cancel it later, your site returns to this free plan and the widget keeps running with ads."
+msgstr "有料プランに変更したあとで解約した場合は、この無料プランに戻ります。ウィジェットは広告つきで動き続けます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "See plans and pricing"
+msgstr "料金プランを見る"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "I already have an R2C contract (connect with a connection key)"
+msgstr "すでに R2C をご契約中の方（接続キーで接続する）"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Open the %s and tell the assistant: \"Issue a connection key for WordPress.\" Then paste the key into the box below."
+msgstr "%s を開き、アシスタントに「WordPress 用の接続キーを発行して」と話しかけてください。届いたキーを、下の欄に貼り付けてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "R2C dashboard"
+msgstr "R2C の管理画面"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
+msgstr "無料プランで始めた方には、招待メールをお送りしています。メールを開いてパスワードを設定し、R2C の管理画面にログインしてください。届かないときは、迷惑メールフォルダもご確認ください。"

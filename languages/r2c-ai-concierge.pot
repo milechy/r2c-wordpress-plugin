@@ -144,9 +144,7 @@ msgid "Connecting…"
 msgstr ""
 
 #: includes/class-r2c-settings-page.php:63
-msgid ""
-"Are you sure you want to disconnect? Your conversation data and R2C tenant "
-"will not be deleted."
+msgid "Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant \"I want to cancel\"."
 msgstr ""
 
 #: includes/class-r2c-settings-page.php:64
@@ -182,10 +180,6 @@ msgstr ""
 
 #: includes/class-r2c-settings-page.php:113
 msgid "Privacy Policy"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:125
-msgid "If you already have an R2C account"
 msgstr ""
 
 #: includes/class-r2c-settings-page.php:128
@@ -339,4 +333,56 @@ msgstr ""
 
 #: includes/class-r2c-settings-page.php:397
 msgid "Disconnect"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Click again to disconnect"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "First time using R2C? Start for free"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Already an R2C customer? Please use \"I already have an R2C contract\" below instead. This button creates a new free account."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "About the free plan"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Ads and R2C branding appear on the chat widget."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "The widget pauses after 200 conversations per month and starts again on the 1st of the next month."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Conversation data is used for R2C's shared learning. This cannot be changed on the free plan."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you move to a paid plan and cancel it later, your site returns to this free plan and the widget keeps running with ads."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "See plans and pricing"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "I already have an R2C contract (connect with a connection key)"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Open the %s and tell the assistant: \"Issue a connection key for WordPress.\" Then paste the key into the box below."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "R2C dashboard"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
 msgstr ""
