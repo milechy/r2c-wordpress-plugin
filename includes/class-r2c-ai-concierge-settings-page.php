@@ -171,7 +171,38 @@ class R2C_AI_Concierge_Settings_Page {
 	 */
 	private static function render_manual_key_form() {
 		?>
-				<?php self::render_manual_key_form(); ?>
+				<form id="r2c-manual-form" style="margin-top: 12px;">
+					<p>
+						<label for="r2c-manual-key"><?php esc_html_e( 'API key', 'r2c-ai-concierge' ); ?></label><br />
+						<input type="text" id="r2c-manual-key" name="api_key" class="regular-text" autocomplete="off" />
+					</p>
+					<p>
+						<button type="submit" class="button" id="r2c-manual-button"><?php esc_html_e( 'Connect with this key', 'r2c-ai-concierge' ); ?></button>
+					</p>
+					<p id="r2c-manual-status" role="status" aria-live="polite"></p>
+				</form>
+		<?php
+	}
+
+	/**
+	 * 入口②: すでに契約中の方。メール照合の自動紐付けはしない(他人の契約に
+	 * 繋がるのを防ぐため)。R2C 管理画面で発行した接続キーを貼る。
+	 * <summary> は E2E(wp-admin.js)が開く目印として、この1つだけにしてある。
+	 */
+	private static function render_entry_existing() {
+		?>
+		<details id="r2c-entry-existing" class="r2c-entry" style="margin-top: 24px;">
+			<summary><strong><?php esc_html_e( 'I already have an R2C contract (connect with a connection key)', 'r2c-ai-concierge' ); ?></strong></summary>
+			<p style="margin-top: 12px;">
+				<?php
+				printf(
+					/* translators: %s: link to the R2C dashboard */
+					esc_html__( 'Open the %s and tell the assistant: "Issue a connection key for WordPress." Then paste the key into the box below.', 'r2c-ai-concierge' ),
+					'<a href="' . esc_url( self::APP_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'R2C dashboard', 'r2c-ai-concierge' ) . '</a>'
+				);
+				?>
+			</p>
+			<?php self::render_manual_key_form(); ?>
 		</details>
 		<?php
 	}
