@@ -431,3 +431,28 @@ msgstr ""
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "The email could not be sent right now. Please try again in a moment."
 msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "R2C is having a temporary problem. We will keep trying. Please wait a moment."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The time to confirm your site has run out. Please press \"Connect\" again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press \"Disconnect\" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant \"Add %2$s to the allowed domains\"."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "This site's address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "A display position you changed in the R2C dashboard is applied to your site when you open this screen."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Could not be retrieved"
+msgstr ""

@@ -135,12 +135,18 @@ class SettingsPageHelpersTest extends TestCase {
 		$body = array(
 			'tenant_id'         => '<script>alert(1)</script>',
 			'is_active'         => true,
-			'plan'              => '"><img src=x onerror=alert(2)>',
 			'has_published_faq' => true,
+		);
+		// プランは /v1/public/wp/status の値だけを使う(WP-UX-18 e)。
+		$status_result = array(
+			'ok'     => true,
+			'status' => 200,
+			'body'   => array( 'plan' => '"><img src=x onerror=alert(2)>' ),
+			'error'  => null,
 		);
 
 		ob_start();
-		$this->call_private_static( 'render_status_summary', array( $body ) );
+		$this->call_private_static( 'render_status_summary', array( $body, $status_result ) );
 		$output = ob_get_clean();
 
 		$this->assertStringNotContainsString( '<script>alert(1)</script>', $output );
@@ -160,6 +166,9 @@ class SettingsPageHelpersTest extends TestCase {
 		);
 		Functions\when( '__' )->returnArg( 1 );
 		Functions\when( 'esc_url' )->returnArg( 1 );
+		// render_disconnect_button() compares the saved site address with home_url().
+		Functions\when( 'wp_parse_url' )->alias( 'parse_url' );
+		Functions\when( 'home_url' )->justReturn( 'https://site.example/' );
 	}
 
 	/**
@@ -203,7 +212,8 @@ class SettingsPageHelpersTest extends TestCase {
 
 		$this->assertStringContainsString( '12', $output );
 		$this->assertStringContainsString( '3', $output );
-		$this->assertStringContainsString( 'Growth plan', $output );
+		// プランの表示元は状態表示ブロックではなく概要(render_status_summary)に一本化した。
+		$this->assertStringNotContainsString( 'Growth plan', $output );
 		$this->assertStringContainsString( 'Active', $output );
 		$this->assertStringContainsString( '5', $output );
 		$this->assertStringContainsString( '2', $output );

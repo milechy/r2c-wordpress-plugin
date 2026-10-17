@@ -46,7 +46,10 @@ the settings screen.
   screen never shows stale values. Also fetches a read-only usage summary
   — this week's conversation count, things the AI learned this week,
   your current plan, avatar on/off status, published FAQ count, and
-  unresolved inquiry count — to display on the same screen.
+  unresolved inquiry count — to display on the same screen. The same
+  display settings are also fetched once right after connecting. The
+  position and color are kept on your site so the widget can be placed
+  without a request on every page view.
 * **Saving a change**: sends only the fields you changed back to R2C.
 * **Resending the invitation email** (only when you press the button on
   the settings screen): asks R2C to email the dashboard link again. The

@@ -99,6 +99,24 @@ class R2C_AI_Concierge_Options {
 	}
 
 	/**
+	 * Refreshes the cache from a GET/PATCH /v1/public/wp/settings response
+	 * body. The widget reads position/colour only from the script tag's data-*
+	 * attributes, so a change made in the R2C dashboard reaches the site only
+	 * once the plugin has stored it here.
+	 */
+	public static function cache_theme_from_settings( $settings ) {
+		if ( ! is_array( $settings ) ) {
+			return;
+		}
+		self::set_cached_theme(
+			isset( $settings['position'] ) ? $settings['position'] : null,
+			isset( $settings['offset_x'] ) ? $settings['offset_x'] : null,
+			isset( $settings['offset_y'] ) ? $settings['offset_y'] : null,
+			isset( $settings['primary_color'] ) ? $settings['primary_color'] : null
+		);
+	}
+
+	/**
 	 * The in-flight provisioning attempt (between POST /provision and a
 	 * successful poll). Short-lived by design — a transient, not an
 	 * option, so a stalled attempt cleans itself up without needing a

@@ -219,20 +219,40 @@
 		var button = document.getElementById( 'r2c-settings-save' );
 		var status = document.getElementById( 'r2c-settings-status' );
 
-		form.addEventListener( 'submit', function ( e ) {
-			e.preventDefault();
-			button.disabled = true;
-			setStatusText( status, window.r2cAiConciergeAdmin.i18n.saving );
-
+		function readFields() {
 			var excludedPatterns = document.getElementById( 'r2c-excluded-patterns' );
-
-			var fields = {
+			return {
 				position: document.getElementById( 'r2c-position' ).value,
 				offset_x: document.getElementById( 'r2c-offset-x' ).value,
 				offset_y: document.getElementById( 'r2c-offset-y' ).value,
 				primary_color: document.getElementById( 'r2c-primary-color' ).value,
 				excluded_page_patterns: excludedPatterns ? excludedPatterns.value : '',
 			};
+		}
+
+		// 画面を開いたときの値。保存では、ここから変わった項目だけを送る — 全項目を
+		// 送ると、画面を開いた後に R2C 側(管理画面)で変えた値を古い値で上書きしてしまう。
+		var baseline = readFields();
+
+		form.addEventListener( 'submit', function ( e ) {
+			e.preventDefault();
+
+			var current = readFields();
+			var fields = {};
+			var changed = false;
+			for ( var key in current ) {
+				if ( Object.prototype.hasOwnProperty.call( current, key ) && current[ key ] !== baseline[ key ] ) {
+					fields[ key ] = current[ key ];
+					changed = true;
+				}
+			}
+			if ( ! changed ) {
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.nothingToChange );
+				return;
+			}
+
+			button.disabled = true;
+			setStatusText( status, window.r2cAiConciergeAdmin.i18n.saving );
 
 			post( 'r2c_ai_concierge_save_settings', fields ).then( function ( json ) {
 				button.disabled = false;
@@ -240,6 +260,7 @@
 					setStatusText( status, ( json.data && json.data.message ) || '' );
 					return;
 				}
+				baseline = current;
 				setStatusText( status, window.r2cAiConciergeAdmin.i18n.saved );
 			} ).catch( function () {
 				button.disabled = false;
