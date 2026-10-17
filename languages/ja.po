@@ -373,3 +373,40 @@ msgstr "ステータス: 接続が無効になっています"
 #: includes/class-r2c-ai-concierge-settings-page.php:178
 msgid "The connection key is no longer valid. In the R2C dashboard, ask the assistant to \"issue a WordPress connection key\", then paste the code it shows into the box below to reconnect."
 msgstr "接続キーが無効になっています。R2C の管理画面で『WordPress 用の接続キーを発行して』と話しかけ、表示されたコードを下の欄に貼って接続し直してください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Resend the invitation email"
+msgstr "招待メールを再送する"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Sending…"
+msgstr "送信しています…"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "We sent an email with the link to the R2C dashboard to the address you entered when you connected. If it does not arrive, please also check your spam folder."
+msgstr "接続時に入力したメールアドレスに、R2C の管理画面へのご案内メールを送りました。届かないときは、迷惑メールフォルダもご確認ください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+#, php-format
+msgid "We sent an email with the link to the R2C dashboard to %s. If it does not arrive, please also check your spam folder."
+msgstr "R2C の管理画面へのご案内メールを %s に送りました。届かないときは、迷惑メールフォルダもご確認ください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "An email was just sent. Please wait about an hour and try again."
+msgstr "先ほど送信しました。1時間ほど経ってからもう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "We could not find an address to send to. If you connected with a connection key, please log in to the R2C dashboard with your usual account. Otherwise, please contact R2C support."
+msgstr "メールの送り先が見つかりませんでした。接続キーで接続した方は、いつものアカウントで R2C の管理画面にログインしてください。そうでない場合は、R2C のサポートまでお問い合わせください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The email could not be sent. Please try again in about an hour. If it still does not arrive, please contact R2C support."
+msgstr "メールを送信できませんでした。1時間ほど経ってからもう一度お試しください。それでも届かない場合は、R2C のサポートまでお問い合わせください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The connection is no longer valid. Please reload this page and reconnect."
+msgstr "接続が無効になっています。このページを開き直して、接続し直してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The email could not be sent right now. Please try again in a moment."
+msgstr "いま、メールを送信できませんでした。しばらくしてからもう一度お試しください。"

@@ -75,6 +75,9 @@ class R2C_Mock_Api {
 				'poll_attempts_until_provisioned' => 1,
 				'forced_poll_status'              => null, // null | 'expired' | 'failed'
 				'force_settings_down'              => false,
+				// POST /v1/public/wp/resend-invite の結果(WP-UX-09)。
+				// null=成功 | 'rate_limit'(429) | 'no_recipient'(404) | 'send_failed'(502)
+				'resend_invite_result'             => null,
 			),
 		);
 	}
@@ -140,6 +143,15 @@ class R2C_Mock_Api {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( __CLASS__, 'handle_get_status' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+		register_rest_route(
+			'r2c-mock',
+			'/v1/public/wp/resend-invite',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( __CLASS__, 'handle_resend_invite' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -302,6 +314,33 @@ class R2C_Mock_Api {
 		return new WP_REST_Response( $state['status'], 200 );
 	}
 
+	/**
+	 * サーバ側 PR(commerce-faq-tasks#1758)の契約どおりの応答を返す:
+	 * 200 {message,email_masked} / 401 / 404 invite_recipient_not_found /
+	 * 429 rate_limit_exceeded / 502 invite_send_failed。
+	 * 文言はプラグインが error コードから自前で組み立てるので、ここの message は
+	 * わざと画面に出ない別文言にしてある(サーバ文言をそのまま出していないことの確認)。
+	 */
+	public static function handle_resend_invite( WP_REST_Request $req ) {
+		$state   = self::get_state();
+		$api_key = $req->get_header( 'x-api-key' );
+		if ( ! in_array( $api_key, $state['active_api_keys'], true ) ) {
+			return new WP_REST_Response( array( 'error' => 'invalid_api_key', 'message' => 'mock-server-text' ), 401 );
+		}
+
+		$result = $state['controls']['resend_invite_result'];
+		if ( 'rate_limit' === $result ) {
+			return new WP_REST_Response( array( 'error' => 'rate_limit_exceeded', 'message' => 'mock-server-text' ), 429 );
+		}
+		if ( 'no_recipient' === $result ) {
+			return new WP_REST_Response( array( 'error' => 'invite_recipient_not_found', 'message' => 'mock-server-text' ), 404 );
+		}
+		if ( 'send_failed' === $result ) {
+			return new WP_REST_Response( array( 'error' => 'invite_send_failed', 'message' => 'mock-server-text' ), 502 );
+		}
+		return new WP_REST_Response( array( 'message' => 'mock-server-text', 'email_masked' => 'ow***@example.com' ), 200 );
+	}
+
 	/* ---- テスト制御専用(本物のAPIには存在しない) ---- */
 
 	/**
@@ -330,6 +369,7 @@ class R2C_Mock_Api {
 	 *   { "poll_attempts_until_provisioned": 0 }  即座にprovisionedにする
 	 *   { "forced_poll_status": "expired" }       毎回expiredを返す
 	 *   { "force_settings_down": true }           settings/disconnectを503に落とす
+	 *   { "resend_invite_result": "rate_limit" }  招待再送の応答を 429 に(no_recipient=404 / send_failed=502)
 	 *   { "seed_api_key": "mock_xxx" }            手動キー貼り付けテスト用に有効キーを事前登録
 	 *   { "revoke_api_key": "mock_xxx" }          そのキーを失効させる(以後の呼び出しは401)
 	 *   { "status": { "avatar_active": true } }   GET /v1/public/wp/status の応答を部分上書き
@@ -341,7 +381,7 @@ class R2C_Mock_Api {
 			return new WP_REST_Response( array( 'error' => 'invalid_body' ), 400 );
 		}
 
-		foreach ( array( 'poll_attempts_until_provisioned', 'forced_poll_status', 'force_settings_down' ) as $key ) {
+		foreach ( array( 'poll_attempts_until_provisioned', 'forced_poll_status', 'force_settings_down', 'resend_invite_result' ) as $key ) {
 			if ( array_key_exists( $key, $body ) ) {
 				$state['controls'][ $key ] = $body[ $key ];
 			}

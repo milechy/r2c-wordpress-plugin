@@ -20,6 +20,7 @@ class R2C_AI_Concierge_Ajax {
 		add_action( 'wp_ajax_r2c_ai_concierge_connect_manual', array( __CLASS__, 'handle_connect_manual' ) );
 		add_action( 'wp_ajax_r2c_ai_concierge_disconnect', array( __CLASS__, 'handle_disconnect' ) );
 		add_action( 'wp_ajax_r2c_ai_concierge_save_settings', array( __CLASS__, 'handle_save_settings' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_resend_invite', array( __CLASS__, 'handle_resend_invite' ) );
 	}
 
 	/**
@@ -351,6 +352,61 @@ class R2C_AI_Concierge_Ajax {
 		);
 
 		wp_send_json_success( array( 'settings' => $body ) );
+	}
+
+	/* 招待メールの再送(WP-UX-09) */
+
+	public static function handle_resend_invite() {
+		self::guard();
+
+		if ( ! R2C_AI_Concierge_Options::is_connected() ) {
+			wp_send_json_error( array( 'message' => __( 'Not connected.', 'r2c-ai-concierge' ) ) );
+		}
+
+		$result = R2C_AI_Concierge_Api_Client::resend_invite( R2C_AI_Concierge_Options::get_api_key() );
+
+		if ( ! $result['ok'] ) {
+			wp_send_json_error( array( 'message' => self::resend_invite_error_message( $result ) ) );
+		}
+
+		// 宛先は R2C が伏せ字にして返す(ta***@example.com)。画面には textContent で出す。
+		$masked = ( is_array( $result['body'] ) && ! empty( $result['body']['email_masked'] ) && is_string( $result['body']['email_masked'] ) )
+			? sanitize_text_field( $result['body']['email_masked'] )
+			: '';
+
+		if ( '' === $masked ) {
+			$message = __( 'We sent an email with the link to the R2C dashboard to the address you entered when you connected. If it does not arrive, please also check your spam folder.', 'r2c-ai-concierge' );
+		} else {
+			/* translators: %s: the recipient's email address with part of it hidden, e.g. ta***@example.com */
+			$message = sprintf( __( 'We sent an email with the link to the R2C dashboard to %s. If it does not arrive, please also check your spam folder.', 'r2c-ai-concierge' ), $masked );
+		}
+
+		wp_send_json_success( array( 'message' => $message ) );
+	}
+
+	/**
+	 * R2C のエラーコードごとに、次の行動つきの文言にする。サーバ文言は日本語
+	 * 固定のため使わず、ここで翻訳可能な文言にする(コードは R2C 側の契約)。
+	 */
+	private static function resend_invite_error_message( $result ) {
+		if ( null === $result['status'] ) {
+			return self::unreachable_message();
+		}
+		$code = ( is_array( $result['body'] ) && isset( $result['body']['error'] ) && is_string( $result['body']['error'] ) ) ? $result['body']['error'] : '';
+
+		if ( 429 === $result['status'] || 'rate_limit_exceeded' === $code ) {
+			return __( 'An email was just sent. Please wait about an hour and try again.', 'r2c-ai-concierge' );
+		}
+		if ( 404 === $result['status'] || 'invite_recipient_not_found' === $code ) {
+			return __( 'We could not find an address to send to. If you connected with a connection key, please log in to the R2C dashboard with your usual account. Otherwise, please contact R2C support.', 'r2c-ai-concierge' );
+		}
+		if ( 502 === $result['status'] || 'invite_send_failed' === $code ) {
+			return __( 'The email could not be sent. Please try again in about an hour. If it still does not arrive, please contact R2C support.', 'r2c-ai-concierge' );
+		}
+		if ( 401 === $result['status'] ) {
+			return __( 'The connection is no longer valid. Please reload this page and reconnect.', 'r2c-ai-concierge' );
+		}
+		return __( 'The email could not be sent right now. Please try again in a moment.', 'r2c-ai-concierge' );
 	}
 
 	/* 文言の組み立て */
