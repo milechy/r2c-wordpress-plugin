@@ -94,6 +94,17 @@ class R2C_AI_Concierge_Api_Client {
 	}
 
 	/**
+	 * POST /v1/public/wp/resend-invite — re-send the dashboard invitation
+	 * (or a password-reset mail for an existing account) to the address R2C
+	 * recorded when this site was connected. No address is sent from here:
+	 * R2C decides the recipient, so this can never be used to mail a third
+	 * party. R2C limits it to once per hour per tenant (429).
+	 */
+	public static function resend_invite( $api_key ) {
+		return self::request( 'POST', '/v1/public/wp/resend-invite', $api_key, null );
+	}
+
+	/**
 	 * Shared request builder every public method above funnels through.
 	 *
 	 * @param string      $method   HTTP method.

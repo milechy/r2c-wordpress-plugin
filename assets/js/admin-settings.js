@@ -180,6 +180,34 @@
 	}
 
 	// -----------------------------------------------------------------
+	// 招待メールの再送(WP-UX-09)
+	// -----------------------------------------------------------------
+
+	function initResendInviteButton() {
+		var button = document.getElementById( 'r2c-resend-invite-button' );
+		if ( ! button ) {
+			return;
+		}
+		var status = document.getElementById( 'r2c-resend-invite-status' );
+
+		button.addEventListener( 'click', function () {
+			button.disabled = true;
+			setStatusText( status, window.r2cAiConciergeAdmin.i18n.sending );
+
+			post( 'r2c_ai_concierge_resend_invite', {} ).then( function ( json ) {
+				var data = ( json && json.data ) || {};
+				setStatusText( status, data.message || window.r2cAiConciergeAdmin.i18n.networkError );
+				// 連打しても R2C は1時間に1回しか送らない。成功後は押せないままにして、
+				// 失敗(429 含む)のときだけ押し直せるようにする。
+				button.disabled = !! ( json && json.success );
+			} ).catch( function () {
+				button.disabled = false;
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.networkError );
+			} );
+		} );
+	}
+
+	// -----------------------------------------------------------------
 	// ウィジェット表示設定
 	// -----------------------------------------------------------------
 
@@ -266,6 +294,7 @@
 		initConnectForm();
 		initManualForm();
 		initDisconnectButton();
+		initResendInviteButton();
 		initSettingsForm();
 		initExcludedPagesHelpers();
 	} );

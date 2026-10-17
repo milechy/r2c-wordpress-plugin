@@ -142,6 +142,19 @@ class SettingsPageConnectGuidanceTest extends TestCase {
 		$this->assertStringContainsString( 'View conversations', $html );
 	}
 
+	/* ---- WP-UX-09: 招待メールの再送ボタン ---- */
+
+	public function test_next_steps_have_a_resend_invitation_button_without_any_remote_call() {
+		// 画面を開いただけでは R2C に話しかけない(押されたときだけ)。
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$html = $this->render_private( 'render_next_steps' );
+
+		$this->assertStringContainsString( 'id="r2c-resend-invite-button"', $html );
+		$this->assertStringContainsString( 'Resend the invitation email', $html );
+		$this->assertStringContainsString( 'id="r2c-resend-invite-status"', $html );
+	}
+
 	/* ---- ④ 接続解除 ≠ 解約 ---- */
 
 	public function test_disconnect_confirmation_says_billing_is_not_stopped() {

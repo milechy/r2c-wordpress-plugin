@@ -48,6 +48,10 @@ the settings screen.
   your current plan, avatar on/off status, published FAQ count, and
   unresolved inquiry count — to display on the same screen.
 * **Saving a change**: sends only the fields you changed back to R2C.
+* **Resending the invitation email** (only when you press the button on
+  the settings screen): asks R2C to email the dashboard link again. The
+  plugin sends no address; R2C uses the one you entered when connecting,
+  and allows this once per hour.
 * **Every front-end page view** (once connected): loads
   `https://api.r2c.biz/widget/{your-tenant-id}.js`, R2C's own script that
   renders the chat bubble and generates AI responses to your visitors'

@@ -74,6 +74,7 @@ class R2C_AI_Concierge_Settings_Page {
 					'connecting'        => __( 'Connecting…', 'r2c-ai-concierge' ),
 					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant "I want to cancel".', 'r2c-ai-concierge' ),
 					'confirmButton'     => __( 'Click again to disconnect', 'r2c-ai-concierge' ),
+					'sending'           => __( 'Sending…', 'r2c-ai-concierge' ),
 					'saving'            => __( 'Saving…', 'r2c-ai-concierge' ),
 					'saved'             => __( 'Saved.', 'r2c-ai-concierge' ),
 					'networkError'      => __( 'Unable to reach the server. Please check your connection and try again.', 'r2c-ai-concierge' ),
@@ -419,9 +420,10 @@ class R2C_AI_Concierge_Settings_Page {
 
 	private static function render_next_steps() {
 		printf(
-			'<div class="notice notice-info r2c-next-steps"><p><strong>%s</strong></p><ul style="list-style:disc;margin-left:20px;"><li>%s</li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li></ul></div>',
+			'<div class="notice notice-info r2c-next-steps"><p><strong>%s</strong></p><ul style="list-style:disc;margin-left:20px;"><li>%s<br /><button type="button" class="button" id="r2c-resend-invite-button">%s</button> <span id="r2c-resend-invite-status" role="status" aria-live="polite"></span></li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li><li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li></ul></div>',
 			esc_html__( 'Next steps', 'r2c-ai-concierge' ),
 			esc_html__( 'If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder.', 'r2c-ai-concierge' ),
+			esc_html__( 'Resend the invitation email', 'r2c-ai-concierge' ),
 			esc_url( self::APP_URL ),
 			esc_html__( 'Register FAQs', 'r2c-ai-concierge' ),
 			esc_url( self::APP_URL ),
