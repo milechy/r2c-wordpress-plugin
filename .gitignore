@@ -5,3 +5,5 @@
 *.log
 /test-results/
 /playwright-report/
+/composer.lock
+/.phpunit.result.cache
