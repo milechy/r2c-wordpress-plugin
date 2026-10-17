@@ -131,6 +131,7 @@ module.exports = {
 	gotoSettings,
 	resetMock,
 	configureMock,
+	mockHits,
 	connectViaManualKey,
 	SETTINGS_URL,
 };
