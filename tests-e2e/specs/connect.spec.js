@@ -15,7 +15,7 @@ test( 'consent + connect flow reaches Connected state and shows next steps', asy
 
 	await page.waitForSelector( '#r2c-disconnect-button' );
 	await expect( page.locator( 'body' ) ).toContainText( 'Status: Connected' );
-	await expect( page.locator( 'body' ) ).toContainText( 'Tenant ID' );
+	await expect( page.locator( 'body' ) ).toContainText( 'Store ID' );
 	await expect( page.locator( 'body' ) ).toContainText( 't_e2e' );
 	await expect( page.locator( '.r2c-next-steps' ) ).toContainText( 'Next steps' );
 	// has_published_faq defaults to false in the mock's default state (FR-27).

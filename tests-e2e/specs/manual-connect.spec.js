@@ -43,7 +43,7 @@ test( 'submitting the manual key form with an empty field is rejected without co
 	await page.click( 'summary' );
 	await page.click( '#r2c-manual-button' );
 
-	await expect( page.locator( '#r2c-manual-status' ) ).toContainText( 'Please enter an API key' );
+	await expect( page.locator( '#r2c-manual-status' ) ).toContainText( 'Please enter a connection key' );
 	await expect( page.locator( '#r2c-disconnect-button' ) ).toHaveCount( 0 );
 } );
 

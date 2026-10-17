@@ -48,3 +48,11 @@ PHP 7.4 以上を宣言しているので、`testVersion` もそれに合わせ�
 WP-6（このリポジトリの骨格。完了）／ WP-7（設定画面）／ WP-8（ウィジェット出力）／ WP-9（未接続ゼロ通信のテスト）／
 WP-10（readme.txt の完成、External Services 節）。サーバ側（プロビジョニングAPI・設定API）は
 `commerce-faq-tasks` にあり、そちらは別リポジトリで開発が進む。
+
+## 翻訳（日本語）
+
+- 画面に出す語彙は「接続キー」「お店のID」（英語は connection key / Store ID）。「APIキー」「テナント」は画面に出さない。
+- 文字列を足したら同じコミットで `languages/r2c-ai-concierge.pot`・`languages/ja.po`・`languages/r2c-ai-concierge-ja.mo` を更新する。
+  手順と、抜けを CI で止める検査は `.github/workflows/lint.yml` の "Check translations are complete and in sync" ステップ。
+  `.mo` はバイナリなので手でマージせず、衝突したら `ja.po` から作り直す。
+- 同梱の `.mo` は WordPress 6.8 以上なら Domain Path ヘッダで自動的に読まれる。6.0〜6.7 向けに `R2C_AI_Concierge_I18n` が読み込む。

@@ -97,7 +97,7 @@ async function configureMock( baseURL, configure ) {
 }
 
 /**
- * Connects via the "Enter API key manually" fallback (FR-05) — used as a
+ * Connects via the manual connection-key fallback (FR-05) — used as a
  * fast, deterministic way for other specs to reach an already-connected
  * state without going through the full consent + polling flow.
  */

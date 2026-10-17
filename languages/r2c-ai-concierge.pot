@@ -5,9 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: R2C AI Concierge 0.1.1\n"
-"Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/"
-"issues\n"
-"POT-Creation-Date: 2026-09-05 07:14+0900\n"
+"Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/issues\n"
+"POT-Creation-Date: 2026-10-18 07:49+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,327 +15,192 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: includes/class-r2c-ajax.php:33
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:38
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Unable to reach R2C right now. Please try again in a moment."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:50
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Please check the consent checkbox."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:55
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:71
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Failed to start the connection."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:90
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "No connection attempt is in progress. Please start over."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:105
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "The connection attempt could not be found. Please start over."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:140
-msgid ""
-"The connection finished, but the API key could not be received. Please paste "
-"the key issued in your R2C dashboard using \"Enter API key manually\" below."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "R2C is having a temporary problem. We will keep trying. Please wait a moment."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:151
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The connection finished, but the connection key could not be received. Please open \"I already have an R2C contract\" below and paste the connection key issued in your R2C dashboard."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Site verification expired before it could complete. Please try again."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:184
-msgid "Please enter an API key."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site is already connected to R2C. Please open \"I already have an R2C contract\" below and paste the connection key issued in your R2C dashboard."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:191
-msgid "This API key is invalid."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The time to confirm your site has run out. Please press \"Connect\" again."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:193
-msgid "Failed to verify the API key."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Please enter a connection key."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:223
-msgid ""
-"The local connection info was removed, but revoking the key on R2C's side "
-"may have failed. If this is unexpected, please check the key status in your "
-"R2C dashboard."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This connection key is invalid."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:243
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Failed to verify the connection key."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The local connection info was removed, but revoking the key on R2C's side may have failed. If this is unexpected, please check the key status in your R2C dashboard."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Not connected."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:276
+#: includes/class-r2c-ai-concierge-ajax.php
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "There is nothing to change."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:282
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Failed to save the settings."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:315
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "We sent an email with the link to the R2C dashboard to the address you entered when you connected. If it does not arrive, please also check your spam folder."
+msgstr ""
+
+#. translators: %s: the recipient's email address with part of it hidden, e.g. ta***@example.com
+#: includes/class-r2c-ai-concierge-ajax.php
+#, php-format
+msgid "We sent an email with the link to the R2C dashboard to %s. If it does not arrive, please also check your spam folder."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "An email was just sent. Please wait about an hour and try again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "We could not find an address to send to. If you connected with a connection key, please log in to the R2C dashboard with your usual account. Otherwise, please contact R2C support."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The email could not be sent. Please try again in about an hour. If it still does not arrive, please contact R2C support."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The connection is no longer valid. Please reload this page and reconnect."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The email could not be sent right now. Please try again in a moment."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "New sign-ups to R2C are currently at capacity. Please wait a moment."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:318
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Today's sign-up limit has been reached. Please try again tomorrow."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:324
-msgid ""
-"Verification access to this site was denied. Please temporarily disable "
-"Basic Auth or any access restrictions."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Verification access to this site was denied. Please temporarily disable Basic Auth or any access restrictions."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:327
-msgid ""
-"This site cannot be reached from outside. It must be a publicly accessible "
-"site (local environments cannot connect)."
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect)."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:330
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Site verification failed. Please make sure the plugin is activated."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:333
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Verifying your site…"
 msgstr ""
 
-#: includes/class-r2c-ajax.php:338
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Site verification failed. Please try again."
 msgstr ""
 
-#: includes/class-r2c-ajax.php:340
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "Connection failed. Please try again."
 msgstr ""
 
-#: includes/class-r2c-notice.php:69
+#: includes/class-r2c-ai-concierge-notice.php
 msgid "The R2C plugin is not connected yet."
 msgstr ""
 
-#: includes/class-r2c-notice.php:71 includes/class-r2c-settings-page.php:119
+#: includes/class-r2c-ai-concierge-notice.php
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Connect"
 msgstr ""
 
-#: includes/class-r2c-notice.php:73
+#: includes/class-r2c-ai-concierge-notice.php
 msgid "Dismiss this notice"
 msgstr ""
 
-#: includes/class-r2c-settings-page.php:32
-#: includes/class-r2c-settings-page.php:33
-#: includes/class-r2c-settings-page.php:82
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "R2C"
 msgstr ""
 
-#: includes/class-r2c-settings-page.php:62
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Connecting…"
 msgstr ""
 
-#: includes/class-r2c-settings-page.php:63
-msgid "Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant \"I want to cancel\"."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:64
-msgid "Saving…"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:65
-msgid "Saved."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:98
-msgid ""
-"R2C is an AI concierge widget that automatically chats with your site's "
-"visitors. Connect using the button below to display the widget with no theme "
-"editing required."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:102
-msgid "Email address"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:111
-#, php-format
-msgid ""
-"Connecting will send your site URL, site name, site language, WordPress/"
-"plugin versions, and the email address above to R2C. I agree to R2C's %1$s "
-"and %2$s."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:112
-msgid "Terms of Service"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:113
-msgid "Privacy Policy"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:128
-#: includes/class-r2c-settings-page.php:189
-msgid "API key"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:132
-msgid "Connect with this key"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:146
-msgid "Status: Connected"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:154
-msgid ""
-"Unable to reach R2C right now. To change settings, please reopen this page "
-"in a moment."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:174
-msgid "Active"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:174
-msgid "Inactive"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:180
-msgid "Status"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:184
-msgid "Tenant ID"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:195
-msgid "Plan"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:205
-msgid ""
-"This tenant is currently inactive, so the widget will not be displayed. If "
-"this is unexpected, please check your plan and billing status in the R2C "
-"dashboard."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:211
-msgid ""
-"No published FAQs have been registered yet. The widget will display, but it "
-"will not be able to answer questions."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:213
-#: includes/class-r2c-settings-page.php:247
-msgid "Register FAQs"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:233
-msgid "Free plan (ad-supported)"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:234
-msgid "Starter plan"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:235
-msgid "Standard plan"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:236
-msgid "Growth plan"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:237
-msgid "Enterprise plan"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:245
-msgid "Next steps"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:249
-msgid "View conversations"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:262
-msgid "Widget display settings"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:266
-msgid "Position"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:269
-msgid "Bottom right"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:270
-msgid "Bottom left"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:275
-msgid "Horizontal offset (px)"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:279
-msgid "Vertical offset (px)"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:283
-msgid "Brand color"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:291
-msgid "Save"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:295
-msgid "Changes may take up to 5 minutes to take effect."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:308
-msgid "Pages to hide the widget on"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:309
-msgid ""
-"One pattern per line. Start with / ; add * at the end to match everything "
-"under that path (e.g. /cart, /checkout/*)."
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:314
-msgid "Add a post type:"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:316
-#: includes/class-r2c-settings-page.php:329
-msgid "Please choose"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:321
-#: includes/class-r2c-settings-page.php:334
-msgid "Add"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:324
-msgid "Add a specific page:"
-msgstr ""
-
-#: includes/class-r2c-settings-page.php:397
-msgid "Disconnect"
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Are you sure you want to disconnect? Your conversation data and your R2C account will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant \"I want to cancel\"."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Click again to disconnect"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Sending…"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Saving…"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Saved."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unable to reach the server. Please check your connection and try again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "R2C is an AI concierge widget that automatically chats with your site's visitors. Connect using the button below to display the widget with no theme editing required."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
@@ -372,10 +236,38 @@ msgid "See plans and pricing"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "I already have an R2C contract (connect with a connection key)"
+msgid "Email address"
+msgstr ""
+
+#. translators: 1: terms of service link, 2: privacy policy link
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "Connecting will send your site URL, site name, site language, WordPress/plugin versions, and the email address above to R2C. I agree to R2C's %1$s and %2$s."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Terms of Service"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Privacy Policy"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Connection key"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Connect with this key"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "I already have an R2C contract (connect with a connection key)"
+msgstr ""
+
+#. translators: %s: link to the R2C dashboard
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
 msgid "Open the %s and tell the assistant: \"Issue a connection key for WordPress.\" Then paste the key into the box below."
 msgstr ""
 
@@ -384,15 +276,135 @@ msgid "R2C dashboard"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-settings-page.php:175
 msgid "Status: Connection is no longer valid"
 msgstr ""
 
-#: includes/class-r2c-ai-concierge-settings-page.php:178
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "The connection key is no longer valid. In the R2C dashboard, ask the assistant to \"issue a WordPress connection key\", then paste the code it shows into the box below to reconnect."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Status: Connected"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unable to reach R2C right now. To change settings, please reopen this page in a moment."
+msgstr ""
+
+#. translators: 1: the site address when it was connected, 2: the current site address
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press \"Disconnect\" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant \"Add %2$s to the allowed domains\"."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Active"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Inactive"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Status"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Store ID"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Plan"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Could not be retrieved"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Your R2C service is currently suspended. Please check the details in the R2C dashboard."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "No published FAQs have been registered yet. The widget will display, but it will not be able to answer questions."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Register FAQs"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "This week"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unable to retrieve this information right now."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Conversations"
+msgstr ""
+
+#. translators: 1: conversation count this week, 2: count of things the AI learned this week
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "%1$d this week / %2$d things the AI learned this week"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Avatar"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "FAQs"
+msgstr ""
+
+#. translators: %d: number of published FAQs
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "%d registered"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unhandled inquiries"
+msgstr ""
+
+#. translators: %d: number of unresolved inquiries
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "%d unresolved"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Respond in the R2C dashboard"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Free plan (ad-supported)"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Starter plan"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Standard plan"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Growth plan"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Enterprise plan"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Next steps"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
@@ -400,53 +412,43 @@ msgid "Resend the invitation email"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Sending…"
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "We sent an email with the link to the R2C dashboard to the address you entered when you connected. If it does not arrive, please also check your spam folder."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-#, php-format
-msgid "We sent an email with the link to the R2C dashboard to %s. If it does not arrive, please also check your spam folder."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "An email was just sent. Please wait about an hour and try again."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "We could not find an address to send to. If you connected with a connection key, please log in to the R2C dashboard with your usual account. Otherwise, please contact R2C support."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "The email could not be sent. Please try again in about an hour. If it still does not arrive, please contact R2C support."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "The connection is no longer valid. Please reload this page and reconnect."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "The email could not be sent right now. Please try again in a moment."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "R2C is having a temporary problem. We will keep trying. Please wait a moment."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "The time to confirm your site has run out. Please press \"Connect\" again."
+msgid "View conversations"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-#, php-format
-msgid "The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press \"Disconnect\" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant \"Add %2$s to the allowed domains\"."
+msgid "Widget display settings"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "This site's address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key."
+msgid "Position"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Bottom right"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Bottom left"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Horizontal offset (px)"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Vertical offset (px)"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Brand color"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Save"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Changes may take up to 5 minutes to take effect."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
@@ -454,5 +456,47 @@ msgid "A display position you changed in the R2C dashboard is applied to your si
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Could not be retrieved"
+msgid "Pages to hide the widget on"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*)."
+msgstr ""
+
+#. translators: %s: link to the Permalinks settings screen
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "Adding a specific page or post type here requires a \"pretty\" permalink structure — this site is currently using the default \"Plain\" one, under which every page and post type archive resolves to the same URL and can't be told apart. You can enable pretty permalinks on the %s screen, or type a pattern directly into the box above."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Permalinks settings"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "There are no pages or post type archives available to add here yet. You can still type a pattern directly into the box above."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Add a post type:"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Please choose"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Add"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Add a specific page:"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "This site's address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Disconnect"
 msgstr ""

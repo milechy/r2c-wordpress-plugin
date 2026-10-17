@@ -186,7 +186,7 @@ class R2C_AI_Concierge_Ajax {
 			wp_send_json_success(
 				array(
 					'status'  => 'issued_without_key',
-					'message' => __( 'The connection finished, but the API key could not be received. Please paste the key issued in your R2C dashboard using "Enter API key manually" below.', 'r2c-ai-concierge' ),
+					'message' => __( 'The connection finished, but the connection key could not be received. Please open "I already have an R2C contract" below and paste the connection key issued in your R2C dashboard.', 'r2c-ai-concierge' ),
 				)
 			);
 		}
@@ -231,7 +231,7 @@ class R2C_AI_Concierge_Ajax {
 			wp_send_json_success(
 				array(
 					'status'  => 'already_connected',
-					'message' => __( 'This site is already connected to R2C. Please paste the key issued in your R2C dashboard using "Enter API key manually" below.', 'r2c-ai-concierge' ),
+					'message' => __( 'This site is already connected to R2C. Please open "I already have an R2C contract" below and paste the connection key issued in your R2C dashboard.', 'r2c-ai-concierge' ),
 				)
 			);
 		}
@@ -272,16 +272,16 @@ class R2C_AI_Concierge_Ajax {
 		// 問い合わせ)を通す。
 		$api_key = sanitize_text_field( self::extract_api_key( self::post_string( 'api_key' ) ) );
 		if ( empty( $api_key ) ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter an API key.', 'r2c-ai-concierge' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a connection key.', 'r2c-ai-concierge' ) ) );
 		}
 
 		$result = R2C_AI_Concierge_Api_Client::get_settings( $api_key );
 
 		if ( ! $result['ok'] ) {
 			if ( 401 === $result['status'] ) {
-				wp_send_json_error( array( 'message' => __( 'This API key is invalid.', 'r2c-ai-concierge' ) ) );
+				wp_send_json_error( array( 'message' => __( 'This connection key is invalid.', 'r2c-ai-concierge' ) ) );
 			}
-			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to verify the API key.', 'r2c-ai-concierge' ) ) ) );
+			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to verify the connection key.', 'r2c-ai-concierge' ) ) ) );
 		}
 
 		$body = $result['body'];
