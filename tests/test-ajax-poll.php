@@ -196,7 +196,7 @@ class AjaxPollTest extends TestCase {
 			$this->fail( 'expected wp_send_json_success to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'issued_without_key', $e->data['status'] );
-			$this->assertStringContainsString( 'Enter API key manually', $e->data['message'] );
+			$this->assertStringContainsString( 'I already have an R2C contract', $e->data['message'] );
 		}
 
 		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_POLL, $cleared );
@@ -226,7 +226,7 @@ class AjaxPollTest extends TestCase {
 			$this->assertNotSame( 'pending', $e->data['status'] );
 			// 次に何をすればよいかが書かれていること(手動キー貼り付けへの導線)。
 			$this->assertStringContainsString( 'already connected', $e->data['message'] );
-			$this->assertStringContainsString( 'Enter API key manually', $e->data['message'] );
+			$this->assertStringContainsString( 'I already have an R2C contract', $e->data['message'] );
 		}
 	}
 

@@ -53,13 +53,11 @@ if ( ! defined( 'R2C_AI_CONCIERGE_API_BASE' ) ) {
 
 // UI strings ship in English; Japanese (the primary market per the
 // requirements doc) is provided via languages/r2c-ai-concierge-ja.mo (see
-// docs §11.4 / NFR-07). No load_plugin_textdomain() call here on purpose —
-// since WP 4.6, core auto-loads a plugin's translations (including a
-// bundled .mo matching this Text Domain in /languages) the moment a
-// translation function is first called; calling it manually is discouraged
-// (https://make.wordpress.org/core/2016/07/06/i18n-improvements-in-4-6/)
-// and flagged by Plugin Check.
+// docs §11.4 / NFR-07). WordPress 6.8+ finds that file through the
+// "Domain Path" header above; for 6.0-6.7 R2C_AI_Concierge_I18n loads it
+// explicitly (tests-e2e/specs/japanese-translation.spec.js checks it is loaded).
 
+require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-i18n.php';
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-options.php';
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-api-client.php';
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-verify-endpoint.php';
@@ -68,6 +66,7 @@ require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-settings-pa
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-notice.php';
 require_once R2C_AI_CONCIERGE_DIR . 'includes/class-r2c-ai-concierge-widget.php';
 
+R2C_AI_Concierge_I18n::init();
 R2C_AI_Concierge_Verify_Endpoint::init();
 R2C_AI_Concierge_Ajax::init();
 R2C_AI_Concierge_Settings_Page::init();

@@ -72,7 +72,7 @@ class R2C_AI_Concierge_Settings_Page {
 				'pagePaths' => self::page_id_to_path_map(),
 				'i18n'      => array(
 					'connecting'        => __( 'Connecting…', 'r2c-ai-concierge' ),
-					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant "I want to cancel".', 'r2c-ai-concierge' ),
+					'confirmDisconnect' => __( 'Are you sure you want to disconnect? Your conversation data and your R2C account will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant "I want to cancel".', 'r2c-ai-concierge' ),
 					'confirmButton'     => __( 'Click again to disconnect', 'r2c-ai-concierge' ),
 					'sending'           => __( 'Sending…', 'r2c-ai-concierge' ),
 					'saving'            => __( 'Saving…', 'r2c-ai-concierge' ),
@@ -175,7 +175,7 @@ class R2C_AI_Concierge_Settings_Page {
 		?>
 				<form id="r2c-manual-form" style="margin-top: 12px;">
 					<p>
-						<label for="r2c-manual-key"><?php esc_html_e( 'API key', 'r2c-ai-concierge' ); ?></label><br />
+						<label for="r2c-manual-key"><?php esc_html_e( 'Connection key', 'r2c-ai-concierge' ); ?></label><br />
 						<input type="text" id="r2c-manual-key" name="api_key" class="regular-text" autocomplete="off" />
 					</p>
 					<p>
@@ -332,12 +332,12 @@ class R2C_AI_Concierge_Settings_Page {
 					<td><?php echo esc_html( $status_label ); ?></td>
 				</tr>
 				<tr>
-					<th><?php esc_html_e( 'Tenant ID', 'r2c-ai-concierge' ); ?></th>
+					<th><?php esc_html_e( 'Store ID', 'r2c-ai-concierge' ); ?></th>
 					<td><code><?php echo esc_html( $tenant_id ); ?></code></td>
 				</tr>
 				<?php if ( '' !== $masked_key ) : ?>
 				<tr>
-					<th><?php esc_html_e( 'API key', 'r2c-ai-concierge' ); ?></th>
+					<th><?php esc_html_e( 'Connection key', 'r2c-ai-concierge' ); ?></th>
 					<td><code><?php echo esc_html( $masked_key ); ?></code></td>
 				</tr>
 				<?php endif; ?>
@@ -351,7 +351,7 @@ class R2C_AI_Concierge_Settings_Page {
 		if ( ! $is_active ) {
 			printf(
 				'<div class="notice notice-warning inline"><p>%s</p></div>',
-				esc_html__( 'This tenant is currently inactive, so the widget will not be displayed. If this is unexpected, please check your plan and billing status in the R2C dashboard.', 'r2c-ai-concierge' )
+				esc_html__( 'Your R2C service is currently suspended. Please check the details in the R2C dashboard.', 'r2c-ai-concierge' )
 			);
 		}
 		if ( empty( $body['has_published_faq'] ) ) {
@@ -459,7 +459,7 @@ class R2C_AI_Concierge_Settings_Page {
 							);
 						}
 						?>
-						<a href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Respond in R2C App', 'r2c-ai-concierge' ); ?></a>
+						<a href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Respond in the R2C dashboard', 'r2c-ai-concierge' ); ?></a>
 					</td>
 				</tr>
 			</tbody>

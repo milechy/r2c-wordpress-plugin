@@ -65,7 +65,7 @@ class AjaxConnectManualTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
+			$this->assertSame( 'Please enter a connection key.', $e->data['message'] );
 		}
 	}
 
@@ -77,7 +77,7 @@ class AjaxConnectManualTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
+			$this->assertSame( 'Please enter a connection key.', $e->data['message'] );
 		}
 	}
 
@@ -93,7 +93,7 @@ class AjaxConnectManualTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'This API key is invalid.', $e->data['message'] );
+			$this->assertSame( 'This connection key is invalid.', $e->data['message'] );
 		}
 	}
 
@@ -134,7 +134,7 @@ class AjaxConnectManualTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'Failed to verify the API key.', $e->data['message'] );
+			$this->assertSame( 'Failed to verify the connection key.', $e->data['message'] );
 		}
 	}
 
@@ -302,7 +302,7 @@ class AjaxConnectManualTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
+			$this->assertSame( 'Please enter a connection key.', $e->data['message'] );
 		}
 	}
 
@@ -319,7 +319,7 @@ class AjaxConnectManualTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect_manual();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'Please enter an API key.', $e->data['message'] );
+			$this->assertSame( 'Please enter a connection key.', $e->data['message'] );
 		}
 	}
 }

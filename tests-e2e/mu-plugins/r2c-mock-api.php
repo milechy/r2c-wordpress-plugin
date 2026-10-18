@@ -24,6 +24,18 @@ class R2C_Mock_Api {
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
 		add_filter( 'rest_pre_dispatch', array( __CLASS__, 'count_hit' ), 10, 3 );
+		add_filter( 'locale', array( __CLASS__, 'filter_locale' ) );
+	}
+
+	/**
+	 * サイトの言語を E2E から切り替える(WP-UX-19)。WordPress 本体の日本語
+	 * 言語パックは入れていないので画面の WP 本体部分は英語のままだが、
+	 * プラグインの翻訳(languages/r2c-ai-concierge-ja.mo)が読まれるかは
+	 * これで確かめられる。reset で空に戻る。
+	 */
+	public static function filter_locale( $locale ) {
+		$state = self::get_state();
+		return ! empty( $state['controls']['locale'] ) ? (string) $state['controls']['locale'] : $locale;
 	}
 
 	/**
@@ -80,6 +92,8 @@ class R2C_Mock_Api {
 				// POST /v1/public/wp/resend-invite の結果(WP-UX-09)。
 				// null=成功 | 'rate_limit'(429) | 'no_recipient'(404) | 'send_failed'(502)
 				'resend_invite_result'             => null,
+				// サイトの言語(例 'ja')。空なら WordPress 既定のまま(WP-UX-19)。
+				'locale'                           => '',
 			),
 		);
 	}
@@ -392,7 +406,7 @@ class R2C_Mock_Api {
 			return new WP_REST_Response( array( 'error' => 'invalid_body' ), 400 );
 		}
 
-		foreach ( array( 'poll_attempts_until_provisioned', 'forced_poll_status', 'clear_challenge_on_poll', 'force_settings_down', 'resend_invite_result' ) as $key ) {
+		foreach ( array( 'poll_attempts_until_provisioned', 'forced_poll_status', 'clear_challenge_on_poll', 'force_settings_down', 'resend_invite_result', 'locale' ) as $key ) {
 			if ( array_key_exists( $key, $body ) ) {
 				$state['controls'][ $key ] = $body[ $key ];
 			}

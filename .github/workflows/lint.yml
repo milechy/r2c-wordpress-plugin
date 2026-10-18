@@ -25,6 +25,48 @@ jobs:
       - name: Run PHPCS (WordPress Coding Standards)
         run: composer run lint
 
+      # WP-UX-19: 翻訳の抜けを CI で止める。ソースに新しい文字列を足したのに
+      # .pot / ja.po / .mo を更新し忘れると、日本語の画面に英語が混ざる
+      # (WP-UX-19 の調査で16件の抜けが見つかった)。
+      #
+      # 翻訳を更新するとき(ローカルで同じコマンドを実行する。要 gettext):
+      #   1. このステップの xgettext を実行して languages/r2c-ai-concierge.pot を作り直す
+      #      (ヘッダは既存のものを残す)
+      #   2. msgmerge --no-wrap --no-fuzzy-matching --add-location=file -U languages/ja.po languages/r2c-ai-concierge.pot
+      #   3. ja.po の空の msgstr を訳す
+      #   4. msgfmt --check -o languages/r2c-ai-concierge-ja.mo languages/ja.po
+      # .mo はバイナリなので手でマージしない。ja.po から毎回作り直す。
+      - name: Check translations are complete and in sync
+        run: |
+          set -eu
+          command -v xgettext >/dev/null || sudo apt-get install -y gettext
+          xgettext --language=PHP --from-code=UTF-8 \
+            -k -k__ -k_e -kesc_html__ -kesc_attr__ -kesc_html_e -kesc_attr_e \
+            -k_x:1,2c -kesc_html_x:1,2c -kesc_attr_x:1,2c -k_n:1,2 \
+            --add-comments=translators -o /tmp/source.pot \
+            r2c-ai-concierge.php includes/*.php
+          ids() { msgattrib --no-obsolete --no-wrap "$1" | grep -E '^msgid(_plural)? ' | sort; }
+          status=0
+          if ! diff <(ids /tmp/source.pot) <(ids languages/r2c-ai-concierge.pot); then
+            echo "::error file=languages/r2c-ai-concierge.pot::.pot is out of date with the source (see the '<' / '>' lines above: < = in source only, > = in .pot only). Regenerate it."
+            status=1
+          fi
+          if ! msgcmp languages/ja.po languages/r2c-ai-concierge.pot; then
+            echo "::error file=languages/ja.po::ja.po is missing (or has an empty translation for) strings that are in the .pot."
+            status=1
+          fi
+          if [ -n "$(msgattrib --untranslated --fuzzy --no-obsolete languages/ja.po | grep '^msgid ' || true)" ]; then
+            echo "::error file=languages/ja.po::ja.po has untranslated or fuzzy entries."
+            msgattrib --untranslated --fuzzy --no-obsolete --no-wrap languages/ja.po | grep '^msgid ' || true
+            status=1
+          fi
+          msgfmt --check -o /tmp/ja.mo languages/ja.po
+          if ! diff <(msgunfmt /tmp/ja.mo) <(msgunfmt languages/r2c-ai-concierge-ja.mo) >/dev/null; then
+            echo "::error file=languages/r2c-ai-concierge-ja.mo::.mo does not match ja.po. Rebuild it with: msgfmt -o languages/r2c-ai-concierge-ja.mo languages/ja.po"
+            status=1
+          fi
+          exit $status
+
   phpunit:
     runs-on: ubuntu-latest
     steps:

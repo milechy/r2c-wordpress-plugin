@@ -129,10 +129,10 @@ plugin restores the widget without reconnecting.
 
 = What happens if I uninstall (delete) the plugin? =
 
-All locally stored settings (your API key, cached display settings) are
+All locally stored settings (your connection key, cached display settings) are
 removed from this site. Your R2C account and its data are not deleted, and
 your contract is not cancelled; disconnect first from the settings screen
-if you also want to revoke the API key on R2C's side immediately.
+if you also want to revoke the connection key on R2C's side immediately.
 
 == Changelog ==
 

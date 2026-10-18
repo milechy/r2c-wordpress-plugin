@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R2C AI Concierge 0.1.1\n"
 "Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/issues\n"
-"POT-Creation-Date: 2026-09-05 06:36+0900\n"
-"PO-Revision-Date: 2026-09-05 06:40+0900\n"
+"POT-Creation-Date: 2026-10-18 07:49+0900\n"
+"PO-Revision-Date: 2026-10-18 07:49+0900\n"
 "Last-Translator: R2C <support@r2c.biz>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -17,391 +17,73 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: includes/class-r2c-ajax.php:33
-msgid "You do not have permission to perform this action."
-msgstr "この操作を行う権限がありません。"
-
-#: includes/class-r2c-ajax.php:38
-msgid "Unable to reach R2C right now. Please try again in a moment."
-msgstr "現在 R2C に接続できません。しばらくしてから再度お試しください。"
-
-#: includes/class-r2c-ajax.php:50
-msgid "Please check the consent checkbox."
-msgstr "同意チェックボックスにチェックを入れてください。"
-
-#: includes/class-r2c-ajax.php:55
-msgid "Please enter a valid email address."
-msgstr "有効なメールアドレスを入力してください。"
-
-#: includes/class-r2c-ajax.php:71
-msgid "Failed to start the connection."
-msgstr "接続の開始に失敗しました。"
-
-#: includes/class-r2c-ajax.php:90
-msgid "No connection attempt is in progress. Please start over."
-msgstr "進行中の接続試行がありません。最初からやり直してください。"
-
-#: includes/class-r2c-ajax.php:105
-msgid "The connection attempt could not be found. Please start over."
-msgstr "接続試行が見つかりませんでした。最初からやり直してください。"
-
-#: includes/class-r2c-ajax.php:140
-msgid "The connection finished, but the API key could not be received. Please paste the key issued in your R2C dashboard using \"Enter API key manually\" below."
-msgstr "接続処理は完了しましたが、APIキーを受信できませんでした。下の「APIキーを直接入力」からR2C管理画面で発行したキーを貼り付けてください。"
-
-#: includes/class-r2c-ajax.php:151
-msgid "Site verification expired before it could complete. Please try again."
-msgstr "サイトの確認が完了しないまま期限切れになりました。もう一度お試しください。"
-
-#: includes/class-r2c-ajax.php:184
-msgid "Please enter an API key."
-msgstr "APIキーを入力してください。"
-
-#: includes/class-r2c-ajax.php:191
-msgid "This API key is invalid."
-msgstr "APIキーが無効です。"
-
-#: includes/class-r2c-ajax.php:193
-msgid "Failed to verify the API key."
-msgstr "APIキーの確認に失敗しました。"
-
-#: includes/class-r2c-ajax.php:223
-msgid "The local connection info was removed, but revoking the key on R2C's side may have failed. If this is unexpected, please check the key status in your R2C dashboard."
-msgstr "ローカルの接続情報は削除しましたが、R2C側でのキー失効に失敗した可能性があります。心当たりがない場合はR2Cの管理画面でキーの状態をご確認ください。"
-
-#: includes/class-r2c-ajax.php:243
-msgid "Not connected."
-msgstr "接続されていません。"
-
-#: includes/class-r2c-ajax.php:276
-msgid "There is nothing to change."
-msgstr "変更する項目がありません。"
-
-#: includes/class-r2c-ajax.php:282
-msgid "Failed to save the settings."
-msgstr "設定の保存に失敗しました。"
-
-#: includes/class-r2c-ajax.php:315
-msgid "New sign-ups to R2C are currently at capacity. Please wait a moment."
-msgstr "現在R2Cへの新規登録が混み合っています。しばらくお待ちください。"
-
-#: includes/class-r2c-ajax.php:318
-msgid "Today's sign-up limit has been reached. Please try again tomorrow."
-msgstr "本日の新規登録上限に達しました。明日改めてお試しください。"
-
-#: includes/class-r2c-ajax.php:324
-msgid "Verification access to this site was denied. Please temporarily disable Basic Auth or any access restrictions."
-msgstr "このサイトへの確認アクセスが拒否されました。Basic認証やアクセス制限を一時的に解除してください。"
-
-#: includes/class-r2c-ajax.php:327
-msgid "This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect)."
-msgstr "このサイトに外部からアクセスできません。公開されているサイトである必要があります(ローカル環境等では接続できません)。"
-
-#: includes/class-r2c-ajax.php:330
-msgid "Site verification failed. Please make sure the plugin is activated."
-msgstr "サイトの確認に失敗しました。プラグインが有効化されているか確認してください。"
-
-#: includes/class-r2c-ajax.php:333
-msgid "Verifying your site…"
-msgstr "サイトを確認しています…"
-
-#: includes/class-r2c-ajax.php:338
-msgid "Site verification failed. Please try again."
-msgstr "サイトの確認に失敗しました。もう一度お試しください。"
-
-#: includes/class-r2c-ajax.php:340
-msgid "Connection failed. Please try again."
-msgstr "接続に失敗しました。もう一度お試しください。"
-
-#: includes/class-r2c-notice.php:69
-msgid "The R2C plugin is not connected yet."
-msgstr "R2C プラグインはまだ接続されていません。"
-
-#: includes/class-r2c-notice.php:71 includes/class-r2c-settings-page.php:119
-msgid "Connect"
-msgstr "接続する"
-
-#: includes/class-r2c-notice.php:73
-msgid "Dismiss this notice"
-msgstr "この通知を閉じる"
-
-#: includes/class-r2c-settings-page.php:32
-#: includes/class-r2c-settings-page.php:33
-#: includes/class-r2c-settings-page.php:82
-msgid "R2C"
-msgstr "R2C"
-
-#: includes/class-r2c-settings-page.php:62
-msgid "Connecting…"
-msgstr "接続しています…"
-
-#: includes/class-r2c-settings-page.php:63
-msgid "Are you sure you want to disconnect? Your conversation data and R2C tenant will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant \"I want to cancel\"."
-msgstr "本当に接続を解除しますか？会話データとR2Cテナントは削除されません。なお、接続を解除してもご契約（お支払い）は解約されません。解約するときは、R2C の管理画面で「解約したい」と話しかけてください。"
-
-#: includes/class-r2c-settings-page.php:64
-msgid "Saving…"
-msgstr "保存しています…"
-
-#: includes/class-r2c-settings-page.php:65
-msgid "Saved."
-msgstr "保存しました。"
-
-#: includes/class-r2c-settings-page.php:98
-msgid "R2C is an AI concierge widget that automatically chats with your site's visitors. Connect using the button below to display the widget with no theme editing required."
-msgstr "R2C は、サイトを訪れたお客様に自動でチャット対応する AI 接客ウィジェットです。下のボタンから接続すると、テーマの編集なしにウィジェットが表示されます。"
-
-#: includes/class-r2c-settings-page.php:102
-msgid "Email address"
-msgstr "メールアドレス"
-
-#: includes/class-r2c-settings-page.php:111
-#, php-format
-msgid "Connecting will send your site URL, site name, site language, WordPress/plugin versions, and the email address above to R2C. I agree to R2C's %1$s and %2$s."
-msgstr "接続すると、サイトURL・サイト名・サイトの言語・WordPress/プラグインのバージョン・上記メールアドレスが R2C に送信されます。R2C の%1$sと%2$sに同意します。"
-
-#: includes/class-r2c-settings-page.php:112
-msgid "Terms of Service"
-msgstr "利用規約"
-
-#: includes/class-r2c-settings-page.php:113
-msgid "Privacy Policy"
-msgstr "プライバシーポリシー"
-
-
-#: includes/class-r2c-settings-page.php:128
-#: includes/class-r2c-settings-page.php:189
-msgid "API key"
-msgstr "APIキー"
-
-#: includes/class-r2c-settings-page.php:132
-msgid "Connect with this key"
-msgstr "このキーで接続する"
-
-#: includes/class-r2c-settings-page.php:146
-msgid "Status: Connected"
-msgstr "ステータス: 接続済み"
-
-#: includes/class-r2c-settings-page.php:154
-msgid "Unable to reach R2C right now. To change settings, please reopen this page in a moment."
-msgstr "現在 R2C に接続できません。設定を変更するには、しばらくしてから再度このページを開いてください。"
-
-#: includes/class-r2c-settings-page.php:174
-msgid "Active"
-msgstr "稼働中"
-
-#: includes/class-r2c-settings-page.php:174
-msgid "Inactive"
-msgstr "停止中"
-
-#: includes/class-r2c-settings-page.php:180
-msgid "Status"
-msgstr "稼働状況"
-
-#: includes/class-r2c-settings-page.php:184
-msgid "Tenant ID"
-msgstr "テナントID"
-
-#: includes/class-r2c-settings-page.php:195
-msgid "Plan"
-msgstr "プラン"
-
-#: includes/class-r2c-settings-page.php:205
-msgid "This tenant is currently inactive, so the widget will not be displayed. If this is unexpected, please check your plan and billing status in the R2C dashboard."
-msgstr "このテナントは現在停止中のため、ウィジェットは表示されません。心当たりがない場合はR2C管理画面でプランや支払い状況をご確認ください。"
-
-#: includes/class-r2c-settings-page.php:211
-msgid "No published FAQs have been registered yet. The widget will display, but it will not be able to answer questions."
-msgstr "まだ公開済みのFAQが登録されていません。ウィジェットは表示されますが、質問に回答できません。"
-
-#: includes/class-r2c-settings-page.php:213
-#: includes/class-r2c-settings-page.php:247
-msgid "Register FAQs"
-msgstr "FAQ を登録する"
-
-#: includes/class-r2c-settings-page.php:233
-msgid "Free plan (ad-supported)"
-msgstr "広告付き無料プラン"
-
-#: includes/class-r2c-settings-page.php:234
-msgid "Starter plan"
-msgstr "スタータープラン"
-
-#: includes/class-r2c-settings-page.php:235
-msgid "Standard plan"
-msgstr "スタンダードプラン"
-
-#: includes/class-r2c-settings-page.php:236
-msgid "Growth plan"
-msgstr "グロースプラン"
-
-#: includes/class-r2c-settings-page.php:237
-msgid "Enterprise plan"
-msgstr "エンタープライズプラン"
-
-#: includes/class-r2c-settings-page.php:245
-msgid "Next steps"
-msgstr "次にやること"
-
-#: includes/class-r2c-settings-page.php:249
-msgid "View conversations"
-msgstr "会話を見る"
-
-#: includes/class-r2c-settings-page.php:262
-msgid "Widget display settings"
-msgstr "ウィジェットの表示設定"
-
-#: includes/class-r2c-settings-page.php:266
-msgid "Position"
-msgstr "表示位置"
-
-#: includes/class-r2c-settings-page.php:269
-msgid "Bottom right"
-msgstr "右下"
-
-#: includes/class-r2c-settings-page.php:270
-msgid "Bottom left"
-msgstr "左下"
-
-#: includes/class-r2c-settings-page.php:275
-msgid "Horizontal offset (px)"
-msgstr "横方向の余白(px)"
-
-#: includes/class-r2c-settings-page.php:279
-msgid "Vertical offset (px)"
-msgstr "縦方向の余白(px)"
-
-#: includes/class-r2c-settings-page.php:283
-msgid "Brand color"
-msgstr "ブランドカラー"
-
-#: includes/class-r2c-settings-page.php:291
-msgid "Save"
-msgstr "保存する"
-
-#: includes/class-r2c-settings-page.php:295
-msgid "Changes may take up to 5 minutes to take effect."
-msgstr "設定の反映には最大5分かかることがあります。"
-
-#: includes/class-r2c-settings-page.php:308
-msgid "Pages to hide the widget on"
-msgstr "非表示にするページ"
-
-#: includes/class-r2c-settings-page.php:309
-msgid "One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*)."
-msgstr "1行に1パターンで指定します。/ から始まり、末尾に * を付けると以下を含めます(例: /cart, /checkout/*)。"
-
-#: includes/class-r2c-settings-page.php:314
-msgid "Add a post type:"
-msgstr "投稿タイプを追加:"
-
-#: includes/class-r2c-settings-page.php:316
-#: includes/class-r2c-settings-page.php:329
-msgid "Please choose"
-msgstr "選択してください"
-
-#: includes/class-r2c-settings-page.php:321
-#: includes/class-r2c-settings-page.php:334
-msgid "Add"
-msgstr "追加"
-
-#: includes/class-r2c-settings-page.php:324
-msgid "Add a specific page:"
-msgstr "特定の固定ページを追加:"
-
-#: includes/class-r2c-settings-page.php:397
-msgid "Disconnect"
-msgstr "接続を解除する"
-
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Click again to disconnect"
-msgstr "もう一度押すと接続を解除します"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "First time using R2C? Start for free"
-msgstr "はじめて R2C をお使いの方（無料で始める）"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Already an R2C customer? Please use \"I already have an R2C contract\" below instead. This button creates a new free account."
-msgstr "すでに R2C をご契約中の方は、この下の「すでに R2C をご契約中の方」から接続してください。このボタンでは、新しい無料アカウントが作られます。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "About the free plan"
-msgstr "無料プランについて"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Ads and R2C branding appear on the chat widget."
-msgstr "チャットウィジェットに、広告と R2C の表示が出ます。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "The widget pauses after 200 conversations per month and starts again on the 1st of the next month."
-msgstr "会話は月に200件までです。上限に達するとウィジェットは一時停止し、翌月1日に再開します。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Conversation data is used for R2C's shared learning. This cannot be changed on the free plan."
-msgstr "会話データは R2C の共有学習に使われます。無料プランでは変更できません。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "If you move to a paid plan and cancel it later, your site returns to this free plan and the widget keeps running with ads."
-msgstr "有料プランに変更したあとで解約した場合は、この無料プランに戻ります。ウィジェットは広告つきで動き続けます。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "See plans and pricing"
-msgstr "料金プランを見る"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "I already have an R2C contract (connect with a connection key)"
-msgstr "すでに R2C をご契約中の方（接続キーで接続する）"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Open the %s and tell the assistant: \"Issue a connection key for WordPress.\" Then paste the key into the box below."
-msgstr "%s を開き、アシスタントに「WordPress 用の接続キーを発行して」と話しかけてください。届いたキーを、下の欄に貼り付けてください。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "R2C dashboard"
-msgstr "R2C の管理画面"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
-msgstr "無料プランで始めた方には、招待メールをお送りしています。メールを開いてパスワードを設定し、R2C の管理画面にログインしてください。届かないときは、迷惑メールフォルダもご確認ください。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php:175
-msgid "Status: Connection is no longer valid"
-msgstr "ステータス: 接続が無効になっています"
-
-#: includes/class-r2c-ai-concierge-settings-page.php:178
-msgid "The connection key is no longer valid. In the R2C dashboard, ask the assistant to \"issue a WordPress connection key\", then paste the code it shows into the box below to reconnect."
-msgstr "接続キーが無効になっています。R2C の管理画面で『WordPress 用の接続キーを発行して』と話しかけ、表示されたコードを下の欄に貼って接続し直してください。"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Resend the invitation email"
-msgstr "招待メールを再送する"
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Sending…"
-msgstr "送信しています…"
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "We sent an email with the link to the R2C dashboard to the address you entered when you connected. If it does not arrive, please also check your spam folder."
-msgstr "接続時に入力したメールアドレスに、R2C の管理画面へのご案内メールを送りました。届かないときは、迷惑メールフォルダもご確認ください。"
-
-#: includes/class-r2c-ai-concierge-ajax.php
-#, php-format
-msgid "We sent an email with the link to the R2C dashboard to %s. If it does not arrive, please also check your spam folder."
-msgstr "R2C の管理画面へのご案内メールを %s に送りました。届かないときは、迷惑メールフォルダもご確認ください。"
-
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "An email was just sent. Please wait about an hour and try again."
 msgstr "先ほど送信しました。1時間ほど経ってからもう一度お試しください。"
 
 #: includes/class-r2c-ai-concierge-ajax.php
-msgid "We could not find an address to send to. If you connected with a connection key, please log in to the R2C dashboard with your usual account. Otherwise, please contact R2C support."
-msgstr "メールの送り先が見つかりませんでした。接続キーで接続した方は、いつものアカウントで R2C の管理画面にログインしてください。そうでない場合は、R2C のサポートまでお問い合わせください。"
+msgid "Connection failed. Please try again."
+msgstr "接続に失敗しました。もう一度お試しください。"
 
 #: includes/class-r2c-ai-concierge-ajax.php
-msgid "The email could not be sent. Please try again in about an hour. If it still does not arrive, please contact R2C support."
-msgstr "メールを送信できませんでした。1時間ほど経ってからもう一度お試しください。それでも届かない場合は、R2C のサポートまでお問い合わせください。"
+msgid "Failed to save the settings."
+msgstr "設定の保存に失敗しました。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Failed to start the connection."
+msgstr "接続の開始に失敗しました。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Failed to verify the connection key."
+msgstr "接続キーの確認に失敗しました。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "New sign-ups to R2C are currently at capacity. Please wait a moment."
+msgstr "現在R2Cへの新規登録が混み合っています。しばらくお待ちください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "No connection attempt is in progress. Please start over."
+msgstr "進行中の接続試行がありません。最初からやり直してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Not connected."
+msgstr "接続されていません。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Please check the consent checkbox."
+msgstr "同意チェックボックスにチェックを入れてください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Please enter a connection key."
+msgstr "接続キーを入力してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Please enter a valid email address."
+msgstr "有効なメールアドレスを入力してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "R2C is having a temporary problem. We will keep trying. Please wait a moment."
+msgstr "R2C 側で一時的な問題が起きています。自動でやり直しますので、少しお待ちください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Site verification expired before it could complete. Please try again."
+msgstr "サイトの確認が完了しないまま期限切れになりました。もう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Site verification failed. Please make sure the plugin is activated."
+msgstr "サイトの確認に失敗しました。プラグインが有効化されているか確認してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Site verification failed. Please try again."
+msgstr "サイトの確認に失敗しました。もう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The connection attempt could not be found. Please start over."
+msgstr "接続試行が見つかりませんでした。最初からやり直してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The connection finished, but the connection key could not be received. Please open \"I already have an R2C contract\" below and paste the connection key issued in your R2C dashboard."
+msgstr "接続処理は完了しましたが、接続キーを受信できませんでした。下の「すでに R2C をご契約中の方」を開き、R2C の管理画面で発行した接続キーを貼り付けてください。"
 
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "The connection is no longer valid. Please reload this page and reconnect."
@@ -412,26 +94,411 @@ msgid "The email could not be sent right now. Please try again in a moment."
 msgstr "いま、メールを送信できませんでした。しばらくしてからもう一度お試しください。"
 
 #: includes/class-r2c-ai-concierge-ajax.php
-msgid "R2C is having a temporary problem. We will keep trying. Please wait a moment."
-msgstr "R2C 側で一時的な問題が起きています。自動でやり直しますので、少しお待ちください。"
+msgid "The email could not be sent. Please try again in about an hour. If it still does not arrive, please contact R2C support."
+msgstr "メールを送信できませんでした。1時間ほど経ってからもう一度お試しください。それでも届かない場合は、R2C のサポートまでお問い合わせください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The local connection info was removed, but revoking the key on R2C's side may have failed. If this is unexpected, please check the key status in your R2C dashboard."
+msgstr "ローカルの接続情報は削除しましたが、R2C側でのキー失効に失敗した可能性があります。心当たりがない場合はR2C の管理画面でキーの状態をご確認ください。"
 
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "The time to confirm your site has run out. Please press \"Connect\" again."
 msgstr "サイトの確認の有効時間が過ぎました。もう一度「接続する」を押してください。"
 
+#: includes/class-r2c-ai-concierge-ajax.php
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "There is nothing to change."
+msgstr "変更する項目がありません。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This connection key is invalid."
+msgstr "この接続キーは正しくありません。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect)."
+msgstr "このサイトに外部からアクセスできません。公開されているサイトである必要があります(ローカル環境等では接続できません)。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site is already connected to R2C. Please open \"I already have an R2C contract\" below and paste the connection key issued in your R2C dashboard."
+msgstr "このサイトはすでに R2C に接続されています。下の「すでに R2C をご契約中の方」を開き、R2C の管理画面で発行した接続キーを貼り付けてください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Today's sign-up limit has been reached. Please try again tomorrow."
+msgstr "本日の新規登録上限に達しました。明日改めてお試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Unable to reach R2C right now. Please try again in a moment."
+msgstr "現在 R2C に接続できません。しばらくしてから再度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Verification access to this site was denied. Please temporarily disable Basic Auth or any access restrictions."
+msgstr "このサイトへの確認アクセスが拒否されました。Basic認証やアクセス制限を一時的に解除してください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Verifying your site…"
+msgstr "サイトを確認しています…"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "We could not find an address to send to. If you connected with a connection key, please log in to the R2C dashboard with your usual account. Otherwise, please contact R2C support."
+msgstr "メールの送り先が見つかりませんでした。接続キーで接続した方は、いつものアカウントで R2C の管理画面にログインしてください。そうでない場合は、R2C のサポートまでお問い合わせください。"
+
+#. translators: %s: the recipient's email address with part of it hidden, e.g. ta***@example.com
+#: includes/class-r2c-ai-concierge-ajax.php
+#, php-format
+msgid "We sent an email with the link to the R2C dashboard to %s. If it does not arrive, please also check your spam folder."
+msgstr "R2C の管理画面へのご案内メールを %s に送りました。届かないときは、迷惑メールフォルダもご確認ください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "We sent an email with the link to the R2C dashboard to the address you entered when you connected. If it does not arrive, please also check your spam folder."
+msgstr "接続時に入力したメールアドレスに、R2C の管理画面へのご案内メールを送りました。届かないときは、迷惑メールフォルダもご確認ください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "You do not have permission to perform this action."
+msgstr "この操作を行う権限がありません。"
+
+#: includes/class-r2c-ai-concierge-notice.php
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Connect"
+msgstr "接続する"
+
+#: includes/class-r2c-ai-concierge-notice.php
+msgid "Dismiss this notice"
+msgstr "この通知を閉じる"
+
+#: includes/class-r2c-ai-concierge-notice.php
+msgid "The R2C plugin is not connected yet."
+msgstr "R2C プラグインはまだ接続されていません。"
+
+#. translators: 1: conversation count this week, 2: count of things the AI learned this week
 #: includes/class-r2c-ai-concierge-settings-page.php
 #, php-format
-msgid "The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press \"Disconnect\" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant \"Add %2$s to the allowed domains\"."
-msgstr "接続したときのサイトのアドレス（%1$s）と現在のアドレス（%2$s）が違います。このままではチャットが表示されません。サイトを複製した場合は、この画面で「接続を解除」を押すと本番サイトも止まります。アドレスを変えた場合は、R2C の管理画面で「許可ドメインに %2$s を追加して」と話しかけてください。"
+msgid "%1$d this week / %2$d things the AI learned this week"
+msgstr "今週の会話 %1$d 件 / AI が今週学んだこと %2$d 件"
 
+#. translators: %d: number of published FAQs
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "This site's address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key."
-msgstr "このサイトのアドレスは、接続したときのアドレスと違います。このサイトが別のサイトの複製である場合、ここで接続を解除すると、同じキーを使っている元のサイトのチャットも止まります。"
+#, php-format
+msgid "%d registered"
+msgstr "%d 件 登録済み"
+
+#. translators: %d: number of unresolved inquiries
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "%d unresolved"
+msgstr "%d 件 未対応"
 
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "A display position you changed in the R2C dashboard is applied to your site when you open this screen."
 msgstr "R2C の管理画面で変えた表示位置は、この画面を開くとサイトに反映されます。"
 
 #: includes/class-r2c-ai-concierge-settings-page.php
+msgid "About the free plan"
+msgstr "無料プランについて"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Active"
+msgstr "稼働中"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Add"
+msgstr "追加"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Add a post type:"
+msgstr "投稿タイプを追加:"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Add a specific page:"
+msgstr "特定の固定ページを追加:"
+
+#. translators: %s: link to the Permalinks settings screen
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "Adding a specific page or post type here requires a \"pretty\" permalink structure — this site is currently using the default \"Plain\" one, under which every page and post type archive resolves to the same URL and can't be told apart. You can enable pretty permalinks on the %s screen, or type a pattern directly into the box above."
+msgstr "ここでページや投稿タイプを選んで追加するには、パーマリンクの設定を「基本」以外にする必要があります。このサイトは「基本」のため、どのページも同じアドレスになり、区別できません。%s の画面で変更するか、上の欄にパターンを直接入力してください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Ads and R2C branding appear on the chat widget."
+msgstr "チャットウィジェットに、広告と R2C の表示が出ます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Already an R2C customer? Please use \"I already have an R2C contract\" below instead. This button creates a new free account."
+msgstr "すでに R2C をご契約中の方は、この下の「すでに R2C をご契約中の方」から接続してください。このボタンでは、新しい無料アカウントが作られます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Are you sure you want to disconnect? Your conversation data and your R2C account will not be deleted. Disconnecting does not cancel your contract or stop billing. To cancel, open the R2C dashboard and tell the assistant \"I want to cancel\"."
+msgstr "本当に接続を解除しますか？会話データと R2C のアカウントは削除されません。なお、接続を解除してもご契約（お支払い）は解約されません。解約するときは、R2C の管理画面で「解約したい」と話しかけてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Avatar"
+msgstr "アバター"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Bottom left"
+msgstr "左下"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Bottom right"
+msgstr "右下"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Brand color"
+msgstr "ブランドカラー"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Changes may take up to 5 minutes to take effect."
+msgstr "設定の反映には最大5分かかることがあります。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Click again to disconnect"
+msgstr "もう一度押すと接続を解除します"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Connect with this key"
+msgstr "このキーで接続する"
+
+#. translators: 1: terms of service link, 2: privacy policy link
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "Connecting will send your site URL, site name, site language, WordPress/plugin versions, and the email address above to R2C. I agree to R2C's %1$s and %2$s."
+msgstr "接続すると、サイトURL・サイト名・サイトの言語・WordPress/プラグインのバージョン・上記メールアドレスが R2C に送信されます。R2C の%1$sと%2$sに同意します。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Connecting…"
+msgstr "接続しています…"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Connection key"
+msgstr "接続キー"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Conversation data is used for R2C's shared learning. This cannot be changed on the free plan."
+msgstr "会話データは R2C の共有学習に使われます。無料プランでは変更できません。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Conversations"
+msgstr "会話"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Could not be retrieved"
 msgstr "取得できませんでした"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Disconnect"
+msgstr "接続を解除する"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Email address"
+msgstr "メールアドレス"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Enterprise plan"
+msgstr "エンタープライズプラン"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "FAQs"
+msgstr "FAQ"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "First time using R2C? Start for free"
+msgstr "はじめて R2C をお使いの方（無料で始める）"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Free plan (ad-supported)"
+msgstr "広告付き無料プラン"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Growth plan"
+msgstr "グロースプラン"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Horizontal offset (px)"
+msgstr "横方向の余白(px)"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "I already have an R2C contract (connect with a connection key)"
+msgstr "すでに R2C をご契約中の方（接続キーで接続する）"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you move to a paid plan and cancel it later, your site returns to this free plan and the widget keeps running with ads."
+msgstr "有料プランに変更したあとで解約した場合は、この無料プランに戻ります。ウィジェットは広告つきで動き続けます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
+msgstr "無料プランで始めた方には、招待メールをお送りしています。メールを開いてパスワードを設定し、R2C の管理画面にログインしてください。届かないときは、迷惑メールフォルダもご確認ください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Inactive"
+msgstr "停止中"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Next steps"
+msgstr "次にやること"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "No published FAQs have been registered yet. The widget will display, but it will not be able to answer questions."
+msgstr "まだ公開済みのFAQが登録されていません。ウィジェットは表示されますが、質問に回答できません。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*)."
+msgstr "1行に1パターンで指定します。/ から始まり、末尾に * を付けると以下を含めます(例: /cart, /checkout/*)。"
+
+#. translators: %s: link to the R2C dashboard
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "Open the %s and tell the assistant: \"Issue a connection key for WordPress.\" Then paste the key into the box below."
+msgstr "%s を開き、アシスタントに「WordPress 用の接続キーを発行して」と話しかけてください。届いたキーを、下の欄に貼り付けてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Pages to hide the widget on"
+msgstr "非表示にするページ"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Permalinks settings"
+msgstr "パーマリンク設定"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Plan"
+msgstr "プラン"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Please choose"
+msgstr "選択してください"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Position"
+msgstr "表示位置"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Privacy Policy"
+msgstr "プライバシーポリシー"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "R2C"
+msgstr "R2C"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "R2C dashboard"
+msgstr "R2C の管理画面"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "R2C is an AI concierge widget that automatically chats with your site's visitors. Connect using the button below to display the widget with no theme editing required."
+msgstr "R2C は、サイトを訪れたお客様に自動でチャット対応する AI 接客ウィジェットです。下のボタンから接続すると、テーマの編集なしにウィジェットが表示されます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Register FAQs"
+msgstr "FAQ を登録する"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Resend the invitation email"
+msgstr "招待メールを再送する"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Respond in the R2C dashboard"
+msgstr "R2C の管理画面で対応する"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Save"
+msgstr "保存する"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Saved."
+msgstr "保存しました。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Saving…"
+msgstr "保存しています…"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "See plans and pricing"
+msgstr "料金プランを見る"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Sending…"
+msgstr "送信しています…"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Standard plan"
+msgstr "スタンダードプラン"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Starter plan"
+msgstr "スタータープラン"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Status"
+msgstr "稼働状況"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Status: Connected"
+msgstr "ステータス: 接続済み"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Status: Connection is no longer valid"
+msgstr "ステータス: 接続が無効になっています"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Store ID"
+msgstr "お店のID"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Terms of Service"
+msgstr "利用規約"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "The connection key is no longer valid. In the R2C dashboard, ask the assistant to \"issue a WordPress connection key\", then paste the code it shows into the box below to reconnect."
+msgstr "接続キーが無効になっています。R2C の管理画面で『WordPress 用の接続キーを発行して』と話しかけ、表示されたコードを下の欄に貼って接続し直してください。"
+
+#. translators: 1: the site address when it was connected, 2: the current site address
+#: includes/class-r2c-ai-concierge-settings-page.php
+#, php-format
+msgid "The site address when you connected (%1$s) is different from the current address (%2$s). The chat will not appear as it is. If you copied this site, do not press \"Disconnect\" on this screen: it would also stop the original site. If you changed the address, open the R2C dashboard and tell the assistant \"Add %2$s to the allowed domains\"."
+msgstr "接続したときのサイトのアドレス（%1$s）と現在のアドレス（%2$s）が違います。このままではチャットが表示されません。サイトを複製した場合は、この画面で「接続を解除」を押すと本番サイトも止まります。アドレスを変えた場合は、R2C の管理画面で「許可ドメインに %2$s を追加して」と話しかけてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "The widget pauses after 200 conversations per month and starts again on the 1st of the next month."
+msgstr "会話は月に200件までです。上限に達するとウィジェットは一時停止し、翌月1日に再開します。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "There are no pages or post type archives available to add here yet. You can still type a pattern directly into the box above."
+msgstr "ここから追加できるページや投稿タイプは、まだありません。上の欄にパターンを直接入力することもできます。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "This site's address is different from the one it was connected with. If this site is a copy of another site, disconnecting here also stops the chat on the original site, because both use the same key."
+msgstr "このサイトのアドレスは、接続したときのアドレスと違います。このサイトが別のサイトの複製である場合、ここで接続を解除すると、同じキーを使っている元のサイトのチャットも止まります。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "This week"
+msgstr "今週の状況"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unable to reach R2C right now. To change settings, please reopen this page in a moment."
+msgstr "現在 R2C に接続できません。設定を変更するには、しばらくしてから再度このページを開いてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unable to reach the server. Please check your connection and try again."
+msgstr "通信できませんでした。インターネットの接続を確認して、もう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unable to retrieve this information right now."
+msgstr "いま、この情報を取得できませんでした。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Unhandled inquiries"
+msgstr "未対応のお問い合わせ"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Vertical offset (px)"
+msgstr "縦方向の余白(px)"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "View conversations"
+msgstr "会話を見る"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Widget display settings"
+msgstr "ウィジェットの表示設定"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Your R2C service is currently suspended. Please check the details in the R2C dashboard."
+msgstr "R2C のご利用が停止されています。R2C の管理画面でご確認ください。"
