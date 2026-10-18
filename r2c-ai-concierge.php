@@ -3,7 +3,7 @@
  * Plugin Name:       R2C – AI Concierge & Chat for Customer Support
  * Plugin URI:        https://github.com/milechy/r2c-wordpress-plugin
  * Description:       Embed R2C's AI sales concierge widget on your site in one click. Connect an existing R2C account or create a free one from this screen.
- * Version:           0.1.1
+ * Version:           0.2.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            R2C
@@ -31,7 +31,7 @@ defined( 'ABSPATH' ) || exit;
  * (wordpress.org Detailed Plugin Guidelines) requires exactly this.
  */
 
-define( 'R2C_AI_CONCIERGE_VERSION', '0.1.1' );
+define( 'R2C_AI_CONCIERGE_VERSION', '0.2.0' );
 define( 'R2C_AI_CONCIERGE_FILE', __FILE__ );
 define( 'R2C_AI_CONCIERGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'R2C_AI_CONCIERGE_URL', plugin_dir_url( __FILE__ ) );

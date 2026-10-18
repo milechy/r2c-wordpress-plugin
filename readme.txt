@@ -4,7 +4,7 @@ Tags: chatbot, live chat, ai, customer support, faq
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.1
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,13 @@ your contract is not cancelled; disconnect first from the settings screen
 if you also want to revoke the connection key on R2C's side immediately.
 
 == Changelog ==
+
+= 0.2.0 =
+* New: the connect screen now explains the free plan conditions, the two ways to start (create a new account, or use an existing R2C account), how to sign in, and the difference between disconnecting and cancelling your contract.
+* New: if the invitation email did not arrive, you can resend it from the connected screen. The recipient is chosen by R2C; the plugin never sends an address.
+* Fix: pasting the whole connection key (including the script tag) into the manual field now connects. If R2C reports that a key is no longer valid, the settings screen says so and explains how to reconnect.
+* Improved: the settings screen is more robust. Widget position changes made in R2C are reflected here, only the fields you changed are sent, an expired connection check stops with a clear message, a changed or copied site address (staging copy, domain change) is flagged with a warning, and the plan and usage shown come from a single source.
+* Improved: filled in missing Japanese translations and replaced technical terms with plain wording.
 
 = 0.1.1 =
 * Fix: the chat widget could not answer questions because the API key was not passed to the widget script. The widget is now only shown when both the tenant ID and the API key are stored.
