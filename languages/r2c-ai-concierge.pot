@@ -500,3 +500,23 @@ msgstr ""
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Disconnect"
 msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Too many attempts. Please wait a while and try again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Your site address must use HTTPS."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site address cannot be registered. Please check the address in Settings > General."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This feature is not available right now. Please try again in a moment."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Some of the values could not be accepted. Please check them and try again."
+msgstr ""

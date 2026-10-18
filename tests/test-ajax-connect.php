@@ -166,13 +166,20 @@ class AjaxConnectTest extends TestCase {
 		}
 	}
 
-	public function test_provision_4xx_with_message_surfaces_that_message() {
+	/**
+	 * The server's `message` is Japanese-only. An English-locale owner must
+	 * see the plugin's own translatable string chosen by the `error` code,
+	 * never the server text.
+	 *
+	 * @dataProvider provision_error_codes
+	 */
+	public function test_provision_error_shows_plugin_text_not_the_japanese_server_message( $status, $code, $expected ) {
 		Functions\when( 'is_email' )->justReturn( true );
 
 		Functions\when( 'wp_remote_request' )->justReturn( array( 'fake' => 'response' ) );
 		Functions\when( 'is_wp_error' )->justReturn( false );
-		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( 429 );
-		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"message":"Too many attempts, please wait."}' );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( $status );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"error":"' . $code . '","message":"サイトURLは https:// で始まる必要があります。"}' );
 
 		$_POST['consent'] = '1';
 		$_POST['email']   = 'owner@example.com';
@@ -181,8 +188,21 @@ class AjaxConnectTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_connect();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'Too many attempts, please wait.', $e->data['message'] );
+			$this->assertSame( $expected, $e->data['message'] );
+			$this->assertDoesNotMatchRegularExpression( '/[\x{3040}-\x{30ff}\x{4e00}-\x{9fff}]/u', $e->data['message'] );
 		}
+	}
+
+	public function provision_error_codes() {
+		return array(
+			'not https'           => array( 400, 'site_url_not_https', 'Your site address must use HTTPS.' ),
+			'not public'          => array( 400, 'site_url_not_public', 'This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect).' ),
+			'rejected pattern'    => array( 400, 'site_url_rejected', 'This site address cannot be registered. Please check the address in Settings > General.' ),
+			'invalid url'         => array( 400, 'invalid_site_url', 'This site address cannot be registered. Please check the address in Settings > General.' ),
+			'service unavailable' => array( 503, 'service_unavailable', 'This feature is not available right now. Please try again in a moment.' ),
+			'rate limited'        => array( 429, 'rate_limit_exceeded', 'Too many attempts. Please wait a while and try again.' ),
+			'unknown code'        => array( 500, 'provision_failed', 'Failed to start the connection.' ),
+		);
 	}
 
 	public function test_provision_4xx_without_message_falls_back_to_generic_text() {

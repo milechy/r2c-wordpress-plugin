@@ -283,7 +283,7 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 		Functions\when( 'wp_remote_request' )->justReturn( array( 'fake' => 'response' ) );
 		Functions\when( 'is_wp_error' )->justReturn( false );
 		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( 503 );
-		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"message":"mocked outage"}' );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"error":"settings_update_failed","message":"設定の更新に失敗しました。"}' );
 
 		$updatedOptionNames = array();
 		Functions\when( 'update_option' )->alias(
@@ -299,7 +299,8 @@ class AjaxSaveSettingsFieldsTest extends TestCase {
 			\R2C_AI_Concierge_Ajax::handle_save_settings();
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
-			$this->assertSame( 'mocked outage', $e->data['message'] );
+			// The server's Japanese `message` is never shown; the plugin's own text is.
+			$this->assertSame( 'Failed to save the settings.', $e->data['message'] );
 		}
 
 		$this->assertNotContains( \R2C_AI_Concierge_Options::CACHED_THEME, $updatedOptionNames );
