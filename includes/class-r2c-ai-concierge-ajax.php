@@ -437,8 +437,27 @@ class R2C_AI_Concierge_Ajax {
 		if ( null === $result['status'] ) {
 			return self::unreachable_message();
 		}
-		if ( is_array( $result['body'] ) && ! empty( $result['body']['message'] ) ) {
-			return (string) $result['body']['message'];
+		// The server's `message` is Japanese-only, so it is never shown: the
+		// stable `error` code picks a translatable string here instead.
+		$code = ( is_array( $result['body'] ) && isset( $result['body']['error'] ) && is_string( $result['body']['error'] ) ) ? $result['body']['error'] : '';
+
+		if ( 429 === $result['status'] ) {
+			return __( 'Too many attempts. Please wait a while and try again.', 'r2c-ai-concierge' );
+		}
+		switch ( $code ) {
+			case 'site_url_not_https':
+				return __( 'Your site address must use HTTPS.', 'r2c-ai-concierge' );
+			case 'site_url_not_public':
+				return __( 'This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect).', 'r2c-ai-concierge' );
+			case 'site_url_rejected':
+			case 'invalid_site_url':
+				return __( 'This site address cannot be registered. Please check the address in Settings > General.', 'r2c-ai-concierge' );
+			case 'service_unavailable':
+				return __( 'This feature is not available right now. Please try again in a moment.', 'r2c-ai-concierge' );
+			case 'invalid_request':
+			case 'invalid_primary_color':
+			case 'invalid_placement':
+				return __( 'Some of the values could not be accepted. Please check them and try again.', 'r2c-ai-concierge' );
 		}
 		return $fallback;
 	}

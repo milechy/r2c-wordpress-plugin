@@ -502,3 +502,23 @@ msgstr "ウィジェットの表示設定"
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Your R2C service is currently suspended. Please check the details in the R2C dashboard."
 msgstr "R2C のご利用が停止されています。R2C の管理画面でご確認ください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Too many attempts. Please wait a while and try again."
+msgstr "試行回数が多すぎます。しばらく待ってから、もう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Your site address must use HTTPS."
+msgstr "サイトのアドレスは HTTPS である必要があります。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site address cannot be registered. Please check the address in Settings > General."
+msgstr "このサイトのアドレスは登録できません。「設定」>「一般」でアドレスをご確認ください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This feature is not available right now. Please try again in a moment."
+msgstr "この機能は現在ご利用いただけません。しばらくしてから、もう一度お試しください。"
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Some of the values could not be accepted. Please check them and try again."
+msgstr "受け付けられない値があります。内容をご確認のうえ、もう一度お試しください。"
