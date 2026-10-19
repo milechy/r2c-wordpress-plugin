@@ -87,6 +87,7 @@ class OptionsTest extends TestCase {
 		$expected = array(
 			\R2C_AI_Concierge_Options::API_KEY,
 			\R2C_AI_Concierge_Options::CACHED_THEME,
+			\R2C_AI_Concierge_Options::CONNECTED_WITH_KEY,
 			\R2C_AI_Concierge_Options::SITE_ORIGIN,
 			\R2C_AI_Concierge_Options::TENANT_ID,
 		);

@@ -173,6 +173,8 @@ class AjaxConnectManualTest extends TestCase {
 
 		$this->assertSame( 'mock_good_key', $options[ \R2C_AI_Concierge_Options::API_KEY ] );
 		$this->assertSame( 't_manual', $options[ \R2C_AI_Concierge_Options::TENANT_ID ] );
+		// 接続キーで繋いだ印(次の手順の案内から招待メールの文を外すために使う)。
+		$this->assertTrue( $options[ \R2C_AI_Concierge_Options::CONNECTED_WITH_KEY ] );
 		$theme = $options[ \R2C_AI_Concierge_Options::CACHED_THEME ];
 		$this->assertSame( 'bottom-left', $theme['position'] );
 		$this->assertSame( 88, $theme['offset_x'] );

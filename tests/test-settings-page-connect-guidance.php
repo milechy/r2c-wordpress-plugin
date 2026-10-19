@@ -34,6 +34,7 @@ class SettingsPageConnectGuidanceTest extends TestCase {
 		Functions\stubTranslationFunctions();
 		Functions\stubEscapeFunctions();
 		Functions\when( 'get_bloginfo' )->justReturn( 'owner@example.com' );
+		Functions\when( 'get_option' )->justReturn( false );
 	}
 
 	protected function tearDown(): void {
@@ -138,6 +139,26 @@ class SettingsPageConnectGuidanceTest extends TestCase {
 		$this->assertStringContainsString( 'set a password', $html );
 		$this->assertStringContainsString( 'spam folder', $html );
 		// 既存の2リンクは残っている。
+		$this->assertStringContainsString( 'Register FAQs', $html );
+		$this->assertStringContainsString( 'View conversations', $html );
+	}
+
+	/* ---- 接続キーで既存アカウントに繋いだ人には、招待メールの案内を出さない ---- */
+
+	public function test_next_steps_hide_the_invitation_and_resend_button_when_connected_with_a_key() {
+		Functions\when( 'get_option' )->alias(
+			function ( $name, $default = false ) {
+				return 'r2c_ai_concierge_connected_with_key' === $name ? true : $default;
+			}
+		);
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$html = $this->render_private( 'render_next_steps' );
+
+		$this->assertStringNotContainsString( 'invitation email', $html );
+		$this->assertStringNotContainsString( 'r2c-resend-invite-button', $html );
+		// 残りの2リンクは、どちらの接続でも出す。
+		$this->assertStringContainsString( 'Next steps', $html );
 		$this->assertStringContainsString( 'Register FAQs', $html );
 		$this->assertStringContainsString( 'View conversations', $html );
 	}
