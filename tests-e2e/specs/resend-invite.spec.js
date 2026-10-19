@@ -5,17 +5,34 @@ const {
 	resetMock,
 	mockHits,
 	connectViaManualKey,
+	connectViaSignup,
 } = require( '../helpers/wp-admin' );
 
 // WP-UX-09: an owner who never got the invitation email can't log in to R2C
 // (no FAQs, no plan change, no cancellation). The connected screen has a
 // button that asks R2C to send it again; every outcome says what to do next.
 
-async function connect( page, baseURL, key, configure ) {
-	await resetMock( baseURL, { seed_api_key: key, ...( configure || {} ) } );
+// 招待メールは「プラグインから新規登録した人」にだけ届く。再送ボタンも同じ人にだけ出るので、
+// ここでは新規登録の接続(connectViaSignup)で繋ぐ。接続キーで繋いだ人には出ない(下の最後のテスト)。
+async function connect( page, baseURL, _key, configure ) {
+	await resetMock( baseURL, { poll_attempts_until_provisioned: 0, ...( configure || {} ) } );
 	await loginAsAdmin( page, baseURL );
-	await connectViaManualKey( page, baseURL, key );
+	await connectViaSignup( page, baseURL );
 }
+
+// 接続キーを貼って既存のR2Cアカウントに繋いだ人には招待メールが届いていないので、
+// 招待メールの案内も再送ボタンも出さない(「次の手順」の他のリンクは出る)。
+test( 'connected with a key (existing account): no invitation notice and no resend button', async ( { page, baseURL } ) => {
+	await resetMock( baseURL, { seed_api_key: 'mock_existing_account_key' } );
+	await loginAsAdmin( page, baseURL );
+	await connectViaManualKey( page, baseURL, 'mock_existing_account_key' );
+
+	const steps = page.locator( '.r2c-next-steps' );
+	await expect( steps ).toContainText( 'Next steps' );
+	await expect( steps ).toContainText( 'Register FAQs' );
+	await expect( steps ).not.toContainText( 'invitation email' );
+	await expect( page.locator( '#r2c-resend-invite-button' ) ).toHaveCount( 0 );
+} );
 
 test( 'resend button shows where the address was sent (masked) and cannot be pressed again', async ( { page, baseURL } ) => {
 	await connect( page, baseURL, 'mock_resend_key' );
