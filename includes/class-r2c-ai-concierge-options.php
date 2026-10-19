@@ -21,13 +21,14 @@ defined( 'ABSPATH' ) || exit;
 
 class R2C_AI_Concierge_Options {
 
-	const API_KEY           = 'r2c_ai_concierge_api_key';
-	const TENANT_ID         = 'r2c_ai_concierge_tenant_id';
-	const SITE_ORIGIN       = 'r2c_ai_concierge_site_origin';
-	const CACHED_THEME      = 'r2c_ai_concierge_cached_widget_theme';
-	const PENDING_POLL      = 'r2c_ai_concierge_pending_poll_token';
-	const PENDING_CHALLENGE = 'r2c_ai_concierge_pending_challenge';
-	const NOTICE_DISMISSED  = 'r2c_ai_concierge_connect_notice_dismissed';
+	const API_KEY            = 'r2c_ai_concierge_api_key';
+	const TENANT_ID          = 'r2c_ai_concierge_tenant_id';
+	const SITE_ORIGIN        = 'r2c_ai_concierge_site_origin';
+	const CACHED_THEME       = 'r2c_ai_concierge_cached_widget_theme';
+	const PENDING_POLL       = 'r2c_ai_concierge_pending_poll_token';
+	const PENDING_CHALLENGE  = 'r2c_ai_concierge_pending_challenge';
+	const NOTICE_DISMISSED   = 'r2c_ai_concierge_connect_notice_dismissed';
+	const CONNECTED_WITH_KEY = 'r2c_ai_concierge_connected_with_key';
 
 	/**
 	 * True once a connection exists locally. Does not confirm the key is
@@ -36,6 +37,20 @@ class R2C_AI_Concierge_Options {
 	 */
 	public static function is_connected() {
 		return (bool) self::get_api_key();
+	}
+
+	/**
+	 * Remember that this site was connected by pasting a connection key (an
+	 * existing R2C account), not by signing up through the plugin. Only used
+	 * to decide whether to mention the sign-up invitation email — it is not a
+	 * setting and R2C stays the source of truth for everything else.
+	 */
+	public static function mark_connected_with_key() {
+		update_option( self::CONNECTED_WITH_KEY, true, false );
+	}
+
+	public static function is_connected_with_key() {
+		return (bool) get_option( self::CONNECTED_WITH_KEY, false );
 	}
 
 	public static function get_api_key() {
@@ -72,6 +87,7 @@ class R2C_AI_Concierge_Options {
 		delete_option( self::TENANT_ID );
 		delete_option( self::SITE_ORIGIN );
 		delete_option( self::CACHED_THEME );
+		delete_option( self::CONNECTED_WITH_KEY );
 	}
 
 	/**

@@ -286,6 +286,7 @@ class R2C_AI_Concierge_Ajax {
 
 		$body = $result['body'];
 		R2C_AI_Concierge_Options::set_connection( $api_key, $body['tenant_id'], home_url( '/' ) );
+		R2C_AI_Concierge_Options::mark_connected_with_key();
 		R2C_AI_Concierge_Options::cache_theme_from_settings( $body );
 
 		wp_send_json_success( array( 'status' => 'connected' ) );

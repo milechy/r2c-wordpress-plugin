@@ -113,6 +113,20 @@ async function connectViaManualKey( page, baseURL, apiKey ) {
 	await page.waitForSelector( '#r2c-disconnect-button' );
 }
 
+/**
+ * Connects through the plugin's own sign-up flow (consent + polling) — i.e. a
+ * brand-new R2C account whose invitation email was sent by R2C. Use this when a
+ * spec needs the invitation notice; connectViaManualKey() is an EXISTING account
+ * and deliberately hides it.
+ */
+async function connectViaSignup( page, baseURL ) {
+	await gotoSettings( page, baseURL );
+	await page.fill( '#r2c-email', 'owner@example.com' );
+	await page.check( '#r2c-consent' );
+	await Promise.all( [ page.waitForNavigation(), page.click( '#r2c-connect-button' ) ] );
+	await page.waitForSelector( '#r2c-disconnect-button' );
+}
+
 // A setPermalinkStructure() helper (switching this wp-env install's live
 // permalink structure to "pretty" via wp-admin, to E2E-test the positive
 // path of the class-r2c-ai-concierge-settings-page.php fix) was tried here and removed.
@@ -133,5 +147,6 @@ module.exports = {
 	configureMock,
 	mockHits,
 	connectViaManualKey,
+	connectViaSignup,
 	SETTINGS_URL,
 };
