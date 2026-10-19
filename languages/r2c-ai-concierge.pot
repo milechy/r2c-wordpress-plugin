@@ -376,6 +376,14 @@ msgid "%d unresolved"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
+msgid "To change your plan or cancel, open the R2C dashboard and tell the assistant what you want."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Open the R2C dashboard"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Respond in the R2C dashboard"
 msgstr ""
 

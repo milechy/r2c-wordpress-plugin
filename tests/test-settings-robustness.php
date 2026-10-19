@@ -347,6 +347,27 @@ class SettingsRobustnessTest extends TestCase {
 		$this->assertStringNotContainsString( 'Free plan', $html );
 	}
 
+	// プランの変更・解約は R2C の管理画面で行う。設定画面の中に、控えめな案内とリンクを1つだけ出す
+	// (wordpress.org ガイドライン #11: 設定画面の中・控えめ。#5: 機能の制限はしない)。
+	public function test_plan_row_points_to_the_dashboard_for_plan_change_and_cancellation() {
+		$html = $this->summary_html(
+			array(
+				'tenant_id' => 't_1',
+				'is_active' => true,
+			),
+			$this->status_result( 'starter' )
+		);
+
+		$this->assertStringContainsString( 'To change your plan or cancel', $html );
+		$this->assertStringContainsString( 'Open the R2C dashboard', $html );
+		// 外部リンクは noopener 付き・同じ画面に1つだけ(催促を重ねない)。
+		$this->assertSame( 1, substr_count( $html, 'Open the R2C dashboard' ) );
+		$this->assertStringContainsString( 'rel="noopener noreferrer"', $html );
+		// 押すと止まる・使えなくなる、と思わせる文言を入れない(ガイドライン #5・#9)。
+		$this->assertStringNotContainsString( 'upgrade to unlock', strtolower( $html ) );
+		$this->assertStringNotContainsString( 'locked', strtolower( $html ) );
+	}
+
 	/**
 	 * @dataProvider unavailablePlanProvider
 	 */

@@ -343,7 +343,14 @@ class R2C_AI_Concierge_Settings_Page {
 				<?php endif; ?>
 				<tr>
 					<th><?php esc_html_e( 'Plan', 'r2c-ai-concierge' ); ?></th>
-					<td><?php echo esc_html( null === $plan ? __( 'Could not be retrieved', 'r2c-ai-concierge' ) : self::plan_label( $plan ) ); ?></td>
+					<td>
+						<?php echo esc_html( null === $plan ? __( 'Could not be retrieved', 'r2c-ai-concierge' ) : self::plan_label( $plan ) ); ?>
+						<?php // 設定画面の中だけの、控えめな案内(ガイドライン #11)。機能の制限や催促はしない。 ?>
+						<p class="description">
+							<?php esc_html_e( 'To change your plan or cancel, open the R2C dashboard and tell the assistant what you want.', 'r2c-ai-concierge' ); ?>
+							<a href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open the R2C dashboard', 'r2c-ai-concierge' ); ?></a>
+						</p>
+					</td>
 				</tr>
 			</tbody>
 		</table>

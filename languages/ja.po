@@ -394,6 +394,14 @@ msgid "Resend the invitation email"
 msgstr "招待メールを再送する"
 
 #: includes/class-r2c-ai-concierge-settings-page.php
+msgid "To change your plan or cancel, open the R2C dashboard and tell the assistant what you want."
+msgstr "プランの変更や解約は、R2C の管理画面を開いて、アシスタントに希望を伝えてください。"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Open the R2C dashboard"
+msgstr "R2C の管理画面を開く"
+
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Respond in the R2C dashboard"
 msgstr "R2C の管理画面で対応する"
 
