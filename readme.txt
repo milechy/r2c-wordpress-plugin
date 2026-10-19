@@ -4,7 +4,7 @@ Tags: chatbot, live chat, ai, customer support, faq
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,11 @@ your contract is not cancelled; disconnect first from the settings screen
 if you also want to revoke the connection key on R2C's side immediately.
 
 == Changelog ==
+
+= 0.2.1 =
+* Fix: error messages that come from R2C's servers are no longer shown as Japanese text on an English screen. They are now plain, translatable messages in the language of your screen.
+* Fix: a site connected with a connection key (an existing R2C account) no longer shows the sign-up invitation email notice or the "Resend the invitation email" button, because no invitation was sent to it.
+* Chore: development-only folders are no longer included in the distributed package.
 
 = 0.2.0 =
 * New: the connect screen now explains the free plan conditions, the two ways to start (create a new account, or use an existing R2C account), how to sign in, and the difference between disconnecting and cancelling your contract.
