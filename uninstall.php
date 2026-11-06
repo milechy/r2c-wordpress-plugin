@@ -32,5 +32,6 @@ delete_option( 'r2c_ai_concierge_site_origin' );
 delete_option( 'r2c_ai_concierge_cached_widget_theme' );
 delete_option( 'r2c_ai_concierge_connect_notice_dismissed' );
 delete_option( 'r2c_ai_concierge_connected_with_key' );
+delete_option( 'r2c_ai_concierge_manage_token' );
 delete_transient( 'r2c_ai_concierge_pending_poll_token' );
 delete_transient( 'r2c_ai_concierge_pending_challenge' );

@@ -179,6 +179,11 @@ class R2C_AI_Concierge_Settings_Page {
 						<input type="text" id="r2c-manual-key" name="api_key" class="regular-text" autocomplete="off" />
 					</p>
 					<p>
+						<label for="r2c-manual-manage-token"><?php esc_html_e( 'Management code (optional)', 'r2c-ai-concierge' ); ?></label><br />
+						<input type="text" id="r2c-manual-manage-token" name="manage_token" class="regular-text" autocomplete="off" />
+						<br /><span class="description"><?php esc_html_e( 'Issued in your R2C dashboard together with the connection key. It is needed to change the hidden pages and to revoke the key. You can also add it later on this screen.', 'r2c-ai-concierge' ); ?></span>
+					</p>
+					<p>
 						<button type="submit" class="button" id="r2c-manual-button"><?php esc_html_e( 'Connect with this key', 'r2c-ai-concierge' ); ?></button>
 					</p>
 					<p id="r2c-manual-status" role="status" aria-live="polite"></p>
@@ -260,7 +265,38 @@ class R2C_AI_Concierge_Settings_Page {
 
 		self::render_status_summary( $result['body'], $status_result );
 		self::render_widget_settings_form( $result['body'] );
+		self::render_manage_token_section();
 		self::render_disconnect_button();
+	}
+
+	/**
+	 * 管理コード(非表示ページの変更・接続解除に要る、接続キーとは別の秘密)の状態と入力欄。
+	 * 保存済みの値は画面に出さない(有る/無いだけ)。入力欄は常に空で出す。
+	 */
+	private static function render_manage_token_section() {
+		$has_token = R2C_AI_Concierge_Options::has_manage_token();
+		?>
+		<h2><?php esc_html_e( 'Management code', 'r2c-ai-concierge' ); ?></h2>
+		<p class="description">
+			<?php
+			if ( $has_token ) {
+				esc_html_e( 'A management code is saved. To replace it, enter the new one below.', 'r2c-ai-concierge' );
+			} else {
+				esc_html_e( 'No management code is saved. Without it, the hidden pages cannot be changed here, and disconnecting does not revoke the key on R2C\'s side. Issue one in your R2C dashboard (ask the assistant for a WordPress connection key) and enter it below.', 'r2c-ai-concierge' );
+			}
+			?>
+		</p>
+		<form id="r2c-manage-token-form">
+			<p>
+				<label for="r2c-manage-token"><?php esc_html_e( 'Management code', 'r2c-ai-concierge' ); ?></label><br />
+				<input type="text" id="r2c-manage-token" name="manage_token" class="regular-text" autocomplete="off" />
+			</p>
+			<p>
+				<button type="submit" class="button" id="r2c-manage-token-save"><?php esc_html_e( 'Save the management code', 'r2c-ai-concierge' ); ?></button>
+			</p>
+			<p id="r2c-manage-token-status" role="status" aria-live="polite"></p>
+		</form>
+		<?php
 	}
 
 	/**
@@ -598,12 +634,17 @@ class R2C_AI_Concierge_Settings_Page {
 	private static function render_excluded_pages_section( $patterns ) {
 		$post_type_patterns = self::excludable_post_type_patterns();
 		$page_map           = self::page_id_to_path_map();
+		$has_manage_token   = R2C_AI_Concierge_Options::has_manage_token();
 		?>
 		<h2><?php esc_html_e( 'Pages to hide the widget on', 'r2c-ai-concierge' ); ?></h2>
 		<p class="description"><?php esc_html_e( 'One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*).', 'r2c-ai-concierge' ); ?></p>
 		<p>
-			<textarea id="r2c-excluded-patterns" name="excluded_page_patterns" rows="4" class="large-text code"><?php echo esc_textarea( implode( "\n", $patterns ) ); ?></textarea>
+			<textarea id="r2c-excluded-patterns" name="excluded_page_patterns" rows="4" class="large-text code"<?php disabled( ! $has_manage_token ); ?>><?php echo esc_textarea( implode( "\n", $patterns ) ); ?></textarea>
 		</p>
+		<?php if ( ! $has_manage_token ) : ?>
+			<p class="description r2c-manage-token-needed"><?php esc_html_e( 'Changing the hidden pages needs the management code. Enter it under "Management code" below the Save button.', 'r2c-ai-concierge' ); ?></p>
+			<?php return; ?>
+		<?php endif; ?>
 		<?php if ( empty( $post_type_patterns ) && empty( $page_map ) ) : ?>
 			<p class="description">
 				<?php if ( '' === get_option( 'permalink_structure' ) ) : ?>

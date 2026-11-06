@@ -88,11 +88,45 @@ class OptionsTest extends TestCase {
 			\R2C_AI_Concierge_Options::API_KEY,
 			\R2C_AI_Concierge_Options::CACHED_THEME,
 			\R2C_AI_Concierge_Options::CONNECTED_WITH_KEY,
+			\R2C_AI_Concierge_Options::MANAGE_TOKEN,
 			\R2C_AI_Concierge_Options::SITE_ORIGIN,
 			\R2C_AI_Concierge_Options::TENANT_ID,
 		);
 		sort( $expected );
 		$this->assertSame( $expected, $deleted );
+	}
+
+	public function test_manage_token_is_stored_without_autoload_and_an_empty_value_removes_it() {
+		$calls = array();
+		Functions\when( 'update_option' )->alias(
+			function ( $name, $value, $autoload = null ) use ( &$calls ) {
+				$calls[ $name ] = array( $value, $autoload );
+				return true;
+			}
+		);
+		$deleted = array();
+		Functions\when( 'delete_option' )->alias(
+			function ( $name ) use ( &$deleted ) {
+				$deleted[] = $name;
+				return true;
+			}
+		);
+
+		\R2C_AI_Concierge_Options::set_manage_token( 'r2cm_abc' );
+		$this->assertSame( array( 'r2cm_abc', false ), $calls[ \R2C_AI_Concierge_Options::MANAGE_TOKEN ] );
+
+		\R2C_AI_Concierge_Options::set_manage_token( '' );
+		$this->assertContains( \R2C_AI_Concierge_Options::MANAGE_TOKEN, $deleted );
+	}
+
+	public function test_manage_token_reads_back_as_a_string_and_defaults_to_empty() {
+		Functions\when( 'get_option' )->justReturn( false );
+		$this->assertSame( '', \R2C_AI_Concierge_Options::get_manage_token() );
+		$this->assertFalse( \R2C_AI_Concierge_Options::has_manage_token() );
+
+		Functions\when( 'get_option' )->justReturn( 'r2cm_abc' );
+		$this->assertSame( 'r2cm_abc', \R2C_AI_Concierge_Options::get_manage_token() );
+		$this->assertTrue( \R2C_AI_Concierge_Options::has_manage_token() );
 	}
 
 	public function test_get_cached_theme_defaults_to_empty_array_when_never_set() {

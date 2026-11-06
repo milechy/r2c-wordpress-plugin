@@ -4,7 +4,7 @@ Tags: chatbot, live chat, ai, customer support, faq
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.1
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,7 +50,12 @@ the settings screen.
   display settings are also fetched once right after connecting. The
   position and color are kept on your site so the widget can be placed
   without a request on every page view.
-* **Saving a change**: sends only the fields you changed back to R2C.
+* **Saving a change**: sends only the fields you changed back to R2C. The
+  request carries your management code (see the changelog) in a request
+  header, so R2C can tell that the change comes from you and not from
+  someone who only has the public key in your page. The management code
+  is sent only to `api.r2c.biz`, only from your server, and is never
+  placed in your pages.
 * **Resending the invitation email** (only when you press the button on
   the settings screen): asks R2C to email the dashboard link again. The
   plugin sends no address; R2C uses the one you entered when connecting,
@@ -135,6 +140,11 @@ your contract is not cancelled; disconnect first from the settings screen
 if you also want to revoke the connection key on R2C's side immediately.
 
 == Changelog ==
+
+= 0.3.0 =
+* New: a "management code" protects the changes that can hide the widget on every page or revoke the connection key. It is issued by R2C when you connect from this plugin, or in your R2C dashboard if you connected with a connection key. It is stored like the connection key, sent only to R2C's servers, and never shown on the screen or placed in your pages.
+* Improved: when you connect with a connection key (an existing R2C account), "Disconnect" now only removes this site's connection information. It no longer revokes the key on R2C's side, because that key may be in use elsewhere.
+* Improved: the hidden pages field is disabled until a management code is saved, with an explanation of where to get one. Widget position and color can still be changed without it.
 
 = 0.2.1 =
 * Fix: error messages that come from R2C's servers are no longer shown as Japanese text on an English screen. They are now plain, translatable messages in the language of your screen.

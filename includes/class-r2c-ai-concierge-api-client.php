@@ -61,8 +61,8 @@ class R2C_AI_Concierge_Api_Client {
 	 * separate step the caller performs regardless of this call's outcome
 	 * — see R2C_AI_Concierge_Ajax::handle_disconnect for the reasoning.
 	 */
-	public static function disconnect( $api_key ) {
-		return self::request( 'POST', '/v1/public/wp/disconnect', $api_key, null );
+	public static function disconnect( $api_key, $manage_token = null ) {
+		return self::request( 'POST', '/v1/public/wp/disconnect', $api_key, null, $manage_token );
 	}
 
 	/**
@@ -78,8 +78,8 @@ class R2C_AI_Concierge_Api_Client {
 	 * same snake_case keys as the API response (position, offset_x,
 	 * offset_y, primary_color, excluded_page_patterns, allowed_origins).
 	 */
-	public static function patch_settings( $api_key, array $fields ) {
-		return self::request( 'PATCH', '/v1/public/wp/settings', $api_key, $fields );
+	public static function patch_settings( $api_key, array $fields, $manage_token = null ) {
+		return self::request( 'PATCH', '/v1/public/wp/settings', $api_key, $fields, $manage_token );
 	}
 
 	/**
@@ -112,8 +112,12 @@ class R2C_AI_Concierge_Api_Client {
 	 * @param string|null $api_key  x-api-key header value, or null for the
 	 *                              two unauthenticated provisioning routes.
 	 * @param array|null  $body     JSON body, or null for a bodyless request.
+	 * @param string|null $manage_token The management code, sent as
+	 *                              `x-r2c-manage-token` only when non-empty.
+	 *                              Server-to-server only: never put it in a
+	 *                              page, a script tag or a browser request.
 	 */
-	private static function request( $method, $path, $api_key, $body ) {
+	private static function request( $method, $path, $api_key, $body, $manage_token = null ) {
 		$args = array(
 			'method'  => $method,
 			'timeout' => self::TIMEOUT_SECONDS,
@@ -124,6 +128,9 @@ class R2C_AI_Concierge_Api_Client {
 
 		if ( null !== $api_key ) {
 			$args['headers']['x-api-key'] = $api_key;
+		}
+		if ( is_string( $manage_token ) && '' !== $manage_token ) {
+			$args['headers']['x-r2c-manage-token'] = $manage_token;
 		}
 		if ( null !== $body ) {
 			$args['headers']['Content-Type'] = 'application/json';

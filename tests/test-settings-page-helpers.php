@@ -384,7 +384,7 @@ class SettingsPageHelpersTest extends TestCase {
 		// pretty permalinks already on" case.
 		Functions\when( 'get_post_types' )->justReturn( array() );
 		Functions\when( 'get_posts' )->justReturn( array() );
-		Functions\when( 'get_option' )->justReturn( '' );
+		$this->stub_permalinks_and_manage_token( '' );
 
 		Functions\expect( 'wp_dropdown_pages' )->never();
 
@@ -395,6 +395,105 @@ class SettingsPageHelpersTest extends TestCase {
 		$this->assertStringNotContainsString( 'r2c-excluded-post-type-add', $output );
 		$this->assertStringNotContainsString( 'r2c-excluded-page-picker', $output );
 		$this->assertStringContainsString( 'pretty', $output );
+	}
+
+	/**
+	 * get_option stub for render_excluded_pages_section(): `permalink_structure` plus a saved
+	 * management code (the section only offers the pickers when one is saved), and the
+	 * disabled() helper the textarea uses.
+	 */
+	private function stub_permalinks_and_manage_token( $permalink_structure, $manage_token = 'r2cm_saved' ) {
+		Functions\when( 'get_option' )->alias(
+			function ( $name, $default = false ) use ( $permalink_structure, $manage_token ) {
+				if ( \R2C_AI_Concierge_Options::MANAGE_TOKEN === $name ) {
+					return $manage_token;
+				}
+				return 'permalink_structure' === $name ? $permalink_structure : $default;
+			}
+		);
+		Functions\when( 'disabled' )->alias(
+			function ( $disabled, $current = true, $echo = true ) {
+				$result = ( $disabled === $current ) ? " disabled='disabled'" : '';
+				if ( $echo ) {
+					echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- test-only stand-in.
+				}
+				return $result;
+			}
+		);
+	}
+
+	private function stub_escapers() {
+		Functions\when( 'esc_html_e' )->alias(
+			function ( $text ) {
+				echo $text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- test-only stand-in.
+			}
+		);
+		foreach ( array( 'esc_html__', '__', 'esc_html', 'esc_attr', 'esc_url', 'esc_textarea', 'admin_url' ) as $fn ) {
+			Functions\when( $fn )->returnArg( 1 );
+		}
+	}
+
+	/**
+	 * 管理コードが無いと R2C は非表示ページの変更を断る。押せるのに必ず失敗する欄を出さず、
+	 * 無効にして理由と入れる場所を書く。ピッカー(追加ボタン)も出さない。
+	 */
+	public function test_render_excluded_pages_section_without_a_management_code_disables_the_textarea_and_hides_the_pickers() {
+		$this->stub_escapers();
+		Functions\when( 'get_post_types' )->justReturn( array() );
+		Functions\when( 'get_posts' )->justReturn( array() );
+		$this->stub_permalinks_and_manage_token( '/%postname%/', '' );
+		Functions\expect( 'wp_dropdown_pages' )->never();
+
+		ob_start();
+		$this->call_private_static( 'render_excluded_pages_section', array( array( '/cart' ) ) );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( "disabled='disabled'", $output );
+		$this->assertStringContainsString( 'r2c-manage-token-needed', $output );
+		$this->assertStringContainsString( '/cart', $output );
+		$this->assertStringNotContainsString( 'r2c-excluded-post-type-add', $output );
+		$this->assertStringNotContainsString( 'r2c-excluded-page-picker', $output );
+	}
+
+	public function test_render_excluded_pages_section_with_a_management_code_keeps_the_textarea_editable() {
+		$this->stub_escapers();
+		Functions\when( 'get_post_types' )->justReturn( array() );
+		Functions\when( 'get_posts' )->justReturn( array() );
+		$this->stub_permalinks_and_manage_token( '/%postname%/' );
+
+		ob_start();
+		$this->call_private_static( 'render_excluded_pages_section', array( array( '/cart' ) ) );
+		$output = ob_get_clean();
+
+		$this->assertStringNotContainsString( 'disabled', $output );
+		$this->assertStringNotContainsString( 'r2c-manage-token-needed', $output );
+	}
+
+	/**
+	 * 保存済みの管理コードの値は、画面のどこにも出さない(有る/無いだけ)。
+	 */
+	public function test_render_manage_token_section_never_prints_the_saved_value() {
+		$this->stub_escapers();
+		$this->stub_permalinks_and_manage_token( '', 'r2cm_SUPER_SECRET_VALUE' );
+
+		ob_start();
+		$this->call_private_static( 'render_manage_token_section', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringNotContainsString( 'r2cm_SUPER_SECRET_VALUE', $output );
+		$this->assertStringContainsString( 'A management code is saved', $output );
+		$this->assertStringContainsString( 'r2c-manage-token-form', $output );
+	}
+
+	public function test_render_manage_token_section_without_a_code_says_what_is_missing() {
+		$this->stub_escapers();
+		$this->stub_permalinks_and_manage_token( '', '' );
+
+		ob_start();
+		$this->call_private_static( 'render_manage_token_section', array() );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'No management code is saved', $output );
 	}
 
 	/**
@@ -420,7 +519,7 @@ class SettingsPageHelpersTest extends TestCase {
 
 		Functions\when( 'get_post_types' )->justReturn( array() );
 		Functions\when( 'get_posts' )->justReturn( array() );
-		Functions\when( 'get_option' )->justReturn( '/%postname%/' );
+		$this->stub_permalinks_and_manage_token( '/%postname%/' );
 
 		Functions\expect( 'wp_dropdown_pages' )->never();
 

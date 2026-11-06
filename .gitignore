@@ -7,3 +7,4 @@
 /playwright-report/
 /composer.lock
 /.phpunit.result.cache
+*~

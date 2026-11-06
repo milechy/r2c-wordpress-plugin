@@ -31,6 +31,8 @@ class AjaxPollTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		Monkey\setUp();
+		Functions\when( 'delete_option' )->justReturn( true );
+		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 
 		Functions\when( 'check_ajax_referer' )->justReturn( true );
 		Functions\when( 'current_user_can' )->justReturn( true );
@@ -133,9 +135,10 @@ class AjaxPollTest extends TestCase {
 		Functions\when( 'get_transient' )->justReturn( 'tok_abc' );
 		$this->stub_poll_response(
 			array(
-				'status'    => 'provisioned',
-				'api_key'   => 'key_123',
-				'tenant_id' => 't_1',
+				'status'       => 'provisioned',
+				'api_key'      => 'key_123',
+				'tenant_id'    => 't_1',
+				'manage_token' => 'r2cm_from_server',
 			)
 		);
 
@@ -163,8 +166,51 @@ class AjaxPollTest extends TestCase {
 
 		$this->assertSame( 'key_123', $options[ \R2C_AI_Concierge_Options::API_KEY ] );
 		$this->assertSame( 't_1', $options[ \R2C_AI_Concierge_Options::TENANT_ID ] );
+		// 管理コードは応答に1回だけ載る。接続キーと同じ場所(autoload なし)に保存する。
+		$this->assertSame( 'r2cm_from_server', $options[ \R2C_AI_Concierge_Options::MANAGE_TOKEN ] );
 		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_POLL, $cleared );
 		$this->assertContains( \R2C_AI_Concierge_Options::PENDING_CHALLENGE, $cleared );
+	}
+
+	/**
+	 * 古いサーバ(管理コードを返さない)や形の違う値のときは、前の接続の管理コードを
+	 * 残さず消す。別のサイト・別のキーの管理コードが残ると、使ったときに断られて原因が分からない。
+	 */
+	public function test_provisioned_without_a_valid_manage_token_removes_any_stale_one() {
+		Functions\when( 'get_transient' )->justReturn( 'tok_abc' );
+		$this->stub_poll_response(
+			array(
+				'status'       => 'provisioned',
+				'api_key'      => 'key_123',
+				'tenant_id'    => 't_1',
+				'manage_token' => 'rjc_not_a_manage_token',
+			)
+		);
+		$deleted = array();
+		Functions\when( 'delete_option' )->alias(
+			function ( $name ) use ( &$deleted ) {
+				$deleted[] = $name;
+				return true;
+			}
+		);
+		$options = array();
+		Functions\when( 'update_option' )->alias(
+			function ( $name, $value ) use ( &$options ) {
+				$options[ $name ] = $value;
+				return true;
+			}
+		);
+		Functions\when( 'delete_transient' )->justReturn( true );
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_poll();
+			$this->fail( 'expected wp_send_json_success to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'connected', $e->data['status'] );
+		}
+
+		$this->assertContains( \R2C_AI_Concierge_Options::MANAGE_TOKEN, $deleted );
+		$this->assertArrayNotHasKey( \R2C_AI_Concierge_Options::MANAGE_TOKEN, $options );
 	}
 
 	/**

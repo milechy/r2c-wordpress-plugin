@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: R2C AI Concierge 0.2.1\n"
+"Project-Id-Version: R2C AI Concierge 0.3.0\n"
 "Report-Msgid-Bugs-To: https://github.com/milechy/r2c-wordpress-plugin/issues\n"
 "POT-Creation-Date: 2026-10-18 07:49+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -68,11 +68,19 @@ msgid "Please enter a connection key."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
+msgid "This does not look like a management code. It starts with \"r2cm_\". Please check it and try again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "This connection key is invalid."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "Failed to verify the connection key."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "The local connection info was removed. The connection key was not revoked on R2C's side because this site has no management code. You can revoke it in your R2C dashboard."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
@@ -90,6 +98,10 @@ msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "Failed to save the settings."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Please enter a management code."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
@@ -123,6 +135,34 @@ msgid "The email could not be sent right now. Please try again in a moment."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
+msgid "Too many attempts. Please wait a while and try again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Your site address must use HTTPS."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect)."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This site address cannot be registered. Please check the address in Settings > General."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "This feature is not available right now. Please try again in a moment."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Changing the hidden pages needs the management code. Issue one in your R2C dashboard (ask the assistant for a WordPress connection key), then enter it under \"Management code\" on this screen."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
+msgid "Some of the values could not be accepted. Please check them and try again."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-ajax.php
 msgid "New sign-ups to R2C are currently at capacity. Please wait a moment."
 msgstr ""
 
@@ -132,10 +172,6 @@ msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
 msgid "Verification access to this site was denied. Please temporarily disable Basic Auth or any access restrictions."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "This site cannot be reached from outside. It must be a publicly accessible site (local environments cannot connect)."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-ajax.php
@@ -258,6 +294,14 @@ msgid "Connection key"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Management code (optional)"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Issued in your R2C dashboard together with the connection key. It is needed to change the hidden pages and to revoke the key. You can also add it later on this screen."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Connect with this key"
 msgstr ""
 
@@ -291,6 +335,22 @@ msgstr ""
 msgid "Unable to reach R2C right now. To change settings, please reopen this page in a moment."
 msgstr ""
 
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Management code"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "A management code is saved. To replace it, enter the new one below."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "No management code is saved. Without it, the hidden pages cannot be changed here, and disconnecting does not revoke the key on R2C's side. Issue one in your R2C dashboard (ask the assistant for a WordPress connection key) and enter it below."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Save the management code"
+msgstr ""
+
 #. translators: 1: the site address when it was connected, 2: the current site address
 #: includes/class-r2c-ai-concierge-settings-page.php
 #, php-format
@@ -319,6 +379,14 @@ msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Could not be retrieved"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "To change your plan or cancel, open the R2C dashboard and tell the assistant what you want."
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Open the R2C dashboard"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
@@ -376,14 +444,6 @@ msgid "%d unresolved"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "To change your plan or cancel, open the R2C dashboard and tell the assistant what you want."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Open the R2C dashboard"
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Respond in the R2C dashboard"
 msgstr ""
 
@@ -408,15 +468,15 @@ msgid "Enterprise plan"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
-msgid "Next steps"
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-settings-page.php
 msgid "If you started with the free plan, an invitation email has been sent to you. Open it, set a password, and log in to the R2C dashboard. If it has not arrived, please check your spam folder."
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Resend the invitation email"
+msgstr ""
+
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Next steps"
 msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
@@ -471,6 +531,10 @@ msgstr ""
 msgid "One pattern per line. Start with / ; add * at the end to match everything under that path (e.g. /cart, /checkout/*)."
 msgstr ""
 
+#: includes/class-r2c-ai-concierge-settings-page.php
+msgid "Changing the hidden pages needs the management code. Enter it under \"Management code\" below the Save button."
+msgstr ""
+
 #. translators: %s: link to the Permalinks settings screen
 #: includes/class-r2c-ai-concierge-settings-page.php
 #, php-format
@@ -507,24 +571,4 @@ msgstr ""
 
 #: includes/class-r2c-ai-concierge-settings-page.php
 msgid "Disconnect"
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "Too many attempts. Please wait a while and try again."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "Your site address must use HTTPS."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "This site address cannot be registered. Please check the address in Settings > General."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "This feature is not available right now. Please try again in a moment."
-msgstr ""
-
-#: includes/class-r2c-ai-concierge-ajax.php
-msgid "Some of the values could not be accepted. Please check them and try again."
 msgstr ""
