@@ -29,6 +29,7 @@ class R2C_AI_Concierge_Options {
 	const PENDING_CHALLENGE  = 'r2c_ai_concierge_pending_challenge';
 	const NOTICE_DISMISSED   = 'r2c_ai_concierge_connect_notice_dismissed';
 	const CONNECTED_WITH_KEY = 'r2c_ai_concierge_connected_with_key';
+	const MANAGE_TOKEN       = 'r2c_ai_concierge_manage_token';
 
 	/**
 	 * True once a connection exists locally. Does not confirm the key is
@@ -51,6 +52,32 @@ class R2C_AI_Concierge_Options {
 
 	public static function is_connected_with_key() {
 		return (bool) get_option( self::CONNECTED_WITH_KEY, false );
+	}
+
+	/**
+	 * The management code: a second secret, separate from the connection key.
+	 * The connection key is printed in the page source (data-api-key) and so
+	 * proves nothing but "which store"; R2C requires this code for the changes
+	 * that can hide the widget on every page or revoke the key. It is stored
+	 * like the key (autoload = false) and is never printed back to a screen.
+	 */
+	public static function get_manage_token() {
+		$token = get_option( self::MANAGE_TOKEN, '' );
+		return is_string( $token ) ? $token : '';
+	}
+
+	public static function has_manage_token() {
+		return '' !== self::get_manage_token();
+	}
+
+	/** An empty value removes the code. */
+	public static function set_manage_token( $token ) {
+		$token = (string) $token;
+		if ( '' === $token ) {
+			delete_option( self::MANAGE_TOKEN );
+			return;
+		}
+		update_option( self::MANAGE_TOKEN, $token, false );
 	}
 
 	public static function get_api_key() {
@@ -88,6 +115,7 @@ class R2C_AI_Concierge_Options {
 		delete_option( self::SITE_ORIGIN );
 		delete_option( self::CACHED_THEME );
 		delete_option( self::CONNECTED_WITH_KEY );
+		delete_option( self::MANAGE_TOKEN );
 	}
 
 	/**

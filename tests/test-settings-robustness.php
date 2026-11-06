@@ -24,6 +24,7 @@ class SettingsRobustnessTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		Monkey\setUp();
+		Functions\when( 'delete_option' )->justReturn( true );
 		Functions\stubTranslationFunctions();
 		Functions\stubEscapeFunctions();
 		Functions\when( 'check_ajax_referer' )->justReturn( true );

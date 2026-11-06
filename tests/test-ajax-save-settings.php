@@ -31,6 +31,8 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		Functions\when( 'sanitize_textarea_field' )->returnArg( 1 );
 		Functions\when( 'sanitize_hex_color' )->returnArg( 1 );
 		Functions\when( 'update_option' )->justReturn( true );
+		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 		Functions\when( 'wp_json_encode' )->alias(
 			function ( $data ) {
 				return json_encode( $data ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- test-only stub for the real wp_json_encode.
@@ -38,9 +40,16 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		);
 
 		// R2C_AI_Concierge_Options::is_connected() / get_api_key() -> get_option( API_KEY ).
+		// The management code is saved, so the excluded-pages field is sent (without one it is not).
 		Functions\when( 'get_option' )->alias(
 			function ( $name, $default = false ) {
-				return \R2C_AI_Concierge_Options::API_KEY === $name ? 'connected-key' : $default;
+				if ( \R2C_AI_Concierge_Options::API_KEY === $name ) {
+					return 'connected-key';
+				}
+				if ( \R2C_AI_Concierge_Options::MANAGE_TOKEN === $name ) {
+					return 'r2cm_secret';
+				}
+				return $default;
 			}
 		);
 
@@ -157,5 +166,102 @@ class AjaxSaveSettingsExcludedPatternsTest extends TestCase {
 		}
 
 		$this->assertSame( array( '/cart', '/checkout/*' ), $captured['excluded_page_patterns'] );
+	}
+	private function stub_connection_with_token( $token ) {
+		Functions\when( 'get_option' )->alias(
+			function ( $name, $default = false ) use ( $token ) {
+				if ( \R2C_AI_Concierge_Options::API_KEY === $name ) {
+					return 'connected-key';
+				}
+				if ( \R2C_AI_Concierge_Options::MANAGE_TOKEN === $name ) {
+					return $token;
+				}
+				return $default;
+			}
+		);
+	}
+
+	private function capture_request( array &$captured, $status = 200, $body = '{}' ) {
+		Functions\when( 'wp_remote_request' )->alias(
+			function ( $url, $args ) use ( &$captured ) {
+				$captured = array(
+					'headers' => $args['headers'],
+					'body'    => isset( $args['body'] ) ? json_decode( $args['body'], true ) : null,
+				);
+				return array( 'fake' => 'response' );
+			}
+		);
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( $status );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( $body );
+	}
+
+	public function test_the_management_code_is_sent_as_a_header_and_never_in_the_body() {
+		$captured = array();
+		$this->capture_request( $captured );
+
+		$_POST['excluded_page_patterns'] = '/cart';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertTrue( $e->success );
+		}
+
+		$this->assertSame( 'r2cm_secret', $captured['headers']['x-r2c-manage-token'] );
+		$this->assertStringNotContainsString( 'r2cm_secret', (string) json_encode( $captured['body'] ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- test-only.
+	}
+
+	/**
+	 * 管理コードが無いと、R2C は非表示ページの変更を断り、同じ要求の位置・色も保存しない。
+	 * だから送らない(位置・色の保存を巻き込まない)。
+	 */
+	public function test_without_a_management_code_the_excluded_pages_are_not_sent_and_the_rest_still_saves() {
+		$this->stub_connection_with_token( '' );
+		$captured = array();
+		$this->capture_request( $captured );
+
+		$_POST['excluded_page_patterns'] = '/cart';
+		$_POST['position']               = 'bottom-left';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertTrue( $e->success );
+		}
+
+		$this->assertSame( array( 'position' => 'bottom-left' ), $captured['body'] );
+		$this->assertArrayNotHasKey( 'x-r2c-manage-token', $captured['headers'] );
+	}
+
+	public function test_only_excluded_pages_without_a_management_code_is_nothing_to_change() {
+		$this->stub_connection_with_token( '' );
+		Functions\expect( 'wp_remote_request' )->never();
+
+		$_POST['excluded_page_patterns'] = '/cart';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertFalse( $e->success );
+			$this->assertSame( 'There is nothing to change.', $e->data['message'] );
+		}
+	}
+
+	public function test_a_rejected_management_code_shows_what_to_do_next() {
+		$captured = array();
+		$this->capture_request( $captured, 403, '{"error":"manage_token_required","message":"日本語"}' );
+
+		$_POST['excluded_page_patterns'] = '/cart';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_save_settings();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertFalse( $e->success );
+			$this->assertStringContainsString( 'management code', $e->data['message'] );
+			$this->assertStringNotContainsString( '日本語', $e->data['message'] );
+		}
 	}
 }

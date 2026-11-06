@@ -125,12 +125,47 @@
 			button.disabled = true;
 			var apiKey = document.getElementById( 'r2c-manual-key' ).value;
 
-			post( 'r2c_ai_concierge_connect_manual', { api_key: apiKey } ).then( function ( json ) {
+			var manageTokenField = document.getElementById( 'r2c-manual-manage-token' );
+			var manageToken = manageTokenField ? manageTokenField.value : '';
+
+			post( 'r2c_ai_concierge_connect_manual', { api_key: apiKey, manage_token: manageToken } ).then( function ( json ) {
 				if ( ! json.success ) {
 					button.disabled = false;
 					setStatusText( status, ( json.data && json.data.message ) || '' );
 					return;
 				}
+				window.location.reload();
+			} ).catch( function () {
+				button.disabled = false;
+				setStatusText( status, window.r2cAiConciergeAdmin.i18n.networkError );
+			} );
+		} );
+	}
+
+	// -----------------------------------------------------------------
+	// 管理コード(非表示ページの変更・接続解除に要る別の秘密)
+	// -----------------------------------------------------------------
+
+	function initManageTokenForm() {
+		var form = document.getElementById( 'r2c-manage-token-form' );
+		if ( ! form ) {
+			return;
+		}
+		var button = document.getElementById( 'r2c-manage-token-save' );
+		var status = document.getElementById( 'r2c-manage-token-status' );
+
+		form.addEventListener( 'submit', function ( e ) {
+			e.preventDefault();
+			button.disabled = true;
+			setStatusText( status, window.r2cAiConciergeAdmin.i18n.saving );
+
+			post( 'r2c_ai_concierge_save_manage_token', { manage_token: document.getElementById( 'r2c-manage-token' ).value } ).then( function ( json ) {
+				if ( ! json.success ) {
+					button.disabled = false;
+					setStatusText( status, ( json.data && json.data.message ) || '' );
+					return;
+				}
+				// 保存した値を画面に残さない。再読み込みで「保存済み」の表示と、使える欄に変わる。
 				window.location.reload();
 			} ).catch( function () {
 				button.disabled = false;
@@ -314,6 +349,7 @@
 	document.addEventListener( 'DOMContentLoaded', function () {
 		initConnectForm();
 		initManualForm();
+initManageTokenForm();
 		initDisconnectButton();
 		initResendInviteButton();
 		initSettingsForm();

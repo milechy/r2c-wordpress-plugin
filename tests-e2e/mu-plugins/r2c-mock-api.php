@@ -212,6 +212,7 @@ class R2C_Mock_Api {
 			'poll_token'      => $poll_token,
 			'polls_remaining' => max( 0, (int) $state['controls']['poll_attempts_until_provisioned'] ),
 			'api_key'         => 'mock_' . wp_generate_password( 32, false ),
+			'manage_token'    => 'r2cm_e2e_' . wp_generate_password( 24, false ),
 			'tenant_id'       => 't_e2e',
 		);
 		self::save_state( $state );
@@ -264,18 +265,30 @@ class R2C_Mock_Api {
 
 		return new WP_REST_Response(
 			array(
-				'status'    => 'provisioned',
-				'api_key'   => $provisioning['api_key'],
-				'tenant_id' => $provisioning['tenant_id'],
+				'status'       => 'provisioned',
+				'api_key'      => $provisioning['api_key'],
+				'manage_token' => $provisioning['manage_token'],
+				'tenant_id'    => $provisioning['tenant_id'],
 			),
 			200
 		);
+	}
+
+	/** Mirrors R2C: a management code is `r2cm_`-prefixed and travels in x-r2c-manage-token. */
+	private static function has_manage_token( WP_REST_Request $req ) {
+		$token = $req->get_header( 'x-r2c-manage-token' );
+		return is_string( $token ) && 0 === strpos( $token, 'r2cm_' );
 	}
 
 	public static function handle_disconnect( WP_REST_Request $req ) {
 		$state = self::get_state();
 		if ( $state['controls']['force_settings_down'] ) {
 			return new WP_REST_Response( array( 'error' => 'service_unavailable' ), 503 );
+		}
+
+		// R2C requires the management code (never the connection key alone) to revoke a key.
+		if ( ! self::has_manage_token( $req ) ) {
+			return new WP_REST_Response( array( 'error' => 'manage_token_required' ), 403 );
 		}
 
 		$api_key = $req->get_header( 'x-api-key' );
@@ -311,6 +324,12 @@ class R2C_Mock_Api {
 		}
 
 		$fields = $req->get_json_params();
+
+		// R2C refuses a change to the hidden pages without the management code, and then saves nothing
+		// from the same request.
+		if ( is_array( $fields ) && array_key_exists( 'excluded_page_patterns', $fields ) && ! self::has_manage_token( $req ) ) {
+			return new WP_REST_Response( array( 'error' => 'manage_token_required', 'message' => 'mocked' ), 403 );
+		}
 		if ( is_array( $fields ) ) {
 			foreach ( array( 'position', 'offset_x', 'offset_y', 'primary_color', 'excluded_page_patterns', 'allowed_origins' ) as $key ) {
 				if ( array_key_exists( $key, $fields ) ) {

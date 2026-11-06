@@ -27,6 +27,7 @@ class AjaxConnectManualTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		Monkey\setUp();
+		Functions\when( 'delete_option' )->justReturn( true );
 
 		$_POST = array();
 
@@ -94,6 +95,76 @@ class AjaxConnectManualTest extends TestCase {
 			$this->fail( 'expected wp_send_json_error to halt execution' );
 		} catch ( \R2CTestJsonExit $e ) {
 			$this->assertSame( 'This connection key is invalid.', $e->data['message'] );
+		}
+	}
+
+	private function stub_settings_ok() {
+		Functions\when( 'wp_remote_request' )->justReturn( array( 'fake' => 'response' ) );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'wp_remote_retrieve_response_code' )->justReturn( 200 );
+		Functions\when( 'wp_remote_retrieve_body' )->justReturn( '{"tenant_id":"t_1","position":"bottom-right"}' );
+	}
+
+	public function test_a_management_code_entered_with_the_key_is_stored() {
+		$this->stub_settings_ok();
+		$options = array();
+		Functions\when( 'update_option' )->alias(
+			function ( $name, $value ) use ( &$options ) {
+				$options[ $name ] = $value;
+				return true;
+			}
+		);
+
+		$_POST['api_key']      = 'rjc_some_key';
+		$_POST['manage_token'] = '  r2cm_abc123  ';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
+			$this->fail( 'expected wp_send_json_success to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'connected', $e->data['status'] );
+		}
+
+		$this->assertSame( 'r2cm_abc123', $options[ \R2C_AI_Concierge_Options::MANAGE_TOKEN ] );
+	}
+
+	public function test_no_management_code_still_connects_and_clears_a_stale_one() {
+		$this->stub_settings_ok();
+		$deleted = array();
+		Functions\when( 'delete_option' )->alias(
+			function ( $name ) use ( &$deleted ) {
+				$deleted[] = $name;
+				return true;
+			}
+		);
+
+		$_POST['api_key'] = 'rjc_some_key';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
+			$this->fail( 'expected wp_send_json_success to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertSame( 'connected', $e->data['status'] );
+		}
+
+		$this->assertContains( \R2C_AI_Concierge_Options::MANAGE_TOKEN, $deleted );
+	}
+
+	/**
+	 * 接続キー(rjc_)を管理コードの欄に貼った取り違え。R2C へ問い合わせる前に止め、何も保存しない。
+	 */
+	public function test_a_management_code_in_the_wrong_format_is_rejected_before_any_remote_call() {
+		Functions\expect( 'wp_remote_request' )->never();
+		Functions\expect( 'update_option' )->never();
+
+		$_POST['api_key']      = 'rjc_some_key';
+		$_POST['manage_token'] = 'rjc_this_is_the_connection_key';
+
+		try {
+			\R2C_AI_Concierge_Ajax::handle_connect_manual();
+			$this->fail( 'expected wp_send_json_error to halt execution' );
+		} catch ( \R2CTestJsonExit $e ) {
+			$this->assertStringContainsString( 'management code', $e->data['message'] );
 		}
 	}
 

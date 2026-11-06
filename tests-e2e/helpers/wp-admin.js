@@ -101,10 +101,14 @@ async function configureMock( baseURL, configure ) {
  * fast, deterministic way for other specs to reach an already-connected
  * state without going through the full consent + polling flow.
  */
-async function connectViaManualKey( page, baseURL, apiKey ) {
+async function connectViaManualKey( page, baseURL, apiKey, manageToken = 'r2cm_e2e_manage_token' ) {
 	await gotoSettings( page, baseURL );
 	await page.click( 'summary' );
 	await page.fill( '#r2c-manual-key', apiKey );
+	// The management code is optional; pass '' to connect without one (the hidden-pages field then stays disabled).
+	if ( manageToken ) {
+		await page.fill( '#r2c-manual-manage-token', manageToken );
+	}
 	await Promise.all( [
 		page.waitForNavigation(),
 		page.click( '#r2c-manual-button' ),

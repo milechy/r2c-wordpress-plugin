@@ -20,6 +20,7 @@ class R2C_AI_Concierge_Ajax {
 		add_action( 'wp_ajax_r2c_ai_concierge_connect_manual', array( __CLASS__, 'handle_connect_manual' ) );
 		add_action( 'wp_ajax_r2c_ai_concierge_disconnect', array( __CLASS__, 'handle_disconnect' ) );
 		add_action( 'wp_ajax_r2c_ai_concierge_save_settings', array( __CLASS__, 'handle_save_settings' ) );
+		add_action( 'wp_ajax_r2c_ai_concierge_save_manage_token', array( __CLASS__, 'handle_save_manage_token' ) );
 		add_action( 'wp_ajax_r2c_ai_concierge_resend_invite', array( __CLASS__, 'handle_resend_invite' ) );
 	}
 
@@ -67,6 +68,20 @@ class R2C_AI_Concierge_Ajax {
 			return trim( $matches[2] );
 		}
 		return trim( $raw );
+	}
+
+	/**
+	 * 管理コード(r2cm_ で始まる)の入力を整える。空は ''(=コード無し)。
+	 * 形が違うとき(接続キーを貼った等)は false。R2C へ問い合わせて確かめることは
+	 * しない(確かめる操作は、設定を書き換える操作しかないため)。使ったときに
+	 * R2C が違うと答えるので、そのときの案内は error_message_for が出す。
+	 */
+	private static function sanitize_manage_token( $raw ) {
+		$token = sanitize_text_field( trim( $raw ) );
+		if ( '' === $token ) {
+			return '';
+		}
+		return ( 0 === strpos( $token, 'r2cm_' ) ) ? $token : false;
 	}
 
 	/* 接続開始 */
@@ -167,6 +182,10 @@ class R2C_AI_Concierge_Ajax {
 		if ( 'provisioned' === $status ) {
 			if ( ! empty( $body['api_key'] ) ) {
 				R2C_AI_Concierge_Options::set_connection( $body['api_key'], $body['tenant_id'], home_url( '/' ) );
+				// 管理コード(非表示ページの変更・接続解除に要る別の秘密)。応答に1回だけ載る。
+				// 無いとき(古いサーバ)は、前の接続の値を残さず消す。
+				$manage_token = ( isset( $body['manage_token'] ) && is_string( $body['manage_token'] ) ) ? self::sanitize_manage_token( $body['manage_token'] ) : '';
+				R2C_AI_Concierge_Options::set_manage_token( false === $manage_token ? '' : $manage_token );
 				R2C_AI_Concierge_Options::clear_pending_poll_token();
 				R2C_AI_Concierge_Options::clear_pending_challenge();
 				// 接続した時点で R2C に保存されている位置・色を取り込む。これをしないと、
@@ -275,6 +294,13 @@ class R2C_AI_Concierge_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Please enter a connection key.', 'r2c-ai-concierge' ) ) );
 		}
 
+		// 管理コードは任意。R2C の管理画面で接続キーと一緒に発行されるが、無くても繋がる
+		// (その場合、非表示ページの変更と接続解除の失効は、あとで管理コードを入れるまでできない)。
+		$manage_token = self::sanitize_manage_token( self::post_string( 'manage_token' ) );
+		if ( false === $manage_token ) {
+			wp_send_json_error( array( 'message' => __( 'This does not look like a management code. It starts with "r2cm_". Please check it and try again.', 'r2c-ai-concierge' ) ) );
+		}
+
 		$result = R2C_AI_Concierge_Api_Client::get_settings( $api_key );
 
 		if ( ! $result['ok'] ) {
@@ -287,6 +313,7 @@ class R2C_AI_Concierge_Ajax {
 		$body = $result['body'];
 		R2C_AI_Concierge_Options::set_connection( $api_key, $body['tenant_id'], home_url( '/' ) );
 		R2C_AI_Concierge_Options::mark_connected_with_key();
+		R2C_AI_Concierge_Options::set_manage_token( $manage_token );
 		R2C_AI_Concierge_Options::cache_theme_from_settings( $body );
 
 		wp_send_json_success( array( 'status' => 'connected' ) );
@@ -297,17 +324,28 @@ class R2C_AI_Concierge_Ajax {
 	public static function handle_disconnect() {
 		self::guard();
 
-		$api_key = R2C_AI_Concierge_Options::get_api_key();
-		$warning = null;
+		$api_key      = R2C_AI_Concierge_Options::get_api_key();
+		$manage_token = R2C_AI_Concierge_Options::get_manage_token();
+		$with_key     = R2C_AI_Concierge_Options::is_connected_with_key();
+		$warning      = null;
 
-		if ( ! empty( $api_key ) ) {
-			$result = R2C_AI_Concierge_Api_Client::disconnect( $api_key );
-			if ( ! $result['ok'] ) {
-				// ★ローカルの資格情報削除は、R2C側の失効の成否とは切り離す★
-				// FR-07の「ローカル資格情報を削除」は利用者が今すぐ止められる
-				// べき操作。R2C側への失効リクエストが届かなくても、ここで
-				// 止めるのを諦めない代わりに、その旨を明示する。
-				$warning = __( 'The local connection info was removed, but revoking the key on R2C\'s side may have failed. If this is unexpected, please check the key status in your R2C dashboard.', 'r2c-ai-concierge' );
+		// ★接続キーを貼って繋いだ(すでに R2C と契約済みの)サイトでは、R2C 側のキーを失効させない★
+		// そのキーは R2C の管理画面で発行した契約のキーで、ほかの場所(別のサイト・手貼りのコード)でも
+		// 使っていることがある。この画面の「接続を解除」は、このサイトの接続情報を消すだけにする。
+		// 自動接続(このプラグインがキーを発行した)サイトだけ、R2C 側でも失効させる。
+		if ( ! empty( $api_key ) && ! $with_key ) {
+			if ( '' === $manage_token ) {
+				// 管理コードが無いと R2C は失効させない。ここで呼んでも必ず断られる。
+				$warning = __( 'The local connection info was removed. The connection key was not revoked on R2C\'s side because this site has no management code. You can revoke it in your R2C dashboard.', 'r2c-ai-concierge' );
+			} else {
+				$result = R2C_AI_Concierge_Api_Client::disconnect( $api_key, $manage_token );
+				if ( ! $result['ok'] ) {
+					// ★ローカルの資格情報削除は、R2C側の失効の成否とは切り離す★
+					// FR-07の「ローカル資格情報を削除」は利用者が今すぐ止められる
+					// べき操作。R2C側への失効リクエストが届かなくても、ここで
+					// 止めるのを諦めない代わりに、その旨を明示する。
+					$warning = __( 'The local connection info was removed, but revoking the key on R2C\'s side may have failed. If this is unexpected, please check the key status in your R2C dashboard.', 'r2c-ai-concierge' );
+				}
 			}
 		}
 
@@ -354,7 +392,10 @@ class R2C_AI_Concierge_Ajax {
 		// FR-10: テキストエリアの1行1パターンをそのまま配列化する。空文字列の
 		// 送信(全パターン削除)も有効な操作として扱うため、issetのみで判定する
 		// (他フィールドの「空なら無視」とは違う——ここは「空=クリア」が意味を持つ)。
-		if ( isset( $_POST['excluded_page_patterns'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		// 管理コードが無いと R2C は非表示ページの変更を断り、同じ要求の位置・色まで保存しない。
+		// 画面では欄を無効にしてあるが、ここでも送らない(位置・色の保存を巻き込まないため)。
+		$manage_token = R2C_AI_Concierge_Options::get_manage_token();
+		if ( '' !== $manage_token && isset( $_POST['excluded_page_patterns'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$raw   = sanitize_textarea_field( self::post_string( 'excluded_page_patterns' ) );
 			$lines = array_filter( array_map( 'trim', explode( "\n", $raw ) ), 'strlen' );
 
@@ -365,7 +406,7 @@ class R2C_AI_Concierge_Ajax {
 			wp_send_json_error( array( 'message' => __( 'There is nothing to change.', 'r2c-ai-concierge' ) ) );
 		}
 
-		$result = R2C_AI_Concierge_Api_Client::patch_settings( R2C_AI_Concierge_Options::get_api_key(), $fields );
+		$result = R2C_AI_Concierge_Api_Client::patch_settings( R2C_AI_Concierge_Options::get_api_key(), $fields, $manage_token );
 
 		if ( ! $result['ok'] ) {
 			wp_send_json_error( array( 'message' => self::error_message_for( $result, __( 'Failed to save the settings.', 'r2c-ai-concierge' ) ) ) );
@@ -375,6 +416,28 @@ class R2C_AI_Concierge_Ajax {
 		R2C_AI_Concierge_Options::cache_theme_from_settings( $body );
 
 		wp_send_json_success( array( 'settings' => $body ) );
+	}
+
+	/* 管理コードの保存 */
+
+	public static function handle_save_manage_token() {
+		self::guard();
+
+		if ( ! R2C_AI_Concierge_Options::is_connected() ) {
+			wp_send_json_error( array( 'message' => __( 'Not connected.', 'r2c-ai-concierge' ) ) );
+		}
+
+		$manage_token = self::sanitize_manage_token( self::post_string( 'manage_token' ) );
+		if ( '' === $manage_token ) {
+			wp_send_json_error( array( 'message' => __( 'Please enter a management code.', 'r2c-ai-concierge' ) ) );
+		}
+		if ( false === $manage_token ) {
+			wp_send_json_error( array( 'message' => __( 'This does not look like a management code. It starts with "r2cm_". Please check it and try again.', 'r2c-ai-concierge' ) ) );
+		}
+
+		R2C_AI_Concierge_Options::set_manage_token( $manage_token );
+
+		wp_send_json_success( array( 'status' => 'saved' ) );
 	}
 
 	/* 招待メールの再送(WP-UX-09) */
@@ -455,6 +518,8 @@ class R2C_AI_Concierge_Ajax {
 				return __( 'This site address cannot be registered. Please check the address in Settings > General.', 'r2c-ai-concierge' );
 			case 'service_unavailable':
 				return __( 'This feature is not available right now. Please try again in a moment.', 'r2c-ai-concierge' );
+			case 'manage_token_required':
+				return __( 'Changing the hidden pages needs the management code. Issue one in your R2C dashboard (ask the assistant for a WordPress connection key), then enter it under "Management code" on this screen.', 'r2c-ai-concierge' );
 			case 'invalid_request':
 			case 'invalid_primary_color':
 			case 'invalid_placement':
